@@ -1,16 +1,16 @@
-# React + Vite
+# MENSTYLE - AURA STUDIO E-Commerce
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Dự án Website bán hàng thời trang (E-Commerce Web Application) xây dựng với React, Vite và Tailwind CSS.
 
-Currently, two official plugins are available:
+## 🚀 Tính năng hiện tại (Tuần 1 - UI):
+- Header Navigation + Announcement Bar + Responsive Drawer Menu.
+- Hero Banner thời trang cao cấp.
+- Grid danh mục xu hướng tuyển chọn (Blazer, Sơ mi, Đầm, Quần âu).
+- Thẻ sản phẩm nổi bật (ProductCard) có badge giảm giá, hiệu ứng hover, thêm nhanh vào giỏ.
+- Footer đầy đủ thông tin thương hiệu, chính sách và liên hệ.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## 🛠️ Công nghệ sử dụng:
+- **Framework:** React 19 + Vite
+- **Styling:** Tailwind CSS
+- **Icons:** Lucide React
+- **Deployment:** Vercel
