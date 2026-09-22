@@ -84,15 +84,6 @@ export const Header = ({ onOpenCart, cartCount = 0, currentTab = 'home', onNavig
 
           {/* Cụm Phải: Action Icons */}
           <div className="flex items-center gap-1 sm:gap-2">
-            {/* Nút vào Admin Portal */}
-            <button
-              onClick={() => onNavigate && onNavigate('admin')}
-              className="text-[11px] font-black bg-neutral-900 text-amber-400 hover:bg-neutral-800 px-2.5 py-1.5 rounded-lg border border-neutral-700 transition flex items-center gap-1 shadow-xs"
-              title="Vào Trang Quản Trị Admin"
-            >
-              <span>Admin</span>
-            </button>
-
             <Button variant="ghost" size="icon" aria-label="Yêu thích" className="hidden sm:inline-flex relative p-2">
               <Heart className="w-5 h-5 text-neutral-700" />
               <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>

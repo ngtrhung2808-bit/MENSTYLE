@@ -231,7 +231,10 @@ export default function App() {
       </main>
 
       {/* 6. Footer */}
-      <Footer />
+      <Footer onNavigate={(tab) => {
+        setCurrentTab(tab);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }} />
 
       {/* 7. Modal Chi Tiết Sản Phẩm (PDP) */}
       <ProductDetailModal 
