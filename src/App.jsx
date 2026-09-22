@@ -115,9 +115,26 @@ export default function App() {
     addToast('Đã Xóa Khỏi Giỏ', 'Sản phẩm đã được xóa khỏi giỏ hàng của bạn.', 'info');
   };
 
-  // Nếu đang ở màn hình ADMIN thì render riêng biệt Admin Layout
-  if (currentTab === 'admin') {
-    return <AdminDashboard onBackToClient={() => setCurrentTab('home')} />;
+  // Kiểm tra môi trường Localhost & URL Admin
+  const isLocalHost = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' || 
+    window.location.hostname === '127.0.0.1'
+  );
+  
+  // Tự động vào Admin nếu gõ localhost:5173/?admin hoặc localhost:5173/#admin
+  const hasAdminParam = typeof window !== 'undefined' && (
+    window.location.search.includes('admin') || 
+    window.location.hash.includes('admin')
+  );
+
+  // Chỉ cho phép vào màn hình ADMIN khi ĐANG CHẠY TRÊN LOCAL và có param/chọn admin
+  if (currentTab === 'admin' || (isLocalHost && hasAdminParam)) {
+    return <AdminDashboard onBackToClient={() => {
+      if (typeof window !== 'undefined') {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+      setCurrentTab('home');
+    }} />;
   }
 
   return (
