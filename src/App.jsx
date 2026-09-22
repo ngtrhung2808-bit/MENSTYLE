@@ -7,12 +7,15 @@ import { ProductCard } from './components/product/ProductCard';
 import { ProductListingPage } from './components/product/ProductListingPage';
 import { ProductDetailModal } from './components/product/ProductDetailModal';
 import { MiniCartDrawer } from './components/cart/MiniCartDrawer';
+import { CheckoutPage } from './components/checkout/CheckoutPage';
+import { UserProfilePage } from './components/profile/UserProfilePage';
+import { AdminDashboard } from './components/admin/AdminDashboard';
 import { Button } from './components/common/Button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { MOCK_PRODUCTS } from './data/mockProducts';
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState('home'); // 'home' | 'products'
+  const [currentTab, setCurrentTab] = useState('home'); // 'home' | 'products' | 'checkout' | 'profile' | 'admin'
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -99,6 +102,11 @@ export default function App() {
     );
   };
 
+  // Nếu đang ở màn hình ADMIN thì render riêng biệt Admin Layout
+  if (currentTab === 'admin') {
+    return <AdminDashboard onBackToClient={() => setCurrentTab('home')} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50 selection:bg-amber-500 selection:text-neutral-950 font-sans overflow-x-hidden w-full">
       {/* 1. Header Navigation */}
@@ -113,7 +121,23 @@ export default function App() {
       />
 
       <main className="flex-1 w-full max-w-full overflow-x-hidden">
-        {currentTab === 'products' ? (
+        {currentTab === 'checkout' ? (
+          /* TRANG CHECKOUT THANH TOÁN (TUẦN 3) */
+          <CheckoutPage 
+            cartItems={cartItems}
+            onBackToShopping={() => setCurrentTab('products')}
+            onOrderSuccess={(orderData) => {
+              alert(`Đặt hàng thành công! Mã đơn của bạn là: ${orderData.orderCode}`);
+              setCartItems([]);
+              setCurrentTab('profile');
+            }}
+          />
+        ) : currentTab === 'profile' ? (
+          /* TRANG PROFILE & LỊCH SỬ ĐƠN HÀNG (TUẦN 3) */
+          <UserProfilePage 
+            onBackToShopping={() => setCurrentTab('products')}
+          />
+        ) : currentTab === 'products' ? (
           /* TRANG DANH SÁCH SẢN PHẨM & BỘ LỌC (PLP) */
           <ProductListingPage 
             onQuickView={handleOpenDetail}
@@ -212,7 +236,9 @@ export default function App() {
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveItem}
         onCheckout={() => {
-          alert('Chuyển sang trang Thanh Toán (Task Tuần 3)!');
+          setIsCartOpen(false);
+          setCurrentTab('checkout');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
     </div>
