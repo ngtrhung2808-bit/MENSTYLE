@@ -20,6 +20,8 @@ import { MOCK_PRODUCTS } from './data/mockProducts';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('home'); // Mặc định luôn là Trang Chủ ('home') dành cho Khách hàng
+  const [filterCategory, setFilterCategory] = useState('Tất cả');
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('menstyle_user');
     return saved ? JSON.parse(saved) : null; // Mặc định là null (Khách vãng lai)
@@ -39,6 +41,12 @@ export default function App() {
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 4000);
+  };
+
+  const handleNavigateWithCategory = (catName) => {
+    setFilterCategory(catName);
+    setCurrentTab('products');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Giỏ hàng state giả lập
@@ -181,10 +189,20 @@ export default function App() {
         currentTab={currentTab}
         currentUser={currentUser}
         onOpenAuth={() => setIsAuthOpen(true)}
-        onNavigate={(tab) => {
+        searchValue={searchQuery}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          if (val.trim() !== '' && currentTab !== 'products') {
+            setCurrentTab('products');
+          }
+        }}
+        onNavigate={(tab, catName) => {
           if (tab === 'profile' && !currentUser) {
             setIsAuthOpen(true);
             return;
+          }
+          if (catName) {
+            setFilterCategory(catName);
           }
           setCurrentTab(tab);
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -220,15 +238,29 @@ export default function App() {
           <ProductListingPage 
             onQuickView={handleOpenDetail}
             onAddToCart={handleAddToCart}
+            initialCategory={filterCategory}
+            searchQuery={searchQuery}
           />
         ) : (
           /* TRANG CHỦ (HOME) */
           <>
             {/* 2. Hero Banner */}
-            <HeroBanner />
+            <HeroBanner 
+              onExplore={() => {
+                setFilterCategory('Tất cả');
+                setCurrentTab('products');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} 
+            />
 
             {/* 3. Featured Categories (Nam) */}
-            <FeaturedCategories />
+            <FeaturedCategories 
+              onSelectCategory={(catName) => {
+                setFilterCategory(catName);
+                setCurrentTab('products');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} 
+            />
 
             {/* 4. Best Seller Men Products */}
             <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12">

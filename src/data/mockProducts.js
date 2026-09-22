@@ -1,4 +1,4 @@
-// Mock data sản phẩm chuẩn phong cách thời trang nam MENSTYLE
+// Mock data sản phẩm chuẩn phong cách thời trang nam MENSTYLE với hình ảnh độ phân giải cao Unsplash chính xác từng phân loại
 export const MOCK_PRODUCTS = [
   {
     id: 1,
@@ -8,7 +8,7 @@ export const MOCK_PRODUCTS = [
     originalPrice: 1550000,
     discount: 20,
     rating: 4.9,
-    reviewCount: 42,
+    reviewCount: 52,
     images: [
       'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?q=80&w=800&auto=format&fit=crop',
@@ -34,7 +34,8 @@ export const MOCK_PRODUCTS = [
     reviewCount: 118,
     images: [
       'https://images.unsplash.com/photo-1620012253295-c15c429fbb3e?q=80&w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1603252109303-2751441dd157?q=80&w=800&auto=format&fit=crop'
     ],
     isNew: false,
     colors: [
@@ -55,7 +56,8 @@ export const MOCK_PRODUCTS = [
     reviewCount: 89,
     images: [
       'https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=800&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?q=80&w=800&auto=format&fit=crop'
     ],
     isNew: true,
     colors: [
@@ -77,7 +79,8 @@ export const MOCK_PRODUCTS = [
     reviewCount: 65,
     images: [
       'https://images.unsplash.com/photo-1479064555552-3ef4979f8908?q=80&w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?q=80&w=800&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=800&auto=format&fit=crop'
     ],
     isNew: false,
     colors: [
@@ -90,28 +93,70 @@ export const MOCK_PRODUCTS = [
   },
   {
     id: 5,
-    name: 'Áo Khoác Bomber Nam Da Lộn Minimalist',
+    name: 'Bộ Suit Nam Cổ Điển May Đo British Tailored',
     category: 'Blazer & Suit',
-    price: 890000,
-    originalPrice: 1100000,
-    discount: 19,
-    rating: 4.9,
-    reviewCount: 38,
+    price: 1850000,
+    originalPrice: 2200000,
+    discount: 16,
+    rating: 5.0,
+    reviewCount: 31,
     images: [
-      'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1495105787522-5334e3ffa0ef?q=80&w=800&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?q=80&w=800&auto=format&fit=crop'
     ],
     isNew: true,
     colors: [
-      { name: 'Nâu Rêu', hex: '#78350f' },
-      { name: 'Đen Nhám', hex: '#18181b' }
+      { name: 'Xanh Navy Hoàng Gia', hex: '#1e3a8a' },
+      { name: 'Đen Tuyển', hex: '#0f172a' }
     ],
     sizes: ['M', 'L', 'XL'],
-    description: 'Chất da lộn nhân tạo cao cấp mềm mại, khóa zip kim loại YKK trơn tru, dáng bomber hiện đại trẻ trung.'
+    description: 'Bộ suit may đo cao cấp theo chuẩn quý tộc Anh, chất vải len tự nhiên dày dặn, đứng phom và toát lên sự đĩnh đạc tuyệt đối.'
   },
   {
     id: 6,
-    name: 'Thắt Lưng Nam Da Bò Thật Khóa Tự Động',
+    name: 'Áo Sơ Mi Nam Kẻ Sọc Xanh Oxford Vintage',
+    category: 'Áo Sơ Mi',
+    price: 490000,
+    originalPrice: 590000,
+    discount: 17,
+    rating: 4.8,
+    reviewCount: 47,
+    images: [
+      'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800&auto=format&fit=crop'
+    ],
+    isNew: true,
+    colors: [
+      { name: 'Kẻ Sọc Xanh', hex: '#38bdf8' },
+      { name: 'Kẻ Sọc Xám', hex: '#94a3b8' }
+    ],
+    sizes: ['S', 'M', 'L', 'XL'],
+    description: 'Vải dệt Oxford kinh điển, độ thoáng khí cao, họa tiết kẻ sọc thanh lịch dễ dàng phối cùng blazer hoặc quần jean.'
+  },
+  {
+    id: 7,
+    name: 'Quần Jean Nam Slim Straight Wash Xanh Đậm',
+    category: 'Quần Âu & Jean',
+    price: 580000,
+    originalPrice: 720000,
+    discount: 19,
+    rating: 4.7,
+    reviewCount: 76,
+    images: [
+      'https://images.unsplash.com/photo-1542272604-780c96856592?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800&auto=format&fit=crop'
+    ],
+    isNew: false,
+    colors: [
+      { name: 'Xanh Chàm Đậm', hex: '#1e293b' },
+      { name: 'Xanh Retro', hex: '#0284c7' }
+    ],
+    sizes: ['29', '30', '31', '32', '34'],
+    description: 'Chất jean cotton 12.5oz pha sợi elastane đàn hồi nhẹ, giặt wash tự nhiên không phai màu, phom ôm vừa phải.'
+  },
+  {
+    id: 8,
+    name: 'Thắt Lưng Nam Da Bò Thật Khóa Tự Động Sang Trọng',
     category: 'Phụ Kiện',
     price: 350000,
     originalPrice: 450000,
@@ -119,7 +164,8 @@ export const MOCK_PRODUCTS = [
     rating: 5.0,
     reviewCount: 154,
     images: [
-      'https://images.unsplash.com/photo-1624222247344-550fb60583dc?q=80&w=800&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1624222247344-550fb60583dc?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=800&auto=format&fit=crop'
     ],
     isNew: false,
     colors: [
@@ -127,7 +173,7 @@ export const MOCK_PRODUCTS = [
       { name: 'Nâu Đậm', hex: '#451a03' }
     ],
     sizes: ['Free Size'],
-    description: '100% da bò lớp đầu tiên bền đẹp theo năm tháng, mặt khóa kim loại chống trầy xước sang trọng.'
+    description: '100% da bò lớp đầu tiên mềm bền, khóa trượt ray tiện dụng mạ hợp kim titan chống gỉ xước.'
   }
 ];
 
@@ -140,4 +186,4 @@ export const CATEGORIES = [
   'Phụ Kiện'
 ];
 
-export const SIZES = ['S', 'M', 'L', 'XL', '2XL', '29', '30', '31', '32'];
+export const SIZES = ['S', 'M', 'L', 'XL', '2XL', '29', '30', '31', '32', '34'];

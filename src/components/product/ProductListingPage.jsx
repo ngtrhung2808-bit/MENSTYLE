@@ -4,8 +4,8 @@ import { ProductCard } from './ProductCard';
 import { ArrowUpDown, SlidersHorizontal, Grid, ListFilter } from 'lucide-react';
 import { MOCK_PRODUCTS } from '../../data/mockProducts';
 
-export const ProductListingPage = ({ onQuickView, onAddToCart }) => {
-  const [selectedCategory, setSelectedCategory] = useState('Tất cả');
+export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory = 'Tất cả', searchQuery = '' }) => {
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedSize, setSelectedSize] = useState('');
   const [priceRange, setPriceRange] = useState(2000000);
   const [sortBy, setSortBy] = useState('featured'); // 'featured' | 'price-asc' | 'price-desc' | 'rating'
@@ -16,6 +16,13 @@ export const ProductListingPage = ({ onQuickView, onAddToCart }) => {
   // Lọc sản phẩm
   const filteredProducts = useMemo(() => {
     return MOCK_PRODUCTS.filter((item) => {
+      // Filter Search Query
+      if (searchQuery && searchQuery.trim() !== '') {
+        const q = searchQuery.toLowerCase().trim();
+        const matchName = item.name.toLowerCase().includes(q);
+        const matchCat = item.category.toLowerCase().includes(q);
+        if (!matchName && !matchCat) return false;
+      }
       // Filter Category
       if (selectedCategory !== 'Tất cả' && item.category !== selectedCategory) {
         return false;
@@ -35,7 +42,7 @@ export const ProductListingPage = ({ onQuickView, onAddToCart }) => {
       if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
       return 0; // featured
     });
-  }, [selectedCategory, selectedSize, priceRange, sortBy]);
+  }, [selectedCategory, selectedSize, priceRange, sortBy, searchQuery]);
 
   const handleResetFilters = () => {
     setSelectedCategory('Tất cả');

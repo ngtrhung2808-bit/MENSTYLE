@@ -28,7 +28,7 @@ const CATEGORIES = [
   },
 ];
 
-export const FeaturedCategories = () => {
+export const FeaturedCategories = ({ onSelectCategory }) => {
   return (
     <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-10 sm:py-16">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-8 gap-2 sm:gap-4">
@@ -36,18 +36,21 @@ export const FeaturedCategories = () => {
           <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Danh mục thời trang nam</span>
           <h2 className="text-xl sm:text-3xl font-black text-neutral-900 mt-1">Lựa Chọn Hoàn Hảo Cho Quý Ông</h2>
         </div>
-        <a href="#" className="inline-flex items-center text-xs sm:text-sm font-semibold text-neutral-900 hover:text-amber-600 transition group">
+        <button 
+          onClick={() => onSelectCategory && onSelectCategory('Tất cả')}
+          className="inline-flex items-center text-xs sm:text-sm font-semibold text-neutral-900 hover:text-amber-600 transition group cursor-pointer"
+        >
           Xem tất cả danh mục
           <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-        </a>
+        </button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
         {CATEGORIES.map((cat) => (
-          <a
+          <button
             key={cat.id}
-            href="#"
-            className="group relative overflow-hidden rounded-xl sm:rounded-2xl bg-neutral-100 aspect-[3/4] shadow-sm hover:shadow-md transition duration-300"
+            onClick={() => onSelectCategory && onSelectCategory(cat.targetCategory || cat.title)}
+            className="group relative overflow-hidden rounded-xl sm:rounded-2xl bg-neutral-100 aspect-[3/4] shadow-sm hover:shadow-md transition duration-300 text-left cursor-pointer"
           >
             <img
               src={cat.image}
@@ -61,7 +64,7 @@ export const FeaturedCategories = () => {
                 {cat.title}
               </h3>
             </div>
-          </a>
+          </button>
         ))}
       </div>
     </section>

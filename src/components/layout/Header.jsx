@@ -2,7 +2,16 @@ import React, { useState } from 'react';
 import { Search, ShoppingBag, Heart, User, Menu, X } from 'lucide-react';
 import { Button } from '../common/Button';
 
-export const Header = ({ onOpenCart, cartCount = 0, currentTab = 'home', onNavigate, currentUser, onOpenAuth }) => {
+export const Header = ({ 
+  onOpenCart, 
+  cartCount = 0, 
+  currentTab = 'home', 
+  onNavigate, 
+  currentUser, 
+  onOpenAuth,
+  searchValue = '',
+  onSearchChange
+}) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -42,31 +51,37 @@ export const Header = ({ onOpenCart, cartCount = 0, currentTab = 'home', onNavig
           <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-semibold text-neutral-600">
             <button 
               onClick={() => onNavigate && onNavigate('home')} 
-              className={`transition ${currentTab === 'home' ? 'text-amber-600 font-bold' : 'hover:text-neutral-950'}`}
+              className={`transition cursor-pointer ${currentTab === 'home' ? 'text-amber-600 font-bold' : 'hover:text-neutral-950'}`}
             >
               Trang chủ
             </button>
             <button 
-              onClick={() => onNavigate && onNavigate('products')} 
-              className={`transition ${currentTab === 'products' ? 'text-amber-600 font-bold' : 'hover:text-neutral-950'}`}
+              onClick={() => onNavigate && onNavigate('products', 'Tất cả')} 
+              className={`transition cursor-pointer ${currentTab === 'products' ? 'text-amber-600 font-bold' : 'hover:text-neutral-950'}`}
             >
               Tất Cả Sản Phẩm
             </button>
             <button 
-              onClick={() => onNavigate && onNavigate('products')} 
-              className="hover:text-neutral-950 transition"
+              onClick={() => onNavigate && onNavigate('products', 'Áo Sơ Mi')} 
+              className="hover:text-neutral-950 transition cursor-pointer"
             >
-              Áo Sơ Mi & Polo
+              Áo Sơ Mi
             </button>
             <button 
-              onClick={() => onNavigate && onNavigate('products')} 
-              className="hover:text-neutral-950 transition"
+              onClick={() => onNavigate && onNavigate('products', 'Áo Polo')} 
+              className="hover:text-neutral-950 transition cursor-pointer"
+            >
+              Áo Polo
+            </button>
+            <button 
+              onClick={() => onNavigate && onNavigate('products', 'Blazer & Suit')} 
+              className="hover:text-neutral-950 transition cursor-pointer"
             >
               Blazer & Suit
             </button>
             <button 
-              onClick={() => onNavigate && onNavigate('products')} 
-              className="hover:text-neutral-950 transition"
+              onClick={() => onNavigate && onNavigate('products', 'Quần Âu & Jean')} 
+              className="hover:text-neutral-950 transition cursor-pointer"
             >
               Quần Âu & Jean
             </button>
@@ -77,6 +92,13 @@ export const Header = ({ onOpenCart, cartCount = 0, currentTab = 'home', onNavig
             <Search className="w-4 h-4 text-neutral-400 absolute left-3 pointer-events-none" />
             <input 
               type="text" 
+              value={searchValue || ''}
+              onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && onNavigate) {
+                  onNavigate('products');
+                }
+              }}
               placeholder="Tìm kiếm áo sơ mi, polo, suit..." 
               className="w-full bg-neutral-100/80 hover:bg-neutral-100 focus:bg-white text-xs rounded-full pl-9 pr-4 py-2 border border-transparent focus:border-neutral-300 outline-none transition"
             />
@@ -134,16 +156,60 @@ export const Header = ({ onOpenCart, cartCount = 0, currentTab = 'home', onNavig
             <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-2.5" />
             <input 
               type="text" 
+              value={searchValue || ''}
+              onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && onNavigate) {
+                  onNavigate('products');
+                  setMobileMenuOpen(false);
+                }
+              }}
               placeholder="Tìm kiếm áo sơ mi, suit, quần..." 
               className="w-full bg-neutral-100 rounded-lg pl-9 pr-4 py-2 text-sm border-none outline-none"
             />
           </div>
-          <a href="#" className="block py-2 text-base font-semibold text-neutral-900 border-b border-neutral-100">Trang chủ</a>
-          <a href="#" className="block py-2 text-base font-medium text-neutral-700 border-b border-neutral-100">Áo Sơ Mi & Polo</a>
-          <a href="#" className="block py-2 text-base font-medium text-neutral-700 border-b border-neutral-100">Blazer & Suit Nam</a>
-          <a href="#" className="block py-2 text-base font-medium text-neutral-700 border-b border-neutral-100">Quần Âu & Jean</a>
-          <a href="#" className="block py-2 text-base font-medium text-neutral-700 border-b border-neutral-100">Phụ Kiện Đồ Da</a>
-          <a href="#" className="block py-2 text-base font-bold text-rose-600">Ưu đãi Hot</a>
+          <button 
+            onClick={() => { onNavigate && onNavigate('home'); setMobileMenuOpen(false); }}
+            className="block w-full text-left py-2 text-base font-semibold text-neutral-900 border-b border-neutral-100"
+          >
+            Trang chủ
+          </button>
+          <button 
+            onClick={() => { onNavigate && onNavigate('products', 'Tất cả'); setMobileMenuOpen(false); }}
+            className="block w-full text-left py-2 text-base font-semibold text-neutral-900 border-b border-neutral-100"
+          >
+            Tất Cả Sản Phẩm
+          </button>
+          <button 
+            onClick={() => { onNavigate && onNavigate('products', 'Áo Sơ Mi'); setMobileMenuOpen(false); }}
+            className="block w-full text-left py-2 text-base font-medium text-neutral-700 border-b border-neutral-100"
+          >
+            Áo Sơ Mi
+          </button>
+          <button 
+            onClick={() => { onNavigate && onNavigate('products', 'Áo Polo'); setMobileMenuOpen(false); }}
+            className="block w-full text-left py-2 text-base font-medium text-neutral-700 border-b border-neutral-100"
+          >
+            Áo Polo
+          </button>
+          <button 
+            onClick={() => { onNavigate && onNavigate('products', 'Blazer & Suit'); setMobileMenuOpen(false); }}
+            className="block w-full text-left py-2 text-base font-medium text-neutral-700 border-b border-neutral-100"
+          >
+            Blazer & Suit Nam
+          </button>
+          <button 
+            onClick={() => { onNavigate && onNavigate('products', 'Quần Âu & Jean'); setMobileMenuOpen(false); }}
+            className="block w-full text-left py-2 text-base font-medium text-neutral-700 border-b border-neutral-100"
+          >
+            Quần Âu & Jean
+          </button>
+          <button 
+            onClick={() => { onNavigate && onNavigate('products', 'Phụ Kiện'); setMobileMenuOpen(false); }}
+            className="block w-full text-left py-2 text-base font-medium text-neutral-700 border-b border-neutral-100"
+          >
+            Phụ Kiện Đồ Da
+          </button>
         </div>
       )}
     </header>

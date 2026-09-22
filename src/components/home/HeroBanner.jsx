@@ -3,7 +3,7 @@ import { ArrowRight, Sparkles, ShieldCheck, Truck, RotateCcw } from 'lucide-reac
 import { Button } from '../common/Button';
 import { Badge } from '../common/Inputs';
 
-export const HeroBanner = () => {
+export const HeroBanner = ({ onExplore }) => {
   return (
     <section className="relative overflow-hidden bg-neutral-950 text-white rounded-2xl sm:rounded-3xl mx-3 sm:mx-6 lg:mx-8 mt-3 sm:mt-6">
       {/* Background Decor & Image Overlay Nam Tính */}
@@ -31,10 +31,20 @@ export const HeroBanner = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-          <Button variant="primary" size="lg" className="rounded-full bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold shadow-lg shadow-amber-500/20 justify-center">
+          <Button 
+            onClick={onExplore}
+            variant="primary" 
+            size="lg" 
+            className="rounded-full bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold shadow-lg shadow-amber-500/20 justify-center cursor-pointer"
+          >
             Xem bộ sưu tập Nam <ArrowRight className="w-4 h-4 ml-1" />
           </Button>
-          <Button variant="outline" size="lg" className="rounded-full !bg-white/10 !text-white !border-white/20 hover:!bg-white/20 backdrop-blur-sm justify-center">
+          <Button 
+            onClick={onExplore}
+            variant="outline" 
+            size="lg" 
+            className="rounded-full !bg-white/10 !text-white !border-white/20 hover:!bg-white/20 backdrop-blur-sm justify-center cursor-pointer"
+          >
             Phong cách Quý Ông
           </Button>
         </div>
