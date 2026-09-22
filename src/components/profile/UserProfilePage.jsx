@@ -14,18 +14,18 @@ import {
 } from 'lucide-react';
 import { Button } from '../common/Button';
 
-export const UserProfilePage = ({ onBackToShopping }) => {
+export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'profile' | 'password'
 
   // Mock User Info
   const [profile, setProfile] = useState({
-    name: 'Nguyễn Trường Hưng',
-    email: 'hung.menstyle@gmail.com',
-    phone: '0988776655',
+    name: user?.name || 'Nguyễn Trường Hưng',
+    email: user?.email || 'hung.menstyle@gmail.com',
+    phone: user?.phone || '0988776655',
     gender: 'Nam',
     address: 'Tòa nhà Landmark 81, P. 22, Q. Bình Thạnh, TP. Hồ Chí Minh',
-    memberLevel: 'VIP Platinum',
-    points: 1250,
+    memberLevel: user?.memberLevel || 'VIP Platinum',
+    points: user?.points || 1250,
   });
 
   const [profileSuccess, setProfileSuccess] = useState('');
@@ -162,7 +162,7 @@ export const UserProfilePage = ({ onBackToShopping }) => {
 
           <div className="pt-3 border-t border-neutral-100 mt-2">
             <button
-              onClick={onBackToShopping}
+              onClick={onLogout || onBackToShopping}
               className="w-full flex items-center gap-3 p-3 rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 transition"
             >
               <LogOut className="w-4 h-4" />

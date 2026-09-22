@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, ShoppingBag, Heart, User, Menu, X } from 'lucide-react';
 import { Button } from '../common/Button';
 
-export const Header = ({ onOpenCart, cartCount = 0, currentTab = 'home', onNavigate }) => {
+export const Header = ({ onOpenCart, cartCount = 0, currentTab = 'home', onNavigate, currentUser, onOpenAuth }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -88,15 +88,29 @@ export const Header = ({ onOpenCart, cartCount = 0, currentTab = 'home', onNavig
               <Heart className="w-5 h-5 text-neutral-700" />
               <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
             </Button>
-            <Button 
-              onClick={() => onNavigate && onNavigate('profile')}
-              variant="ghost" 
-              size="icon" 
-              aria-label="Tài khoản" 
-              className="p-2 cursor-pointer"
-            >
-              <User className="w-5 h-5 text-neutral-700" />
-            </Button>
+
+            {/* Nút Tài khoản / Đăng nhập */}
+            {currentUser ? (
+              <button
+                onClick={() => onNavigate && onNavigate('profile')}
+                className="flex items-center gap-1.5 p-1.5 sm:px-3 sm:py-1.5 rounded-full hover:bg-neutral-100 text-neutral-900 transition text-xs font-bold"
+                title="Hồ sơ tài khoản"
+              >
+                <div className="w-7 h-7 rounded-full bg-neutral-950 text-amber-400 flex items-center justify-center font-bold text-xs">
+                  {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <span className="hidden md:inline-block max-w-[100px] truncate">{currentUser.name}</span>
+              </button>
+            ) : (
+              <button 
+                onClick={onOpenAuth}
+                className="flex items-center gap-1.5 text-xs font-bold text-neutral-700 hover:text-neutral-950 px-2.5 py-1.5 rounded-lg hover:bg-neutral-100 transition"
+              >
+                <User className="w-4 h-4" />
+                <span className="hidden sm:inline-block">Đăng nhập</span>
+              </button>
+            )}
+
             <Button 
               onClick={onOpenCart}
               variant="primary" 

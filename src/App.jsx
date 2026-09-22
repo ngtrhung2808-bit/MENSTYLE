@@ -11,6 +11,7 @@ import { CheckoutPage } from './components/checkout/CheckoutPage';
 import { UserProfilePage } from './components/profile/UserProfilePage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminLogin } from './components/admin/AdminLogin';
+import { AuthModal } from './components/auth/AuthModal';
 import { ChatbotWidget } from './components/chatbot/ChatbotWidget';
 import { Toast } from './components/common/Toast';
 import { Button } from './components/common/Button';
@@ -18,7 +19,12 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 import { MOCK_PRODUCTS } from './data/mockProducts';
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState('home'); // 'home' | 'products' | 'checkout' | 'profile' | 'admin'
+  const [currentTab, setCurrentTab] = useState('home'); // Mặc định luôn là Trang Chủ ('home') dành cho Khách hàng
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem('menstyle_user');
+    return saved ? JSON.parse(saved) : null; // Mặc định là null (Khách vãng lai)
+  });
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
     return localStorage.getItem('menstyle_admin_auth') === 'true';
   });
@@ -173,7 +179,13 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
         cartCount={totalCartCount}
         currentTab={currentTab}
+        currentUser={currentUser}
+        onOpenAuth={() => setIsAuthOpen(true)}
         onNavigate={(tab) => {
+          if (tab === 'profile' && !currentUser) {
+            setIsAuthOpen(true);
+            return;
+          }
           setCurrentTab(tab);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
@@ -188,13 +200,20 @@ export default function App() {
             onOrderSuccess={(orderData) => {
               addToast('Đặt Hàng Thành Công', `Mã đơn hàng: ${orderData.orderCode}`);
               setCartItems([]);
-              setCurrentTab('profile');
+              setCurrentTab(currentUser ? 'profile' : 'home');
             }}
           />
         ) : currentTab === 'profile' ? (
           /* TRANG PROFILE & LỊCH SỬ ĐƠN HÀNG (TUẦN 3) */
           <UserProfilePage 
-            onBackToShopping={() => setCurrentTab('products')}
+            user={currentUser}
+            onBackToShopping={() => setCurrentTab('home')}
+            onLogout={() => {
+              setCurrentUser(null);
+              localStorage.removeItem('menstyle_user');
+              setCurrentTab('home');
+              addToast('Đã Đăng Xuất', 'Bạn đã quay trở lại giao diện khách vãng lai.', 'info');
+            }}
           />
         ) : currentTab === 'products' ? (
           /* TRANG DANH SÁCH SẢN PHẨM & BỘ LỌC (PLP) */
@@ -311,6 +330,17 @@ export default function App() {
       <Toast 
         toasts={toasts} 
         onRemove={(id) => setToasts(prev => prev.filter(t => t.id !== id))} 
+      />
+
+      {/* 11. Modal Đăng Nhập / Đăng Ký Khách Hàng */}
+      <AuthModal 
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onLoginSuccess={(userData) => {
+          setCurrentUser(userData);
+          localStorage.setItem('menstyle_user', JSON.stringify(userData));
+          addToast('Chào Mừng Trở Lại', `Xin chào quý ông ${userData.name}!`);
+        }}
       />
     </div>
   );
