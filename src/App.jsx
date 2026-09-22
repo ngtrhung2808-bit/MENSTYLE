@@ -10,6 +10,7 @@ import { MiniCartDrawer } from './components/cart/MiniCartDrawer';
 import { CheckoutPage } from './components/checkout/CheckoutPage';
 import { UserProfilePage } from './components/profile/UserProfilePage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { AdminLogin } from './components/admin/AdminLogin';
 import { ChatbotWidget } from './components/chatbot/ChatbotWidget';
 import { Toast } from './components/common/Toast';
 import { Button } from './components/common/Button';
@@ -18,6 +19,9 @@ import { MOCK_PRODUCTS } from './data/mockProducts';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('home'); // 'home' | 'products' | 'checkout' | 'profile' | 'admin'
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
+    return localStorage.getItem('menstyle_admin_auth') === 'true';
+  });
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -121,20 +125,45 @@ export default function App() {
     window.location.hostname === '127.0.0.1'
   );
   
-  // Tự động vào Admin nếu gõ localhost:5173/?admin hoặc localhost:5173/#admin
-  const hasAdminParam = typeof window !== 'undefined' && (
+  // Kiểm tra nếu url có admin (?admin, #admin, hoặc pathname /admin)
+  const isTryingAdmin = typeof window !== 'undefined' && (
     window.location.search.includes('admin') || 
-    window.location.hash.includes('admin')
+    window.location.hash.includes('admin') ||
+    window.location.pathname.includes('admin') ||
+    currentTab === 'admin'
   );
 
-  // Chỉ cho phép vào màn hình ADMIN khi ĐANG CHẠY TRÊN LOCAL và có param/chọn admin
-  if (currentTab === 'admin' || (isLocalHost && hasAdminParam)) {
-    return <AdminDashboard onBackToClient={() => {
-      if (typeof window !== 'undefined') {
-        window.history.replaceState(null, '', window.location.pathname);
-      }
-      setCurrentTab('home');
-    }} />;
+  // Xử lý luồng Quản Trị: Chỉ áp dụng trên Localhost
+  if (isLocalHost && isTryingAdmin) {
+    // Nếu chưa đăng nhập => Bắt buộc qua trang Login
+    if (!isAdminLoggedIn) {
+      return (
+        <AdminLogin 
+          onLoginSuccess={() => {
+            setIsAdminLoggedIn(true);
+            localStorage.setItem('menstyle_admin_auth', 'true');
+          }}
+          onBackToClient={() => {
+            window.history.replaceState(null, '', window.location.pathname.replace('/admin', '') || '/');
+            setCurrentTab('home');
+          }}
+        />
+      );
+    }
+
+    // Đã đăng nhập => Vào thẳng Dashboard
+    return (
+      <AdminDashboard 
+        onBackToClient={() => {
+          window.history.replaceState(null, '', window.location.pathname.replace('/admin', '') || '/');
+          setCurrentTab('home');
+        }}
+        onLogout={() => {
+          setIsAdminLoggedIn(false);
+          localStorage.removeItem('menstyle_admin_auth');
+        }}
+      />
+    );
   }
 
   return (
