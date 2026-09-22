@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, ShoppingBag, Heart, User, Menu, X } from 'lucide-react';
 import { Button } from '../common/Button';
 
-export const Header = () => {
+export const Header = ({ onOpenCart, cartCount = 0, currentTab = 'home', onNavigate }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -27,22 +27,49 @@ export const Header = () => {
             </button>
 
             {/* Logo MENSTYLE */}
-            <a href="#" className="flex items-center gap-1.5 font-black text-xl sm:text-2xl tracking-wider text-neutral-950">
+            <button 
+              onClick={() => onNavigate && onNavigate('home')}
+              className="flex items-center gap-1.5 font-black text-xl sm:text-2xl tracking-wider text-neutral-950"
+            >
               <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-neutral-950 text-amber-400 flex items-center justify-center text-xs sm:text-sm font-black shadow-sm border border-neutral-800">
                 M
               </span>
               <span>MEN<span className="text-neutral-400 font-light">STYLE</span></span>
-            </a>
+            </button>
           </div>
 
           {/* Navigation Links (Desktop) */}
           <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-semibold text-neutral-600">
-            <a href="#" className="text-neutral-950 transition hover:text-neutral-900">Trang chủ</a>
-            <a href="#" className="hover:text-neutral-950 transition">Áo Sơ Mi & Polo</a>
-            <a href="#" className="hover:text-neutral-950 transition">Blazer & Suit</a>
-            <a href="#" className="hover:text-neutral-950 transition">Quần Âu & Jean</a>
-            <a href="#" className="hover:text-neutral-950 transition">Phụ Kiện Nam</a>
-            <a href="#" className="text-rose-600 hover:text-rose-700 transition">Ưu đãi Hot</a>
+            <button 
+              onClick={() => onNavigate && onNavigate('home')} 
+              className={`transition ${currentTab === 'home' ? 'text-amber-600 font-bold' : 'hover:text-neutral-950'}`}
+            >
+              Trang chủ
+            </button>
+            <button 
+              onClick={() => onNavigate && onNavigate('products')} 
+              className={`transition ${currentTab === 'products' ? 'text-amber-600 font-bold' : 'hover:text-neutral-950'}`}
+            >
+              Tất Cả Sản Phẩm
+            </button>
+            <button 
+              onClick={() => onNavigate && onNavigate('products')} 
+              className="hover:text-neutral-950 transition"
+            >
+              Áo Sơ Mi & Polo
+            </button>
+            <button 
+              onClick={() => onNavigate && onNavigate('products')} 
+              className="hover:text-neutral-950 transition"
+            >
+              Blazer & Suit
+            </button>
+            <button 
+              onClick={() => onNavigate && onNavigate('products')} 
+              className="hover:text-neutral-950 transition"
+            >
+              Quần Âu & Jean
+            </button>
           </nav>
 
           {/* Search Box Desktop */}
@@ -64,11 +91,16 @@ export const Header = () => {
             <Button variant="ghost" size="icon" aria-label="Tài khoản" className="p-2">
               <User className="w-5 h-5 text-neutral-700" />
             </Button>
-            <Button variant="primary" size="sm" className="relative !rounded-full px-2.5 sm:px-4 py-2">
+            <Button 
+              onClick={onOpenCart}
+              variant="primary" 
+              size="sm" 
+              className="relative !rounded-full px-2.5 sm:px-4 py-2 cursor-pointer"
+            >
               <ShoppingBag className="w-4 h-4 text-amber-400 sm:mr-1.5" />
               <span className="hidden sm:inline-block font-semibold text-xs">Giỏ hàng</span>
               <span className="ml-1 sm:ml-1.5 bg-amber-500 text-neutral-950 text-[10px] font-black px-1.5 py-0.5 rounded-full">
-                2
+                {cartCount}
               </span>
             </Button>
           </div>
