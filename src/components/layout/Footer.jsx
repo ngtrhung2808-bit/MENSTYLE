@@ -80,6 +80,16 @@ export const Footer = ({ onNavigate }) => {
           <div className="flex items-center gap-6">
             <a href="#" className="hover:text-neutral-400">Điều khoản dịch vụ</a>
             <a href="#" className="hover:text-neutral-400">Chính sách bảo mật</a>
+            {/* ĐƯỜNG DẪN MỞ ADMIN LOCAL - CHỈ XUẤT HIỆN KHI CHẠY LOCALHOST */}
+            {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+              <a
+                href="/?admin"
+                className="text-amber-500 hover:text-amber-400 font-bold bg-neutral-900 border border-amber-500/40 px-2 py-0.5 rounded text-[11px] transition shadow-xs"
+                title="Đường dẫn quản trị nội bộ (Chỉ hiện trên Localhost)"
+              >
+                ⚙️ Quản Trị (Local)
+              </a>
+            )}
           </div>
         </div>
       </div>
