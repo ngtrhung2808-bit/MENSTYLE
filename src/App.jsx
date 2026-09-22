@@ -10,6 +10,8 @@ import { MiniCartDrawer } from './components/cart/MiniCartDrawer';
 import { CheckoutPage } from './components/checkout/CheckoutPage';
 import { UserProfilePage } from './components/profile/UserProfilePage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { ChatbotWidget } from './components/chatbot/ChatbotWidget';
+import { Toast } from './components/common/Toast';
 import { Button } from './components/common/Button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { MOCK_PRODUCTS } from './data/mockProducts';
@@ -19,6 +21,15 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (title, message, type = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, title, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4000);
+  };
 
   // Giỏ hàng state giả lập
   const [cartItems, setCartItems] = useState([
@@ -73,6 +84,7 @@ export default function App() {
 
     setIsDetailOpen(false);
     setIsCartOpen(true);
+    addToast('Đã Thêm Vào Giỏ Hàng', `"${productToAdd.name}" đã được đưa vào giỏ.`);
   };
 
   // Cập nhật số lượng
@@ -100,6 +112,7 @@ export default function App() {
         item.selectedColor === targetItem.selectedColor
       ))
     );
+    addToast('Đã Xóa Khỏi Giỏ', 'Sản phẩm đã được xóa khỏi giỏ hàng của bạn.', 'info');
   };
 
   // Nếu đang ở màn hình ADMIN thì render riêng biệt Admin Layout
@@ -108,7 +121,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-50 selection:bg-amber-500 selection:text-neutral-950 font-sans overflow-x-hidden w-full">
+    <div className="min-h-screen flex flex-col bg-neutral-50 selection:bg-amber-500 selection:text-neutral-950 font-sans overflow-x-hidden w-full relative">
       {/* 1. Header Navigation */}
       <Header 
         onOpenCart={() => setIsCartOpen(true)}
@@ -127,7 +140,7 @@ export default function App() {
             cartItems={cartItems}
             onBackToShopping={() => setCurrentTab('products')}
             onOrderSuccess={(orderData) => {
-              alert(`Đặt hàng thành công! Mã đơn của bạn là: ${orderData.orderCode}`);
+              addToast('Đặt Hàng Thành Công', `Mã đơn hàng: ${orderData.orderCode}`);
               setCartItems([]);
               setCurrentTab('profile');
             }}
@@ -240,6 +253,15 @@ export default function App() {
           setCurrentTab('checkout');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
+      />
+
+      {/* 9. Cửa Sổ Chatbot Trợ Lý Stylist (Tuần 4) */}
+      <ChatbotWidget />
+
+      {/* 10. Toast Thông Báo Góc Màn Hình (Tuần 4) */}
+      <Toast 
+        toasts={toasts} 
+        onRemove={(id) => setToasts(prev => prev.filter(t => t.id !== id))} 
       />
     </div>
   );
