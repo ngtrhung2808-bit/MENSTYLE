@@ -4,27 +4,27 @@ import { ArrowUpRight } from 'lucide-react';
 const CATEGORIES = [
   {
     id: 1,
-    title: 'Áo Blazer & Vest',
-    items: '48+ sản phẩm',
-    image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop',
+    title: 'Blazer & Suit Quý Ông',
+    items: '45+ mẫu lịch lãm',
+    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop',
   },
   {
     id: 2,
-    title: 'Sơ Mi Tối Giản',
-    items: '64+ sản phẩm',
-    image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=600&auto=format&fit=crop',
+    title: 'Sơ Mi Công Sở & Casual',
+    items: '68+ mẫu chống nhăn',
+    image: 'https://images.unsplash.com/photo-1620012253295-c15c429fbb3e?q=80&w=600&auto=format&fit=crop',
   },
   {
     id: 3,
-    title: 'Đầm & Váy Dự Tiệc',
-    items: '32+ sản phẩm',
-    image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=600&auto=format&fit=crop',
+    title: 'Áo Polo Nam Thể Thao',
+    items: '36+ màu sắc thanh lịch',
+    image: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=600&auto=format&fit=crop',
   },
   {
     id: 4,
-    title: 'Quần Âu & Jean',
-    items: '52+ sản phẩm',
-    image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=600&auto=format&fit=crop',
+    title: 'Quần Tây & Kaki Co Giãn',
+    items: '52+ dáng phom chuẩn',
+    image: 'https://images.unsplash.com/photo-1479064555552-3ef4979f8908?q=80&w=600&auto=format&fit=crop',
   },
 ];
 
@@ -33,11 +33,11 @@ export const FeaturedCategories = () => {
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
         <div>
-          <span className="text-xs font-bold text-brand-600 uppercase tracking-wider">Danh mục tuyển chọn</span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-neutral-900 mt-1">Xu Hướng Thời Trang Nổi Bật</h2>
+          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Danh mục thời trang nam</span>
+          <h2 className="text-2xl sm:text-3xl font-black text-neutral-900 mt-1">Lựa Chọn Hoàn Hảo Cho Quý Ông</h2>
         </div>
-        <a href="#" className="inline-flex items-center text-sm font-semibold text-neutral-900 hover:text-brand-600 transition group">
-          Xem tất cả danh mục 
+        <a href="#" className="inline-flex items-center text-sm font-semibold text-neutral-900 hover:text-amber-600 transition group">
+          Xem toàn bộ danh mục nam
           <ArrowUpRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </a>
       </div>
@@ -54,10 +54,10 @@ export const FeaturedCategories = () => {
               alt={cat.title}
               className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/85 via-neutral-950/25 to-transparent" />
             <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 text-white">
-              <span className="text-[11px] font-medium text-neutral-300 block mb-1">{cat.items}</span>
-              <h3 className="font-bold text-base sm:text-lg leading-tight group-hover:text-brand-300 transition">
+              <span className="text-[11px] font-medium text-amber-300 block mb-1">{cat.items}</span>
+              <h3 className="font-bold text-base sm:text-lg leading-tight group-hover:text-amber-300 transition">
                 {cat.title}
               </h3>
             </div>
