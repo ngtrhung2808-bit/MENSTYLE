@@ -1,0 +1,26 @@
+{
+  "name": "menstyle-backend",
+  "version": "1.0.0",
+  "description": "Backend REST API and MongoDB/Mongoose Database for MENSTYLE Fashion E-Commerce with AI Stylist Chatbot",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/seeds/seeder.js",
+    "seed:destroy": "node src/seeds/seeder.js -d",
+    "test": "node --test src/tests/models.test.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^4.21.2",
+    "helmet": "^8.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.3.0",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {}
+}

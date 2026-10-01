@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "node server/src/server.js",
+    "server:dev": "node --watch server/src/server.js",
+    "seed": "node server/src/seeds/seeder.js",
+    "test:server": "node --test server/src/tests/models.test.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
