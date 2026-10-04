@@ -1,0 +1,150 @@
+<mxfile host="app.diagrams.net" modified="2026-10-04T16:50:00.000Z" agent="Mozilla/5.0" version="22.0.0" type="device">
+  <diagram id="MENSTYLE_ERD_DATABASE" name="MENSTYLE - MongoDB ERD 28 Collections">
+    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- TITLE -->
+        <mxCell id="title" value="MENSTYLE E-COMMERCE - MONGODB NO-SQL DATABASE ARCHITECTURE (28 COLLECTIONS)&#xa;Author: lqnga112 (Database Designer) | Benchmark: Torano.vn" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="30" width="800" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- MODULE 1: AUTH & USER (XANH DƯƠNG) -->
+        <mxCell id="grp1" value="PHÂN HỆ 1: NGƯỜI DÙNG &amp; PHÂN QUYỀN (AUTH &amp; USER)" style="swimlane;startSize=25;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="120" width="340" height="740" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_users" value="users&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ email: String [Unique]&#xa;+ phone: String [Unique]&#xa;+ passwordHash: String&#xa;+ role: String (guest/customer/staff/admin)&#xa;+ isActive: Boolean&#xa;+ createdAt: Date" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="grp1">
+          <mxGeometry x="20" y="40" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_roles" value="roles_permissions&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ roleName: String (staff/admin)&#xa;+ permissions: Array&lt;String&gt;&#xa;+ description: String" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="grp1">
+          <mxGeometry x="20" y="180" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_profiles" value="user_profiles&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ userId: ObjectId [FK -&gt; users]&#xa;+ fullName: String&#xa;+ gender: String&#xa;+ dateOfBirth: Date&#xa;+ heightCm: Number&#xa;+ weightKg: Number (tính BMI)&#xa;+ avatarUrl: String" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="grp1">
+          <mxGeometry x="20" y="290" width="300" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_addresses" value="user_addresses&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ userId: ObjectId [FK -&gt; users]&#xa;+ receiverName: String&#xa;+ receiverPhone: String&#xa;+ province: String&#xa;+ district: String&#xa;+ ward: String&#xa;+ streetAddress: String&#xa;+ isDefault: Boolean" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="grp1">
+          <mxGeometry x="20" y="440" width="300" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_loyalty" value="loyalty_memberships&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ userId: ObjectId [FK -&gt; users]&#xa;+ tier: String (Silver/Gold/Platinum)&#xa;+ currentPoints: Number&#xa;+ totalSpent: Number&#xa;+ discountRate: Number" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="grp1">
+          <mxGeometry x="20" y="610" width="300" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- MODULE 2: CATALOG & PRODUCT (XANH LÁ) -->
+        <mxCell id="grp2" value="PHÂN HỆ 2: SẢN PHẨM &amp; DANH MỤC (CATALOG)" style="swimlane;startSize=25;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="430" y="120" width="350" height="850" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_categories" value="categories&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ name: String&#xa;+ slug: String [Unique]&#xa;+ parentId: ObjectId [FK self]&#xa;+ imageUrl: String&#xa;+ description: String&#xa;+ order: Number&#xa;+ isActive: Boolean" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="grp2">
+          <mxGeometry x="25" y="40" width="300" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_products" value="products&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ name: String&#xa;+ slug: String [Unique]&#xa;+ skuPrefix: String&#xa;+ categoryId: ObjectId [FK -&gt; categories]&#xa;+ basePrice: Number&#xa;+ salePrice: Number&#xa;+ material: String&#xa;+ ratingAverage: Number&#xa;+ reviewCount: Number&#xa;+ images: Array&lt;String&gt;&#xa;+ isPublished: Boolean" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="grp2">
+          <mxGeometry x="25" y="190" width="300" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_variants" value="product_variants&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ productId: ObjectId [FK -&gt; products]&#xa;+ sku: String [Unique]&#xa;+ colorName: String&#xa;+ colorHex: String&#xa;+ size: String (S, M, L, XL, 2XL)&#xa;+ price: Number&#xa;+ stockQuantity: Number&#xa;+ image: String" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="grp2">
+          <mxGeometry x="25" y="390" width="300" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_attributes" value="product_attributes&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ productId: ObjectId [FK -&gt; products]&#xa;+ fitType: String (Slim fit/Regular)&#xa;+ pattern: String (Trơn/Kẻ/Caro)&#xa;+ collarType: String (Cổ đức/Cổ tàu)&#xa;+ season: String" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="grp2">
+          <mxGeometry x="25" y="560" width="300" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_sizeguides" value="size_guides&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ categoryId: ObjectId [FK -&gt; categories]&#xa;+ sizeName: String&#xa;+ heightMinMax: String&#xa;+ weightMinMax: String&#xa;+ chestCm: String&#xa;+ waistCm: String" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="grp2">
+          <mxGeometry x="25" y="690" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_inventory" value="inventory_stocks&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ variantId: ObjectId [FK -&gt; product_variants]&#xa;+ quantityOnHand: Number&#xa;+ quantityReserved: Number&#xa;+ lowStockThreshold: Number" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="grp2">
+          <mxGeometry x="25" y="830" width="300" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- MODULE 3: CART & WISHLIST (VÀNG CAM) -->
+        <mxCell id="grp3" value="PHÂN HỆ 3: GIỎ HÀNG &amp; WISHLIST" style="swimlane;startSize=25;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="820" y="120" width="330" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_carts" value="carts&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ userId: ObjectId [FK -&gt; users / Nullable]&#xa;+ sessionId: String [Guest session]&#xa;+ updatedAt: Date" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;" vertex="1" parent="grp3">
+          <mxGeometry x="15" y="40" width="300" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_cartitems" value="cart_items&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ cartId: ObjectId [FK -&gt; carts]&#xa;+ variantId: ObjectId [FK -&gt; product_variants]&#xa;+ quantity: Number&#xa;+ priceAtAdd: Number" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;" vertex="1" parent="grp3">
+          <mxGeometry x="15" y="140" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_wishlists" value="wishlists&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ userId: ObjectId [FK -&gt; users]&#xa;+ productId: ObjectId [FK -&gt; products]&#xa;+ addedAt: Date" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;" vertex="1" parent="grp3">
+          <mxGeometry x="15" y="250" width="300" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- MODULE 4: ORDER & PAYMENT (TÍM HỒNG) -->
+        <mxCell id="grp4" value="PHÂN HỆ 4: ĐƠN HÀNG &amp; THANH TOÁN (ORDER &amp; PAYMENT)" style="swimlane;startSize=25;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="120" width="350" height="950" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_orders" value="orders&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ orderCode: String [Unique, MS-XXXXXX]&#xa;+ userId: ObjectId [FK -&gt; users / Nullable]&#xa;+ shippingAddress: Object (Họ tên, SĐT, Đ/C)&#xa;+ subTotal: Number&#xa;+ shippingFee: Number&#xa;+ discountAmount: Number&#xa;+ grandTotal: Number&#xa;+ orderStatus: String (Pending/Shipped/Done/Cancel)&#xa;+ paymentStatus: String (Unpaid/Paid)&#xa;+ createdAt: Date" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="grp4">
+          <mxGeometry x="25" y="40" width="300" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_orderitems" value="order_items&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ orderId: ObjectId [FK -&gt; orders]&#xa;+ variantId: ObjectId [FK -&gt; product_variants]&#xa;+ productName: String&#xa;+ colorName: String&#xa;+ size: String&#xa;+ quantity: Number&#xa;+ unitPrice: Number&#xa;+ itemTotal: Number" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="grp4">
+          <mxGeometry x="25" y="250" width="300" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_statushistory" value="order_status_history&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ orderId: ObjectId [FK -&gt; orders]&#xa;+ status: String&#xa;+ note: String&#xa;+ updatedBy: ObjectId [FK -&gt; users]&#xa;+ timestamp: Date" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="grp4">
+          <mxGeometry x="25" y="420" width="300" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_payments" value="payment_transactions&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ orderId: ObjectId [FK -&gt; orders]&#xa;+ paymentMethod: String (COD, VietQR, VNPay, MoMo)&#xa;+ transactionCode: String&#xa;+ amount: Number&#xa;+ status: String (Success/Failed/Pending)&#xa;+ paidAt: Date" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="grp4">
+          <mxGeometry x="25" y="540" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_shipments" value="shipments&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ orderId: ObjectId [FK -&gt; orders]&#xa;+ carrierName: String (GHN/GHTK)&#xa;+ trackingCode: String&#xa;+ estimatedDelivery: Date&#xa;+ shippingCost: Number" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="grp4">
+          <mxGeometry x="25" y="680" width="300" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_returns" value="order_returns&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ orderId: ObjectId [FK -&gt; orders]&#xa;+ userId: ObjectId [FK -&gt; users]&#xa;+ returnReason: String&#xa;+ returnStatus: String (Requested/Approved/Completed)&#xa;+ requestedSize: String&#xa;+ returnImages: Array&lt;String&gt;" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="grp4">
+          <mxGeometry x="25" y="810" width="300" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- MODULE 5: PROMOTIONS & MARKETING (XÁM BẠC) -->
+        <mxCell id="grp5" value="PHÂN HỆ 5: KHUYẾN MÃI &amp; MARKETING" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="820" y="580" width="330" height="490" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_coupons" value="coupons_promotions&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ code: String [Unique, MENSTYLE20]&#xa;+ discountType: String (percent/fixed)&#xa;+ discountValue: Number&#xa;+ minOrderValue: Number&#xa;+ maxDiscount: Number&#xa;+ startDate: Date&#xa;+ endDate: Date&#xa;+ usageLimit: Number&#xa;+ isActive: Boolean" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="grp5">
+          <mxGeometry x="15" y="40" width="300" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_couponusages" value="coupon_usages&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ couponId: ObjectId [FK -&gt; coupons_promotions]&#xa;+ userId: ObjectId [FK -&gt; users]&#xa;+ orderId: ObjectId [FK -&gt; orders]&#xa;+ usedAt: Date" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="grp5">
+          <mxGeometry x="15" y="230" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_banners" value="banners_sliders&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ title: String&#xa;+ imageUrl: String&#xa;+ linkUrl: String&#xa;+ position: String (Hero/Popup)&#xa;+ displayOrder: Number&#xa;+ isActive: Boolean" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="grp5">
+          <mxGeometry x="15" y="340" width="300" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- MODULE 6: INTERACTION & LOGS (XANH NGỌC) -->
+        <mxCell id="grp6" value="PHÂN HỆ 6: TƯƠNG TÁC, AI &amp; AUDIT LOGS" style="swimlane;startSize=25;fillColor=#b0e3e6;strokeColor=#0e8088;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="120" width="340" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_reviews" value="reviews_ratings&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ productId: ObjectId [FK -&gt; products]&#xa;+ userId: ObjectId [FK -&gt; users]&#xa;+ orderId: ObjectId [FK -&gt; orders]&#xa;+ ratingScore: Number (1-5)&#xa;+ comment: String&#xa;+ reviewImages: Array&lt;String&gt;&#xa;+ isApproved: Boolean&#xa;+ createdAt: Date" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0e8088;" vertex="1" parent="grp6">
+          <mxGeometry x="20" y="40" width="300" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_replies" value="review_replies&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ reviewId: ObjectId [FK -&gt; reviews_ratings]&#xa;+ staffUserId: ObjectId [FK -&gt; users]&#xa;+ replyContent: String&#xa;+ repliedAt: Date" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0e8088;" vertex="1" parent="grp6">
+          <mxGeometry x="20" y="210" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_aichat" value="ai_chat_conversations&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ sessionId: String&#xa;+ userId: ObjectId [FK -&gt; users / Nullable]&#xa;+ userQuery: String&#xa;+ botResponse: String&#xa;+ intent: String (size_guide/outfit/return)&#xa;+ createdAt: Date" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0e8088;" vertex="1" parent="grp6">
+          <mxGeometry x="20" y="320" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_stores" value="store_branches&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ branchName: String&#xa;+ address: String&#xa;+ hotline: String&#xa;+ openHours: String&#xa;+ latitude: Number&#xa;+ longitude: Number" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0e8088;" vertex="1" parent="grp6">
+          <mxGeometry x="20" y="460" width="300" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_audit" value="audit_logs&#xa;------------------------&#xa;+ _id: ObjectId [PK]&#xa;+ adminUserId: ObjectId [FK -&gt; users]&#xa;+ action: String (CREATE/UPDATE/DELETE)&#xa;+ collectionTarget: String&#xa;+ documentId: ObjectId&#xa;+ ipAddress: String&#xa;+ timestamp: Date" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0e8088;" vertex="1" parent="grp6">
+          <mxGeometry x="20" y="590" width="300" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- RELATIONSHIP CONNECTORS -->
+        <mxCell id="rel1" edge="1" source="tbl_users" target="tbl_profiles" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0050ef;strokeWidth=2;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel2" edge="1" source="tbl_products" target="tbl_variants" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#27ae60;strokeWidth=2;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel3" edge="1" source="tbl_categories" target="tbl_products" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#27ae60;strokeWidth=2;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel4" edge="1" source="tbl_orders" target="tbl_orderitems" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#8e44ad;strokeWidth=2;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel5" edge="1" source="tbl_variants" target="tbl_orderitems" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#8e44ad;strokeWidth=2;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel6" edge="1" source="tbl_carts" target="tbl_cartitems" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d35400;strokeWidth=2;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
