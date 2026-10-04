@@ -14,7 +14,7 @@ const productSchema = new mongoose.Schema(
     images: [{ type: String }],
     thumbnail: { type: String, required: true },
     colors: [{ name: String, code: String }],
-    sizes: [{ type: String }], // ['S', 'M', 'L', 'XL', '2XL']
+    sizes: [{ type: String }],
     isFeatured: { type: Boolean, default: false },
     isBestSeller: { type: Boolean, default: false },
     isNewArrival: { type: Boolean, default: false },
