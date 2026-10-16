@@ -19,68 +19,83 @@ import {
   X,
   Bell,
   ArrowLeft,
-  ChevronRight
+  ChevronRight,
+  Trash2
 } from 'lucide-react';
 import { Button } from '../common/Button';
+import { MOCK_PRODUCTS } from '../../data/mockProducts';
 
 export const AdminDashboard = ({ onBackToClient, onLogout }) => {
   const [activeAdminTab, setActiveAdminTab] = useState('dashboard'); // 'dashboard' | 'products' | 'orders'
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Mock stats
-  const stats = [
-    {
-      title: 'Doanh Thu Tháng Này',
-      value: '186.450.000đ',
-      change: '+18.2%',
-      isPositive: true,
-      icon: DollarSign,
-      color: 'text-amber-500 bg-amber-500/10',
-    },
-    {
-      title: 'Đơn Hàng Mới',
-      value: '428',
-      change: '+8.5%',
-      isPositive: true,
-      icon: ShoppingBag,
-      color: 'text-blue-500 bg-blue-500/10',
-    },
-    {
-      title: 'Khách Hàng Mới',
-      value: '1,240',
-      change: '+24.1%',
-      isPositive: true,
-      icon: Users,
-      color: 'text-emerald-500 bg-emerald-500/10',
-    },
-    {
-      title: 'Sản Phẩm Tồn Kho Thấp',
-      value: '12 món',
-      change: '-4 món',
-      isPositive: false,
-      icon: AlertTriangle,
-      color: 'text-rose-500 bg-rose-500/10',
-    }
-  ];
-
-  // Danh sách đơn hàng đồng bộ thời gian thực từ Khách hàng
+  // Danh sách đơn hàng đồng bộ thời gian thực từ Khách hàng (Làm sạch toàn bộ dữ liệu ảo)
   const [ordersList, setOrdersList] = useState(() => {
     const saved = localStorage.getItem('menstyle_orders');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       } catch (e) {
         console.error(e);
       }
     }
-    return [
-      { id: 'MS-892140', customer: 'Lê Hoàng Nam', items: 'Áo Blazer Italian Wool (x1)', total: 1250000, status: 'delivering', statusText: 'Đang giao', date: '22/09/2026' },
-      { id: 'MS-892139', customer: 'Trần Minh Đức', items: 'Áo Polo Pima Cotton (x2)', total: 760000, status: 'completed', statusText: 'Hoàn thành', date: '22/09/2026' },
-      { id: 'MS-892138', customer: 'Vũ Quốc Khánh', items: 'Quần Tây 4 Chiều (x1)', total: 520000, status: 'pending', statusText: 'Chờ xác nhận', date: '21/09/2026' },
-      { id: 'MS-892137', customer: 'Nguyễn Thành Long', items: 'Áo Sơ Mi Trắng Nano (x1)', total: 450000, status: 'completed', statusText: 'Hoàn thành', date: '21/09/2026' },
-    ];
+    return [];
   });
+
+  // Danh sách khách hàng đã đăng ký từ hệ thống
+  const [customersList, setCustomersList] = useState(() => {
+    const saved = localStorage.getItem('menstyle_registered_users');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return [];
+  });
+
+  // Tính toán số liệu thống kê THỰC TẾ 100% không dùng số liệu ảo
+  const totalRevenue = ordersList
+    .filter(o => o.status !== 'cancelled')
+    .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+
+  const stats = [
+    {
+      title: 'Doanh Thu Thực Tế',
+      value: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalRevenue),
+      change: ordersList.length > 0 ? `${ordersList.length} đơn` : 'Chưa có đơn',
+      isPositive: totalRevenue > 0,
+      icon: DollarSign,
+      color: 'text-amber-500 bg-amber-500/10',
+    },
+    {
+      title: 'Tổng Đơn Hàng',
+      value: `${ordersList.length} đơn`,
+      change: `${ordersList.filter(o => o.status === 'completed').length} hoàn thành`,
+      isPositive: ordersList.length > 0,
+      icon: ShoppingBag,
+      color: 'text-blue-500 bg-blue-500/10',
+    },
+    {
+      title: 'Khách Hàng Đã Đăng Ký',
+      value: `${customersList.length} tài khoản`,
+      change: 'Hệ thống thật',
+      isPositive: customersList.length > 0,
+      icon: Users,
+      color: 'text-emerald-500 bg-emerald-500/10',
+    },
+    {
+      title: 'Tổng Sản Phẩm Đang Bán',
+      value: `${MOCK_PRODUCTS.length} sản phẩm`,
+      change: '100% ảnh Torano',
+      isPositive: true,
+      icon: Layers,
+      color: 'text-purple-500 bg-purple-500/10',
+    }
+  ];
 
   const handleUpdateOrderStatus = (orderId, newStatus) => {
     let statusText = 'Chờ xác nhận';
@@ -91,6 +106,13 @@ export const AdminDashboard = ({ onBackToClient, onLogout }) => {
     const updated = ordersList.map(o => o.id === orderId ? { ...o, status: newStatus, statusText } : o);
     setOrdersList(updated);
     localStorage.setItem('menstyle_orders', JSON.stringify(updated));
+  };
+
+  const handleClearAllOrders = () => {
+    if (window.confirm('Quý khách có chắc chắn muốn làm sạch toàn bộ đơn hàng trong hệ thống không?')) {
+      setOrdersList([]);
+      localStorage.removeItem('menstyle_orders');
+    }
   };
 
   const formatPrice = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
@@ -157,7 +179,12 @@ export const AdminDashboard = ({ onBackToClient, onLogout }) => {
             </button>
 
             <button
-              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-neutral-400 hover:bg-neutral-900 hover:text-white transition"
+              onClick={() => setActiveAdminTab('customers')}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition ${
+                activeAdminTab === 'customers' 
+                  ? 'bg-amber-500 text-neutral-950 font-bold shadow-md' 
+                  : 'text-neutral-400 hover:bg-neutral-900 hover:text-white'
+              }`}
             >
               <Users className="w-4 h-4" />
               <span>Khách Hàng (CRM)</span>
@@ -373,32 +400,40 @@ export const AdminDashboard = ({ onBackToClient, onLogout }) => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-100">
-                      {ordersList.slice(0, 5).map((ord) => (
-                        <tr key={ord.id} className="hover:bg-neutral-50/70 transition">
-                          <td className="p-4 font-bold text-neutral-900">{ord.id}</td>
-                          <td className="p-4 font-semibold text-neutral-800">{ord.customer}</td>
-                          <td className="p-4 text-neutral-600 max-w-xs truncate">{ord.items}</td>
-                          <td className="p-4 font-bold text-neutral-950">{formatPrice(ord.total)}</td>
-                          <td className="p-4">
-                            {ord.status === 'completed' && (
-                              <span className="bg-emerald-50 text-emerald-700 font-bold px-2.5 py-1 rounded-full border border-emerald-200 inline-flex items-center gap-1">
-                                <CheckCircle2 className="w-3 h-3" /> {ord.statusText}
-                              </span>
-                            )}
-                            {ord.status === 'delivering' && (
-                              <span className="bg-amber-50 text-amber-700 font-bold px-2.5 py-1 rounded-full border border-amber-200 inline-flex items-center gap-1">
-                                <Clock className="w-3 h-3" /> {ord.statusText}
-                              </span>
-                            )}
-                            {ord.status === 'pending' && (
-                              <span className="bg-blue-50 text-blue-700 font-bold px-2.5 py-1 rounded-full border border-blue-200 inline-flex items-center gap-1">
-                                <Clock className="w-3 h-3" /> {ord.statusText}
-                              </span>
-                            )}
+                      {ordersList.length === 0 ? (
+                        <tr>
+                          <td colSpan="6" className="p-8 text-center text-neutral-400">
+                            Chưa có đơn hàng nào từ khách hàng. Dữ liệu sẽ xuất hiện tại đây ngay khi có đơn mới!
                           </td>
-                          <td className="p-4 text-neutral-400">{ord.date}</td>
                         </tr>
-                      ))}
+                      ) : (
+                        ordersList.slice(0, 5).map((ord) => (
+                          <tr key={ord.id} className="hover:bg-neutral-50/70 transition">
+                            <td className="p-4 font-bold text-neutral-900">{ord.id}</td>
+                            <td className="p-4 font-semibold text-neutral-800">{ord.customer}</td>
+                            <td className="p-4 text-neutral-600 max-w-xs truncate">{ord.items}</td>
+                            <td className="p-4 font-bold text-neutral-950">{formatPrice(ord.total)}</td>
+                            <td className="p-4">
+                              {ord.status === 'completed' && (
+                                <span className="bg-emerald-50 text-emerald-700 font-bold px-2.5 py-1 rounded-full border border-emerald-200 inline-flex items-center gap-1">
+                                  <CheckCircle2 className="w-3 h-3" /> {ord.statusText}
+                                </span>
+                              )}
+                              {ord.status === 'delivering' && (
+                                <span className="bg-amber-50 text-amber-700 font-bold px-2.5 py-1 rounded-full border border-amber-200 inline-flex items-center gap-1">
+                                  <Clock className="w-3 h-3" /> {ord.statusText}
+                                </span>
+                              )}
+                              {ord.status === 'pending' && (
+                                <span className="bg-blue-50 text-blue-700 font-bold px-2.5 py-1 rounded-full border border-blue-200 inline-flex items-center gap-1">
+                                  <Clock className="w-3 h-3" /> {ord.statusText}
+                                </span>
+                              )}
+                            </td>
+                            <td className="p-4 text-neutral-400">{ord.date}</td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -433,28 +468,22 @@ export const AdminDashboard = ({ onBackToClient, onLogout }) => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-100">
-                    {[
-                      { name: 'Áo Blazer Nam Italian Wool Dáng Slim-fit', category: 'Blazer & Suit', price: 1250000, stock: 45, status: 'Đang bán', img: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=200&auto=format&fit=crop' },
-                      { name: 'Áo Sơ Mi Trắng Kháng Khuẩn Chống Nhăn', category: 'Áo Sơ Mi', price: 450000, stock: 120, status: 'Đang bán', img: 'https://images.unsplash.com/photo-1620012253295-c15c429fbb3e?q=80&w=200&auto=format&fit=crop' },
-                      { name: 'Áo Polo Nam Pima Cotton Bo Dệt', category: 'Áo Polo', price: 380000, stock: 85, status: 'Đang bán', img: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=200&auto=format&fit=crop' },
-                      { name: 'Quần Tây Nam Co Giãn 4 Chiều Xếp Ly', category: 'Quần Âu & Jean', price: 520000, stock: 8, status: 'Sắp hết hàng', img: 'https://images.unsplash.com/photo-1479064555552-3ef4979f8908?q=80&w=200&auto=format&fit=crop' },
-                      { name: 'Áo Khoác Bomber Nam Da Lộn Minimalist', category: 'Blazer & Suit', price: 890000, stock: 24, status: 'Đang bán', img: 'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=200&auto=format&fit=crop' },
-                    ].map((p, idx) => (
-                      <tr key={idx} className="hover:bg-neutral-50/70 transition">
+                    {MOCK_PRODUCTS.slice(0, 15).map((p) => (
+                      <tr key={p.id} className="hover:bg-neutral-50/70 transition">
                         <td className="p-4">
-                          <img src={p.img} alt="p" className="w-10 h-12 rounded-lg object-cover border border-neutral-200" />
+                          <img 
+                            src={p.images?.[0] || 'https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg'} 
+                            alt={p.name} 
+                            className="w-10 h-12 rounded-lg object-cover border border-neutral-200" 
+                          />
                         </td>
                         <td className="p-4 font-semibold text-neutral-900 max-w-xs">{p.name}</td>
                         <td className="p-4 text-neutral-500 font-medium">{p.category}</td>
                         <td className="p-4 font-bold text-neutral-950">{formatPrice(p.price)}</td>
-                        <td className="p-4 font-semibold text-neutral-700">{p.stock} cái</td>
+                        <td className="p-4 font-semibold text-neutral-700">50 cái</td>
                         <td className="p-4">
-                          <span className={`px-2.5 py-1 rounded-full font-bold text-[11px] ${
-                            p.stock <= 10 
-                              ? 'bg-rose-50 text-rose-700 border border-rose-200' 
-                              : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          }`}>
-                            {p.status}
+                          <span className="px-2.5 py-1 rounded-full font-bold text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Đang bán
                           </span>
                         </td>
                         <td className="p-4 text-right">
@@ -483,9 +512,16 @@ export const AdminDashboard = ({ onBackToClient, onLogout }) => {
                     placeholder="Tìm mã đơn hoặc khách..."
                     className="px-3 py-1.5 border border-neutral-200 rounded-xl text-xs outline-none"
                   />
-                  <Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">
-                    <Filter className="w-3.5 h-3.5 mr-1" /> Lọc đơn
-                  </Button>
+                  {ordersList.length > 0 && (
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={handleClearAllOrders}
+                      className="text-xs rounded-xl font-bold text-rose-600 hover:bg-rose-50 border-rose-200 flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Xóa tất cả đơn
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -503,48 +539,113 @@ export const AdminDashboard = ({ onBackToClient, onLogout }) => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-100">
-                    {ordersList.map((ord) => (
-                      <tr key={ord.id} className="hover:bg-neutral-50/70 transition">
-                        <td className="p-4 font-bold text-neutral-900">{ord.id}</td>
-                        <td className="p-4 font-semibold text-neutral-800">
-                          <div>{ord.customer}</div>
-                          {ord.phone && <div className="text-[11px] text-neutral-400 font-normal">{ord.phone}</div>}
-                        </td>
-                        <td className="p-4 text-neutral-600 max-w-sm">
-                          <p className="line-clamp-2">{ord.items}</p>
-                          {ord.paymentMethod && (
-                            <span className="text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 mt-1 inline-block">
-                              PT: {ord.paymentMethod === 'cod' ? 'COD' : ord.paymentMethod === 'banking' ? 'VietQR' : 'VNPay'}
-                            </span>
-                          )}
-                        </td>
-                        <td className="p-4 font-bold text-neutral-950">{formatPrice(ord.total)}</td>
-                        <td className="p-4">
-                          <span className={`font-bold px-2.5 py-1 rounded-full border inline-flex items-center gap-1 ${
-                            ord.status === 'completed' 
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                              : ord.status === 'cancelled'
-                              ? 'bg-rose-50 text-rose-700 border-rose-200'
-                              : 'bg-amber-50 text-amber-700 border-amber-200'
-                          }`}>
-                            {ord.statusText || 'Chờ xác nhận'}
-                          </span>
-                        </td>
-                        <td className="p-4 text-neutral-400">{ord.date}</td>
-                        <td className="p-4 text-right">
-                          <select 
-                            value={ord.status || 'pending'}
-                            onChange={(e) => handleUpdateOrderStatus(ord.id, e.target.value)}
-                            className="bg-neutral-100 border border-neutral-300 rounded-lg text-xs px-2 py-1 outline-none font-medium cursor-pointer"
-                          >
-                            <option value="pending">Chờ xác nhận</option>
-                            <option value="delivering">Đang giao</option>
-                            <option value="completed">Hoàn thành</option>
-                            <option value="cancelled">Hủy đơn</option>
-                          </select>
+                    {ordersList.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="p-12 text-center text-neutral-400">
+                          Hệ thống hiện tại chưa có đơn hàng nào từ khách. Toàn bộ đơn hàng thật sẽ tự động cập nhật ngay tại đây!
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      ordersList.map((ord) => (
+                        <tr key={ord.id} className="hover:bg-neutral-50/70 transition">
+                          <td className="p-4 font-bold text-neutral-900">{ord.id}</td>
+                          <td className="p-4 font-semibold text-neutral-800">
+                            <div>{ord.customer}</div>
+                            {ord.phone && <div className="text-[11px] text-neutral-400 font-normal">{ord.phone}</div>}
+                          </td>
+                          <td className="p-4 text-neutral-600 max-w-sm">
+                            <p className="line-clamp-2">{ord.items}</p>
+                            {ord.paymentMethod && (
+                              <span className="text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 mt-1 inline-block">
+                                PT: {ord.paymentMethod === 'cod' ? 'COD' : ord.paymentMethod === 'banking' ? 'VietQR' : 'VNPay'}
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-4 font-bold text-neutral-950">{formatPrice(ord.total)}</td>
+                          <td className="p-4">
+                            <span className={`font-bold px-2.5 py-1 rounded-full border inline-flex items-center gap-1 ${
+                              ord.status === 'completed' 
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                                : ord.status === 'cancelled'
+                                ? 'bg-rose-50 text-rose-700 border-rose-200'
+                                : 'bg-amber-50 text-amber-700 border-amber-200'
+                            }`}>
+                              {ord.statusText || 'Chờ xác nhận'}
+                            </span>
+                          </td>
+                          <td className="p-4 text-neutral-400">{ord.date}</td>
+                          <td className="p-4 text-right">
+                            <select 
+                              value={ord.status || 'pending'}
+                              onChange={(e) => handleUpdateOrderStatus(ord.id, e.target.value)}
+                              className="bg-neutral-100 border border-neutral-300 rounded-lg text-xs px-2 py-1 outline-none font-medium cursor-pointer"
+                            >
+                              <option value="pending">Chờ xác nhận</option>
+                              <option value="delivering">Đang giao</option>
+                              <option value="completed">Hoàn thành</option>
+                              <option value="cancelled">Hủy đơn</option>
+                            </select>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* TAB QUẢN LÝ KHÁCH HÀNG (CRM THỰC TẾ) */}
+          {activeAdminTab === 'customers' && (
+            <div className="bg-white rounded-2xl border border-neutral-200 shadow-2xs overflow-hidden">
+              <div className="p-5 sm:p-6 border-b border-neutral-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-bold text-neutral-900">Danh Sách Khách Hàng Đăng Ký</h3>
+                  <p className="text-xs text-neutral-400 mt-0.5">Tài khoản khách hàng thực tế được lưu trữ trên hệ thống</p>
+                </div>
+                <div className="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200">
+                  Tổng: {customersList.length} khách hàng
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead className="bg-neutral-50 text-neutral-600 font-semibold border-b border-neutral-200 uppercase tracking-wider text-[11px]">
+                    <tr>
+                      <th className="p-4">Khách Hàng</th>
+                      <th className="p-4">Email</th>
+                      <th className="p-4">Hạng Thành Viên</th>
+                      <th className="p-4">Điểm Tích Lũy</th>
+                      <th className="p-4">Ngày Đăng Ký</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-100">
+                    {customersList.length === 0 ? (
+                      <tr>
+                        <td colSpan="5" className="p-12 text-center text-neutral-400">
+                          Chưa có tài khoản khách hàng nào đăng ký. Khi khách đăng ký tài khoản mới, dữ liệu sẽ tự động xuất hiện tại đây!
+                        </td>
+                      </tr>
+                    ) : (
+                      customersList.map((c, idx) => (
+                        <tr key={idx} className="hover:bg-neutral-50/70 transition">
+                          <td className="p-4 font-bold text-neutral-900 flex items-center gap-2.5">
+                            <div className="w-7 h-7 rounded-full bg-neutral-950 text-amber-400 flex items-center justify-center font-bold text-xs">
+                              {c.name ? c.name.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                            <span>{c.name}</span>
+                          </td>
+                          <td className="p-4 text-neutral-600 font-mono">{c.email}</td>
+                          <td className="p-4">
+                            <span className="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 text-[11px]">
+                              {c.memberLevel || 'Thành Viên Bạc'}
+                            </span>
+                          </td>
+                          <td className="p-4 font-bold text-neutral-950">{c.points || 100} pts</td>
+                          <td className="p-4 text-neutral-400">{c.createdAt || 'Mới'}</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
