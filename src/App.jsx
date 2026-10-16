@@ -27,8 +27,7 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Tự động đồng bộ chuẩn hóa danh mục mới nếu bản lưu cũ đang dùng danh mục gộp 'Quần Âu & Jean'
+        if (Array.isArray(parsed) && parsed.length >= MOCK_PRODUCTS.length) {
           const hasOldCategories = parsed.some(p => p.category === 'Quần Âu & Jean' || p.category === 'Blazer & Suit');
           if (!hasOldCategories) {
             return parsed;
@@ -476,7 +475,7 @@ export default function App() {
                   size="lg" 
                   className="rounded-full border-neutral-300 px-6 sm:px-8 hover:border-neutral-950 font-bold text-xs sm:text-base w-full sm:w-auto cursor-pointer"
                 >
-                  Xem toàn bộ 56+ sản phẩm thời trang MENSTYLE <ArrowRight className="w-4 h-4 ml-2" />
+                  Xem toàn bộ 200+ sản phẩm thời trang MENSTYLE <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </section>
