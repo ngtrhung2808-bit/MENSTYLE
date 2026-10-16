@@ -1,15 +1,28 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Bot, Sparkles, ShoppingBag, Loader2, Key } from 'lucide-react';
+import { 
+  X, 
+  Send, 
+  Bot, 
+  Sparkles, 
+  Loader2, 
+  Key, 
+  Phone, 
+  ArrowUp,
+  MessageCircle
+} from 'lucide-react';
 import { Button } from '../common/Button';
 import { generateStylistChatReply, getGeminiApiKey, setGeminiApiKey } from '../../services/geminiService';
 
 export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isWidgetExpanded, setIsWidgetExpanded] = useState(true); // Mở/đóng cụm nút liên hệ
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'bot',
-      text: 'Xin chào quý ông! Tôi là Stylist AI của MENSTYLE (được tích hợp Gemini AI). Bạn đang tìm trang phục cho dịp nào: công sở, dạ tiệc hay dạo phố cuối tuần?',
+      text: 'Xin chào quý ông! Tôi là Stylist AI của MENSTYLE (tích hợp Gemini AI 2.5). Quý khách cần tư vấn chọn size, phối outfit đi làm, dạ tiệc hay dạo phố hôm nay?',
       time: 'Vừa xong'
     }
   ]);
@@ -18,6 +31,23 @@ export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState(getGeminiApiKey());
   const messagesEndRef = useRef(null);
+
+  // Theo dõi cuộn trang để hiện nút Back to top
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -54,7 +84,6 @@ export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
     try {
       const replyText = await generateStylistChatReply(messages, text.trim(), products);
       
-      // Tìm sản phẩm liên quan gợi ý kèm tin nhắn nếu có
       let suggestedItem = null;
       const lower = text.toLowerCase();
       if (lower.includes('polo')) {
@@ -100,10 +129,10 @@ export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-      {/* Cửa sổ Chat Popup */}
+    <div className="fixed bottom-6 right-5 sm:right-6 z-50 flex flex-col items-end gap-2.5">
+      {/* Cửa sổ Chat Popup AI */}
       {isOpen && (
-        <div className="w-[92vw] sm:w-[400px] bg-white rounded-3xl shadow-2xl border border-neutral-200 overflow-hidden flex flex-col h-[520px] mb-4 animate-in slide-in-from-bottom-5 duration-300">
+        <div className="w-[92vw] sm:w-[400px] bg-white rounded-3xl shadow-2xl border border-neutral-200 overflow-hidden flex flex-col h-[520px] mb-2 animate-in slide-in-from-bottom-5 duration-300">
           {/* Header Chatbot */}
           <div className="bg-neutral-950 text-white p-4 flex items-center justify-between border-b border-neutral-800">
             <div className="flex items-center gap-2.5">
@@ -263,17 +292,82 @@ export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
         </div>
       )}
 
-      {/* Nút bấm tròn mở Chatbot với Badge AI */}
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 rounded-full bg-gradient-to-tr from-neutral-950 via-neutral-900 to-amber-950 text-white flex items-center justify-center shadow-xl hover:scale-105 transition-all cursor-pointer border border-amber-500/40 relative group"
-        aria-label="Mở Trợ lý AI Stylist"
-      >
-        <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-400 to-amber-500 text-neutral-950 text-[9px] font-black px-1.5 py-0.5 rounded-full border border-neutral-900 shadow animate-pulse">
-          AI
-        </span>
-        {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6 text-amber-400" />}
-      </button>
+      {/* ================= CỤM NÚT TRÒN NỔI Ở GÓC THEO ĐÚNG ẢNH MẪU ================= */}
+      <div className="flex flex-col items-center gap-2.5 select-none">
+        {isWidgetExpanded && (
+          <div className="flex flex-col items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
+            {/* 1. Nút Chat AI Stylist (Đặc quyền nổi bật với huy hiệu AI) */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className={`w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer relative ${
+                isOpen 
+                  ? 'bg-amber-500 text-neutral-950 ring-2 ring-neutral-950' 
+                  : 'bg-gradient-to-tr from-neutral-950 to-neutral-800 text-amber-400 border border-amber-500/50'
+              }`}
+              title="Trò chuyện cùng AI Stylist"
+            >
+              <span className="absolute -top-1 -right-1 bg-amber-500 text-neutral-950 text-[8px] font-black px-1 rounded-full shadow">
+                AI
+              </span>
+              <Bot className="w-5 h-5" />
+            </button>
+
+            {/* 2. Nút Gọi Điện Hotline (Màu xanh lá tròn - Icon điện thoại chuẩn ảnh) */}
+            <a 
+              href="tel:19006868"
+              className="w-11 h-11 rounded-full bg-[#276749] hover:bg-[#1f5139] text-white flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer"
+              title="Gọi Hotline tư vấn 1900 6868"
+            >
+              <Phone className="w-5 h-5" />
+            </a>
+
+            {/* 3. Nút Messenger Facebook (Màu xanh dương tròn - Icon Messenger chuẩn ảnh) */}
+            <a 
+              href="https://m.me/menstyle"
+              target="_blank"
+              rel="noreferrer"
+              className="w-11 h-11 rounded-full bg-[#0084ff] hover:bg-[#0073e6] text-white flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer"
+              title="Chat qua Facebook Messenger"
+            >
+              {/* SVG Messenger chính xác */}
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.03 2 11c0 2.87 1.5 5.43 3.86 7.02V21l2.84-1.56C9.74 19.8 10.84 20 12 20c5.52 0 10-4.03 10-9s-4.48-9-10-9zm1.06 12.15l-2.58-2.75-5.04 2.75 5.54-5.89 2.65 2.75 4.97-2.75-5.54 5.89z"/>
+              </svg>
+            </a>
+
+            {/* 4. Nút Zalo Chat (Màu xanh biển đậm với chữ Zalo đậm chuẩn ảnh) */}
+            <a 
+              href="https://zalo.me/0988776655"
+              target="_blank"
+              rel="noreferrer"
+              className="w-11 h-11 rounded-full bg-[#0068ff] hover:bg-[#0057d6] text-white flex items-center justify-center font-black text-xs shadow-lg transition-transform hover:scale-110 cursor-pointer tracking-tighter"
+              title="Chat qua Zalo: 0988 776 655"
+            >
+              Zalo
+            </a>
+          </div>
+        )}
+
+        {/* 5. Nút Đóng / Mở menu liên hệ (Nút tròn màu đen có icon X / Message) */}
+        <button
+          onClick={() => setIsWidgetExpanded(!isWidgetExpanded)}
+          className="w-11 h-11 rounded-full bg-[#18181b] hover:bg-neutral-800 text-white flex items-center justify-center shadow-xl transition-all cursor-pointer"
+          title={isWidgetExpanded ? 'Thu gọn liên hệ' : 'Mở rộng liên hệ'}
+        >
+          {isWidgetExpanded ? <X className="w-5 h-5" /> : <MessageCircle className="w-5 h-5 text-amber-400" />}
+        </button>
+
+        {/* 6. Nút Cuộn Lên Đầu Trang (Back To Top - Tròn đen có mũi tên lên chuẩn ảnh) */}
+        <button
+          onClick={scrollToTop}
+          className={`w-11 h-11 rounded-full bg-[#18181b] hover:bg-neutral-800 text-white flex items-center justify-center shadow-xl transition-all duration-300 cursor-pointer ${
+            showScrollTop ? 'opacity-100 scale-100' : 'opacity-70 hover:opacity-100'
+          }`}
+          title="Cuộn lên đầu trang"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      </div>
     </div>
   );
 };
