@@ -9,6 +9,7 @@ import orderRoutes from './routes/orderRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { connectDB, getDatabaseState } from './config/db.js';
 
 export const createApp = () => {
   const app = express();
@@ -26,23 +27,77 @@ export const createApp = () => {
     app.use(morgan('dev'));
   }
 
-  // Health check endpoint
-  app.get('/api/health', async (req, res) => {
-    const isDbConnected = (await import('mongoose')).default.connection.readyState === 1;
+  // Root endpoint: API status & service discovery
+  app.get('/', (req, res) => {
     res.status(200).json({
       status: 'success',
       message: 'MENSTYLE Fashion Backend & Database API is running',
-      database: isDbConnected ? 'connected' : 'disconnected',
-      timestamp: new Date().toISOString()
+      version: '1.0.0',
+      endpoints: {
+        health: '/health',
+        apiHealth: '/api/health',
+        products: '/api/products',
+        categories: '/api/products/categories',
+        auth: '/api/auth',
+        orders: '/api/orders',
+        coupons: '/api/coupons',
+        chat: '/api/chat'
+      }
     });
   });
 
+  // Health check handler
+  const handleHealthCheck = async (req, res) => {
+    let dbState = getDatabaseState();
+    // Attempt auto-reconnect if database was disconnected and cooldown elapsed
+    if (dbState === 'disconnected') {
+      await connectDB(true);
+      dbState = getDatabaseState();
+    }
+    const isDbConnected = dbState === 'connected';
+
+    const responseData = {
+      status: isDbConnected ? 'ok' : 'degraded',
+      message: 'MENSTYLE Fashion Backend & Database API is running',
+      api: 'connected',
+      database: dbState,
+      timestamp: new Date().toISOString()
+    };
+
+    // Return 200 when fully healthy, 503 Service Unavailable when database is not connected
+    const statusCode = isDbConnected ? 200 : 503;
+    return res.status(statusCode).json(responseData);
+  };
+
+  // Health check endpoints
+  app.get('/health', handleHealthCheck);
+  app.get('/api/health', handleHealthCheck);
+
+  // Middleware to guard database-backed routes when database is unavailable
+  const requireDatabase = async (req, res, next) => {
+    let dbState = getDatabaseState();
+    if (dbState === 'disconnected') {
+      await connectDB(true);
+      dbState = getDatabaseState();
+    }
+    if (dbState !== 'connected') {
+      return res.status(503).json({
+        success: false,
+        message: 'Dịch vụ cơ sở dữ liệu MongoDB hiện không khả dụng. Vui lòng kiểm tra dịch vụ MongoDB hoặc file cấu hình .env.',
+        database: dbState
+      });
+    }
+    next();
+  };
+
+
   // Main REST API routes
-  app.use('/api/auth', authRoutes);
-  app.use('/api/products', productRoutes);
-  app.use('/api/orders', orderRoutes);
-  app.use('/api/coupons', couponRoutes);
-  app.use('/api/chat', chatRoutes);
+  app.use('/api/auth', requireDatabase, authRoutes);
+  app.use('/api/products', requireDatabase, productRoutes);
+  app.use('/api/orders', requireDatabase, orderRoutes);
+  app.use('/api/coupons', requireDatabase, couponRoutes);
+  app.use('/api/chat', requireDatabase, chatRoutes);
+
 
   // 404 handler for undefined routes
   app.use((req, res, next) => {

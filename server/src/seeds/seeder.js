@@ -1,3 +1,5 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import {
@@ -13,8 +15,13 @@ import {
   Wishlist,
   AI_Conversation
 } from '../models/index.js';
+import { sanitizeMongoUri } from '../config/db.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
+
 
 const categoriesData = [
   { name: 'Blazer & Suit', slug: 'blazer-suit', description: 'Blazer may đo và suit quý ông sang trọng chuẩn phong cách Ý & Anh', displayOrder: 1 },
@@ -213,8 +220,9 @@ const mockProductsData = [
 const seedData = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/menstyle_db';
-    console.log(`[Seeder] Connecting to MongoDB: ${mongoUri}`);
+    console.log(`[Seeder] Connecting to MongoDB: ${sanitizeMongoUri(mongoUri)}`);
     await mongoose.connect(mongoUri);
+
 
     console.log('[Seeder] Cleaning existing collections...');
     await Promise.all([
