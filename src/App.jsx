@@ -8,20 +8,42 @@ import { ProductCard } from './components/product/ProductCard';
 import { ProductListingPage } from './components/product/ProductListingPage';
 import { ProductDetailModal } from './components/product/ProductDetailModal';
 import { MiniCartDrawer } from './components/cart/MiniCartDrawer';
+import { WishlistDrawer } from './components/cart/WishlistDrawer';
 import { CheckoutPage } from './components/checkout/CheckoutPage';
 import { UserProfilePage } from './components/profile/UserProfilePage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AuthModal } from './components/auth/AuthModal';
 import { ChatbotWidget } from './components/chatbot/ChatbotWidget';
+import { SmartOutfitStylistModal } from './components/ai/SmartOutfitStylistModal';
+import { VisualSearchModal } from './components/ai/VisualSearchModal';
 import { Toast } from './components/common/Toast';
 import { Button } from './components/common/Button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { MOCK_PRODUCTS } from './data/mockProducts';
 
+
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [products, setProducts] = useState(() => {
+    const saved = localStorage.getItem('menstyle_products_v2');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length >= MOCK_PRODUCTS.length) {
+          return parsed;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    localStorage.setItem('menstyle_products_v2', JSON.stringify(MOCK_PRODUCTS));
+    localStorage.setItem('menstyle_products', JSON.stringify(MOCK_PRODUCTS));
+    return MOCK_PRODUCTS;
+  });
+
   const [currentTab, setCurrentTab] = useState('home'); // Mặc định luôn là Trang Chủ ('home') dành cho Khách hàng
   const [filterCategory, setFilterCategory] = useState('Tất cả');
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,12 +52,20 @@ export default function App() {
     return saved ? JSON.parse(saved) : null; // Mặc định là null (Khách vãng lai)
   });
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isPendingCheckout, setIsPendingCheckout] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
     return localStorage.getItem('menstyle_admin_auth') === 'true';
   });
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [isOutfitStylistOpen, setIsOutfitStylistOpen] = useState(false);
+  const [isVisualSearchOpen, setIsVisualSearchOpen] = useState(false);
+  const [wishlistItems, setWishlistItems] = useState(() => {
+    const saved = localStorage.getItem('menstyle_wishlist');
+    return saved ? JSON.parse(saved) : []; // Mặc định rỗng khi khách mới vào web
+  });
   const [toasts, setToasts] = useState([]);
 
   const addToast = (title, message, type = 'success') => {
@@ -46,27 +76,37 @@ export default function App() {
     }, 4000);
   };
 
+  const handleAddMultipleToCart = (itemsToAdd) => {
+    setCartItems(prev => {
+      let current = [...prev];
+      itemsToAdd.forEach(prod => {
+        const size = prod.selectedSize || prod.sizes?.[0] || 'L';
+        const color = prod.selectedColor || prod.colors?.[0]?.name || '';
+        const idx = current.findIndex(i => i.id === prod.id && i.selectedSize === size);
+        if (idx >= 0) {
+          current[idx] = { ...current[idx], quantity: current[idx].quantity + 1 };
+        } else {
+          current.push({ ...prod, selectedSize: size, selectedColor: color, quantity: 1 });
+        }
+      });
+      localStorage.setItem('menstyle_cart', JSON.stringify(current));
+      return current;
+    });
+    addToast('Đã Thêm Trọn Bộ Set Đồ', `Đã thêm ${itemsToAdd.length} món từ AI Stylist vào giỏ hàng.`);
+    setIsCartOpen(true);
+  };
+
   const handleNavigateWithCategory = (catName) => {
     setFilterCategory(catName);
     setCurrentTab('products');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Giỏ hàng state giả lập
-  const [cartItems, setCartItems] = useState([
-    {
-      ...MOCK_PRODUCTS[0],
-      selectedSize: 'L',
-      selectedColor: 'Đen Sang Trọng',
-      quantity: 1,
-    },
-    {
-      ...MOCK_PRODUCTS[2],
-      selectedSize: 'M',
-      selectedColor: 'Đen Huyền Bí',
-      quantity: 1,
-    }
-  ]);
+  // Giỏ hàng state (mặc định trống khi khách mới vào web)
+  const [cartItems, setCartItems] = useState(() => {
+    const saved = localStorage.getItem('menstyle_cart');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -86,21 +126,23 @@ export default function App() {
         item => item.id === productToAdd.id && item.selectedSize === size && item.selectedColor === color
       );
 
+      let updated;
       if (existingIndex > -1) {
-        const updated = [...prev];
+        updated = [...prev];
         updated[existingIndex].quantity += (productToAdd.quantity || 1);
-        return updated;
+      } else {
+        updated = [
+          ...prev,
+          {
+            ...productToAdd,
+            selectedSize: size,
+            selectedColor: color,
+            quantity: productToAdd.quantity || 1,
+          }
+        ];
       }
-
-      return [
-        ...prev,
-        {
-          ...productToAdd,
-          selectedSize: size,
-          selectedColor: color,
-          quantity: productToAdd.quantity || 1,
-        }
-      ];
+      localStorage.setItem('menstyle_cart', JSON.stringify(updated));
+      return updated;
     });
 
     setIsDetailOpen(false);
@@ -110,8 +152,8 @@ export default function App() {
 
   // Cập nhật số lượng
   const handleUpdateQuantity = (targetItem, newQuantity) => {
-    setCartItems(prev => 
-      prev.map(item => {
+    setCartItems(prev => {
+      const updated = prev.map(item => {
         if (
           item.id === targetItem.id && 
           item.selectedSize === targetItem.selectedSize && 
@@ -120,20 +162,50 @@ export default function App() {
           return { ...item, quantity: newQuantity };
         }
         return item;
-      })
-    );
+      });
+      localStorage.setItem('menstyle_cart', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   // Xóa món khỏi giỏ
   const handleRemoveItem = (targetItem) => {
-    setCartItems(prev => 
-      prev.filter(item => !(
+    setCartItems(prev => {
+      const updated = prev.filter(item => !(
         item.id === targetItem.id && 
         item.selectedSize === targetItem.selectedSize && 
         item.selectedColor === targetItem.selectedColor
-      ))
-    );
+      ));
+      localStorage.setItem('menstyle_cart', JSON.stringify(updated));
+      return updated;
+    });
     addToast('Đã Xóa Khỏi Giỏ', 'Sản phẩm đã được xóa khỏi giỏ hàng của bạn.', 'info');
+  };
+
+  // Quản lý Yêu thích (Wishlist)
+  const handleToggleWishlist = (product) => {
+    setWishlistItems(prev => {
+      const exists = prev.some(item => item.id === product.id);
+      let updated;
+      if (exists) {
+        updated = prev.filter(item => item.id !== product.id);
+        addToast('Đã Bỏ Yêu Thích', `Đã xóa "${product.name}" khỏi danh sách lưu.`, 'info');
+      } else {
+        updated = [product, ...prev];
+        addToast('Đã Thêm Yêu Thích', `Đã lưu "${product.name}" vào danh sách yêu thích!`, 'success');
+      }
+      localStorage.setItem('menstyle_wishlist', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleRemoveFromWishlist = (productId) => {
+    setWishlistItems(prev => {
+      const updated = prev.filter(item => item.id !== productId);
+      localStorage.setItem('menstyle_wishlist', JSON.stringify(updated));
+      return updated;
+    });
+    addToast('Đã Xóa Yêu Thích', 'Đã xóa sản phẩm khỏi danh sách yêu thích.', 'info');
   };
 
   // Kiểm tra môi trường Localhost & URL Admin
@@ -172,6 +244,11 @@ const isTryingAdmin =
     // Đã đăng nhập => Vào thẳng Dashboard
     return (
       <AdminDashboard 
+        products={products}
+        onUpdateProducts={(updatedProducts) => {
+          setProducts(updatedProducts);
+          localStorage.setItem('menstyle_products', JSON.stringify(updatedProducts));
+        }}
         onBackToClient={() => {
           navigate('/');
           setCurrentTab('home');
@@ -191,6 +268,7 @@ const isTryingAdmin =
         onOpenCart={() => setIsCartOpen(true)}
         cartCount={totalCartCount}
         currentTab={currentTab}
+        activeCategory={filterCategory}
         currentUser={currentUser}
         onOpenAuth={() => setIsAuthOpen(true)}
         searchValue={searchQuery}
@@ -200,6 +278,10 @@ const isTryingAdmin =
             setCurrentTab('products');
           }
         }}
+        wishlistCount={wishlistItems.length}
+        onOpenWishlist={() => setIsWishlistOpen(true)}
+        onOpenVisualSearch={() => setIsVisualSearchOpen(true)}
+        onOpenOutfitStylist={() => setIsOutfitStylistOpen(true)}
         onNavigate={(tab, catName) => {
           if (tab === 'profile' && !currentUser) {
             setIsAuthOpen(true);
@@ -218,10 +300,35 @@ const isTryingAdmin =
           /* TRANG CHECKOUT THANH TOÁN (TUẦN 3) */
           <CheckoutPage 
             cartItems={cartItems}
+            currentUser={currentUser}
+            onRequireAuth={() => setIsAuthOpen(true)}
             onBackToShopping={() => setCurrentTab('products')}
             onOrderSuccess={(orderData) => {
-              addToast('Đặt Hàng Thành Công', `Mã đơn hàng: ${orderData.orderCode}`);
+              addToast('Đặt Hàng Thành Công', `Mã đơn hàng: ${orderData.orderCode}. Đơn hàng đã được đồng bộ vào hệ thống quản trị!`);
+              
+              // Lưu vào danh sách đơn hàng toàn hệ thống
+              const existingOrders = JSON.parse(localStorage.getItem('menstyle_orders') || '[]');
+              const newOrder = {
+                id: orderData.orderCode,
+                customer: orderData.fullName || currentUser?.name || 'Quý Ông Khách Hàng',
+                email: orderData.email || currentUser?.email || '',
+                phone: orderData.phone || '',
+                address: `${orderData.address}, ${orderData.district ? orderData.district + ', ' : ''}${orderData.province}`,
+                items: orderData.cartItems.map(i => `${i.name} (${i.selectedSize || 'L'}, x${i.quantity})`).join(', '),
+                cartItems: orderData.cartItems,
+                total: orderData.grandTotal,
+                paymentMethod: orderData.paymentMethod,
+                paymentStatus: orderData.paymentMethod === 'cod' ? 'Chưa thanh toán' : 'Đã thanh toán (Chờ khớp)',
+                status: 'pending',
+                statusText: 'Chờ xác nhận',
+                date: orderData.createdAt
+              };
+              
+              const updatedOrders = [newOrder, ...existingOrders];
+              localStorage.setItem('menstyle_orders', JSON.stringify(updatedOrders));
+
               setCartItems([]);
+              localStorage.removeItem('menstyle_cart');
               setCurrentTab(currentUser ? 'profile' : 'home');
             }}
           />
@@ -240,10 +347,14 @@ const isTryingAdmin =
         ) : currentTab === 'products' ? (
           /* TRANG DANH SÁCH SẢN PHẨM & BỘ LỌC (PLP) */
           <ProductListingPage 
+            products={products}
             onQuickView={handleOpenDetail}
             onAddToCart={handleAddToCart}
             initialCategory={filterCategory}
+            onCategoryChange={(cat) => setFilterCategory(cat)}
             searchQuery={searchQuery}
+            wishlistIds={wishlistItems.map(w => w.id)}
+            onToggleWishlist={handleToggleWishlist}
           />
         ) : (
           /* TRANG CHỦ (HOME) */
@@ -266,44 +377,109 @@ const isTryingAdmin =
               }} 
             />
 
-            {/* 4. Best Seller Men Products */}
-            <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12">
+            {/* 4. Best Seller Men Products - Chuẩn Catalog MENSTYLE */}
+            <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-14">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-8 gap-3 sm:gap-4">
                 <div>
-                  <span className="text-xs font-bold text-amber-600 uppercase tracking-wider flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> Bán chạy nhất tuần
+                  <span className="text-xs font-bold text-amber-600 uppercase tracking-widest flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" /> Bán chạy nhất tuần • MENSTYLE Premium
                   </span>
-                  <h2 className="text-xl sm:text-3xl font-black text-neutral-900 mt-1">Được Phái Mạnh Ưa Chuộng</h2>
+                  <h2 className="text-2xl sm:text-3xl font-black text-neutral-950 mt-1">Được Phái Mạnh Ưa Chuộng Nhất</h2>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-                  <Button variant="secondary" size="sm" className="rounded-full text-xs shrink-0">Mới nhất</Button>
-                  <Button variant="outline" size="sm" className="rounded-full text-xs shrink-0">Bán chạy</Button>
-                  <Button variant="ghost" size="sm" className="rounded-full text-rose-600 font-semibold text-xs shrink-0">Khuyến mãi</Button>
+                  <Button 
+                    onClick={() => handleNavigateWithCategory('Tất cả')}
+                    variant="secondary" 
+                    size="sm" 
+                    className="rounded-full text-xs shrink-0 cursor-pointer"
+                  >
+                    Tất cả
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavigateWithCategory('Áo Polo')}
+                    variant="outline" 
+                    size="sm" 
+                    className="rounded-full text-xs shrink-0 cursor-pointer"
+                  >
+                    Polo Smart
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavigateWithCategory('Áo Sơ Mi')}
+                    variant="outline" 
+                    size="sm" 
+                    className="rounded-full text-xs shrink-0 cursor-pointer"
+                  >
+                    Sơ Mi Kháng Khuẩn
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavigateWithCategory('Quần Âu Công Sở')}
+                    variant="ghost" 
+                    size="sm" 
+                    className="rounded-full text-neutral-800 hover:text-amber-600 font-bold text-xs shrink-0 cursor-pointer"
+                  >
+                    Quần Âu Công Sở
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavigateWithCategory('Quần Short')}
+                    variant="ghost" 
+                    size="sm" 
+                    className="rounded-full text-rose-600 font-bold text-xs shrink-0 cursor-pointer bg-rose-50"
+                  >
+                    Short & Khaki 🔥
+                  </Button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-6">
-                {MOCK_PRODUCTS.slice(0, 4).map((product) => (
+              {/* Grid 8 sản phẩm MENSTYLE nổi bật */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+                {products.slice(0, 8).map((product) => (
                   <ProductCard 
                     key={product.id} 
                     product={product} 
                     onQuickView={handleOpenDetail}
                     onAddToCart={handleAddToCart}
+                    isWishlisted={wishlistItems.some(w => w.id === product.id)}
+                    onToggleWishlist={handleToggleWishlist}
                   />
                 ))}
+              </div>
+
+              {/* Banner Flash Sale Giữa Trang Chuẩn MENSTYLE */}
+              <div className="mt-10 sm:mt-14 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-neutral-950 via-neutral-900 to-amber-950 p-6 sm:p-10 text-white flex flex-col md:flex-row items-center justify-between gap-6 border border-neutral-800 shadow-xl">
+                <div className="space-y-2 text-center md:text-left">
+                  <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">
+                    Ưu đãi độc quyền dành riêng quý ông
+                  </span>
+                  <h3 className="text-xl sm:text-3xl font-black">
+                    Bộ Sưu Tập Công Sở <span className="text-amber-400">Giảm Đến 35%</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-neutral-400 max-w-md">
+                    Áp dụng cho dòng Áo Polo Silk Touch, Sơ mi Modal Silk và Quần âu co giãn 4 chiều. Đổi trả miễn phí trong 7 ngày.
+                  </p>
+                </div>
+
+                <Button 
+                  onClick={() => handleNavigateWithCategory('Tất cả')}
+                  variant="primary" 
+                  size="lg" 
+                  className="rounded-xl bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold px-8 py-3 text-xs sm:text-sm shrink-0 cursor-pointer shadow-lg"
+                >
+                  Mua Ngay Kẻo Hết <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
               </div>
 
               <div className="mt-8 sm:mt-12 text-center">
                 <Button 
                   onClick={() => {
+                    setFilterCategory('Tất cả');
                     setCurrentTab('products');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   variant="outline" 
                   size="lg" 
-                  className="rounded-full border-neutral-300 px-6 sm:px-8 hover:border-neutral-900 font-bold text-xs sm:text-base w-full sm:w-auto cursor-pointer"
+                  className="rounded-full border-neutral-300 px-6 sm:px-8 hover:border-neutral-950 font-bold text-xs sm:text-base w-full sm:w-auto cursor-pointer"
                 >
-                  Xem toàn bộ 180+ sản phẩm Nam <ArrowRight className="w-4 h-4 ml-2" />
+                  Xem toàn bộ 200+ sản phẩm thời trang MENSTYLE <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </section>
@@ -332,10 +508,16 @@ const isTryingAdmin =
       </main>
 
       {/* 6. Footer */}
-      <Footer onNavigate={(tab) => {
-        setCurrentTab(tab);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }} />
+      <Footer 
+        onNavigate={(tab, catName) => {
+          if (catName) {
+            handleNavigateWithCategory(catName);
+          } else {
+            setCurrentTab(tab);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }} 
+      />
 
       {/* 7. Modal Chi Tiết Sản Phẩm (PDP) */}
       <ProductDetailModal 
@@ -354,13 +536,48 @@ const isTryingAdmin =
         onRemoveItem={handleRemoveItem}
         onCheckout={() => {
           setIsCartOpen(false);
+          if (!currentUser) {
+            setIsPendingCheckout(true);
+            setIsAuthOpen(true);
+            addToast('Yêu Cầu Đăng Nhập', 'Quý khách vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục thanh toán.', 'info');
+            return;
+          }
           setCurrentTab('checkout');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
 
-      {/* 9. Cửa Sổ Chatbot Trợ Lý Stylist (Tuần 4) */}
-      <ChatbotWidget />
+      {/* 8.1. Drawer Danh Sách Yêu Thích (Wishlist) */}
+      <WishlistDrawer
+        isOpen={isWishlistOpen}
+        onClose={() => setIsWishlistOpen(false)}
+        wishlistItems={wishlistItems}
+        onRemoveFromWishlist={handleRemoveFromWishlist}
+        onAddToCart={handleAddToCart}
+        onOpenProductDetail={handleOpenDetail}
+      />
+
+      {/* 9. Cửa Sổ Chatbot Trợ Lý Stylist (Tích hợp Gemini 2.5 Flash) */}
+      <ChatbotWidget 
+        products={products}
+        onSelectProduct={handleOpenDetail}
+      />
+
+      {/* 9.1. Modal AI Smart Outfit Stylist (Gợi ý trọn bộ set đồ theo hoàn cảnh) */}
+      <SmartOutfitStylistModal 
+        isOpen={isOutfitStylistOpen}
+        onClose={() => setIsOutfitStylistOpen(false)}
+        products={products}
+        onAddMultipleToCart={handleAddMultipleToCart}
+      />
+
+      {/* 9.2. Modal AI Visual Search (Tìm kiếm bằng hình ảnh) */}
+      <VisualSearchModal 
+        isOpen={isVisualSearchOpen}
+        onClose={() => setIsVisualSearchOpen(false)}
+        products={products}
+        onSelectProduct={handleOpenDetail}
+      />
 
       {/* 10. Toast Thông Báo Góc Màn Hình (Tuần 4) */}
       <Toast 
@@ -371,11 +588,19 @@ const isTryingAdmin =
       {/* 11. Modal Đăng Nhập / Đăng Ký Khách Hàng */}
       <AuthModal 
         isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
+        onClose={() => {
+          setIsAuthOpen(false);
+          setIsPendingCheckout(false);
+        }}
         onLoginSuccess={(userData) => {
           setCurrentUser(userData);
           localStorage.setItem('menstyle_user', JSON.stringify(userData));
           addToast('Chào Mừng Trở Lại', `Xin chào quý ông ${userData.name}!`);
+          if (isPendingCheckout) {
+            setIsPendingCheckout(false);
+            setCurrentTab('checkout');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         }}
       />
     </div>

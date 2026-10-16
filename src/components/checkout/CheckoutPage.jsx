@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, 
   CreditCard, 
@@ -10,17 +10,27 @@ import {
   User, 
   Phone, 
   Mail, 
-  AlertCircle 
+  AlertCircle,
+  QrCode,
+  Smartphone,
+  Copy,
+  Check
 } from 'lucide-react';
 import { Button } from '../common/Button';
 
-export const CheckoutPage = ({ cartItems = [], onBackToShopping, onOrderSuccess }) => {
+export const CheckoutPage = ({ 
+  cartItems = [], 
+  onBackToShopping, 
+  onOrderSuccess,
+  currentUser = null,
+  onRequireAuth
+}) => {
   // Form fields
   const [formData, setFormData] = useState({
-    fullName: '',
-    phone: '',
-    email: '',
-    address: '',
+    fullName: currentUser?.name || '',
+    phone: currentUser?.phone || '',
+    email: currentUser?.email || '',
+    address: currentUser?.address || '',
     province: 'Hà Nội',
     district: '',
     note: '',
@@ -28,17 +38,38 @@ export const CheckoutPage = ({ cartItems = [], onBackToShopping, onOrderSuccess 
     couponCode: '',
   });
 
+  // Tự động điền thông tin khi khách đăng nhập/đăng ký thành công
+  useEffect(() => {
+    if (currentUser) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: prev.fullName || currentUser.name || '',
+        email: prev.email || currentUser.email || '',
+        phone: prev.phone || currentUser.phone || '',
+        address: prev.address || currentUser.address || ''
+      }));
+    }
+  }, [currentUser]);
+
   // Errors state for validation test
   const [errors, setErrors] = useState({});
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponError, setCouponError] = useState('');
   const [couponSuccess, setCouponSuccess] = useState('');
+  const [copiedField, setCopiedField] = useState(null);
 
   const formatPrice = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
 
   const subTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shippingFee = subTotal >= 500000 || subTotal === 0 ? 0 : 30000;
-  const grandTotal = Math.max(0, subTotal + shippingFee - appliedDiscount);
+  const paymentMethodDiscount = formData.paymentMethod === 'vnpay' ? 15000 : 0;
+  const grandTotal = Math.max(0, subTotal + shippingFee - appliedDiscount - paymentMethodDiscount);
+
+  const handleCopy = (text, fieldName) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldName);
+    setTimeout(() => setCopiedField(null), 2500);
+  };
 
   // Validate form
   const validateForm = () => {
@@ -81,6 +112,10 @@ export const CheckoutPage = ({ cartItems = [], onBackToShopping, onOrderSuccess 
 
   const handleSubmitOrder = (e) => {
     e.preventDefault();
+    if (!currentUser) {
+      if (onRequireAuth) onRequireAuth();
+      return;
+    }
     if (validateForm()) {
       if (onOrderSuccess) {
         onOrderSuccess({
@@ -119,6 +154,41 @@ export const CheckoutPage = ({ cartItems = [], onBackToShopping, onOrderSuccess 
             <h2 className="text-base sm:text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-amber-600" /> 1. Thông Tin Nhận Hàng
             </h2>
+
+            {currentUser ? (
+              <div className="mb-5 p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center justify-between text-xs sm:text-sm">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-neutral-950 text-amber-400 font-bold flex items-center justify-center shrink-0">
+                    {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  <div>
+                    <p className="font-bold text-neutral-900">
+                      Tài khoản đặt hàng: <span className="text-amber-700">{currentUser.name}</span>
+                    </p>
+                    <p className="text-neutral-500 text-[11px]">{currentUser.email}</p>
+                  </div>
+                </div>
+                <span className="hidden sm:inline-flex items-center gap-1 text-emerald-600 font-bold text-xs bg-emerald-50 px-2 py-1 rounded-full border border-emerald-200">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Đã xác thực
+                </span>
+              </div>
+            ) : (
+              <div className="mb-5 p-4 rounded-xl bg-neutral-900 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+                <div>
+                  <p className="font-bold text-sm text-amber-400">Quý khách chưa đăng nhập tài khoản?</p>
+                  <p className="text-xs text-neutral-300">Vui lòng đăng nhập hoặc tạo tài khoản để hoàn tất đặt hàng.</p>
+                </div>
+                <Button 
+                  type="button"
+                  variant="primary" 
+                  size="sm" 
+                  onClick={onRequireAuth}
+                  className="bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold rounded-lg text-xs shrink-0"
+                >
+                  Đăng nhập / Đăng ký ngay
+                </Button>
+              </div>
+            )}
 
             <form className="space-y-4">
               {/* Họ tên */}
@@ -315,9 +385,90 @@ export const CheckoutPage = ({ cartItems = [], onBackToShopping, onOrderSuccess 
                     <p className="text-xs text-neutral-500">Giảm thêm 15.000đ khi thanh toán qua cổng VNPay</p>
                   </div>
                 </div>
-                <CreditCard className="w-5 h-5 text-neutral-400" />
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">-15.000đ</span>
+                  <CreditCard className="w-5 h-5 text-neutral-400" />
+                </div>
               </label>
             </div>
+
+            {/* KHUNG HƯỚNG DẪN THANH TOÁN CHI TIẾT TƯƠNG TÁC */}
+            {formData.paymentMethod === 'banking' && (
+              <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-amber-50/50 border border-amber-200 space-y-4 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5 uppercase tracking-wide">
+                    <QrCode className="w-4 h-4 text-amber-600" /> Quét mã VietQR chuyển khoản nhanh 24/7
+                  </span>
+                  <span className="text-[11px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded-full">
+                    Khớp lệnh tự động
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  {/* VietQR Dynamic Code */}
+                  <div className="p-2.5 bg-white rounded-xl border border-neutral-200 shadow-xs shrink-0 text-center">
+                    <img 
+                      src={`https://api.vietqr.io/image/970422-0988776655-compact2.jpg?amount=${grandTotal}&addInfo=MENSTYLE%20DH&accountName=MENSTYLE%20STORE`}
+                      alt="Mã VietQR Thanh Toán"
+                      className="w-36 h-36 object-contain rounded-lg mx-auto"
+                    />
+                    <p className="text-[10px] text-neutral-500 mt-1 font-medium">Quét bằng App Ngân Hàng</p>
+                  </div>
+
+                  {/* Thông tin số tài khoản */}
+                  <div className="space-y-2 text-xs flex-1 w-full">
+                    <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-neutral-200">
+                      <span className="text-neutral-500">Ngân hàng:</span>
+                      <strong className="text-neutral-900">MB Bank (Quân Đội)</strong>
+                    </div>
+
+                    <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-neutral-200">
+                      <span className="text-neutral-500">Số tài khoản:</span>
+                      <div className="flex items-center gap-1.5">
+                        <strong className="text-amber-800 font-mono">0988776655</strong>
+                        <button 
+                          type="button"
+                          onClick={() => handleCopy('0988776655', 'stk')}
+                          className="p-1 hover:bg-neutral-100 rounded text-neutral-600 transition"
+                          title="Sao chép STK"
+                        >
+                          {copiedField === 'stk' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-neutral-200">
+                      <span className="text-neutral-500">Chủ tài khoản:</span>
+                      <strong className="text-neutral-900">MENSTYLE STORE</strong>
+                    </div>
+
+                    <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-neutral-200">
+                      <span className="text-neutral-500">Số tiền:</span>
+                      <strong className="text-amber-600 font-bold">{formatPrice(grandTotal)}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {formData.paymentMethod === 'vnpay' && (
+              <div className="mt-4 p-4 rounded-2xl bg-blue-50/60 border border-blue-200 space-y-3 animate-in fade-in duration-200 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-blue-900 flex items-center gap-1.5">
+                    <Smartphone className="w-4 h-4 text-blue-600" /> Cổng thanh toán trực tuyến VNPay / MoMo
+                  </span>
+                  <span className="text-rose-600 font-bold bg-rose-100 px-2 py-0.5 rounded-full text-[11px]">
+                    Đã áp dụng -15.000đ
+                  </span>
+                </div>
+                <p className="text-neutral-600 leading-relaxed">
+                  Sau khi bấm <strong>"Xác Nhận Đặt Hàng Ngay"</strong>, hệ thống sẽ kết nối trực tiếp đến cổng thanh toán VNPay / MoMo an toàn để quét mã hoặc thanh toán qua App ngân hàng.
+                </p>
+                <div className="flex items-center gap-2 pt-1 text-[11px] text-neutral-500">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Hỗ trợ thẻ ATM nội địa, Visa/Mastercard, Ví điện tử MoMo & ZaloPay.
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -399,6 +550,12 @@ export const CheckoutPage = ({ cartItems = [], onBackToShopping, onOrderSuccess 
                 <div className="flex justify-between text-emerald-600 font-semibold">
                   <span>Giảm giá Voucher:</span>
                   <span>-{formatPrice(appliedDiscount)}</span>
+                </div>
+              )}
+              {paymentMethodDiscount > 0 && (
+                <div className="flex justify-between text-rose-600 font-semibold">
+                  <span>Ưu đãi VNPay / MoMo:</span>
+                  <span>-{formatPrice(paymentMethodDiscount)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm sm:text-base font-black text-neutral-950 pt-3 border-t border-neutral-100">

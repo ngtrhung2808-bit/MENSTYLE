@@ -1,10 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { SidebarFilter } from './SidebarFilter';
 import { ProductCard } from './ProductCard';
 import { ArrowUpDown, SlidersHorizontal, Grid, ListFilter } from 'lucide-react';
 import { MOCK_PRODUCTS } from '../../data/mockProducts';
 
-export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory = 'Tất cả', searchQuery = '' }) => {
+export const ProductListingPage = ({ 
+  products = MOCK_PRODUCTS,
+  onQuickView, 
+  onAddToCart, 
+  initialCategory = 'Tất cả', 
+  onCategoryChange,
+  searchQuery = '',
+  wishlistIds = [],
+  onToggleWishlist
+}) => {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedSize, setSelectedSize] = useState('');
   const [priceRange, setPriceRange] = useState(2000000);
@@ -13,9 +22,15 @@ export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory =
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
+  // Tự động đồng bộ khi người dùng bấm danh mục trên Header / Menu
+  useEffect(() => {
+    setSelectedCategory(initialCategory);
+    setCurrentPage(1);
+  }, [initialCategory]);
+
   // Lọc sản phẩm
   const filteredProducts = useMemo(() => {
-    return MOCK_PRODUCTS.filter((item) => {
+    return products.filter((item) => {
       // Filter Search Query
       if (searchQuery && searchQuery.trim() !== '') {
         const q = searchQuery.toLowerCase().trim();
@@ -100,12 +115,19 @@ export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory =
         {/* Sidebar Bộ Lọc */}
         <SidebarFilter
           selectedCategory={selectedCategory}
-          onSelectCategory={(c) => { setSelectedCategory(c); setCurrentPage(1); }}
+          onSelectCategory={(c) => { 
+            setSelectedCategory(c); 
+            if (onCategoryChange) onCategoryChange(c);
+            setCurrentPage(1); 
+          }}
           selectedSize={selectedSize}
           onSelectSize={(s) => { setSelectedSize(s); setCurrentPage(1); }}
           priceRange={priceRange}
           onPriceChange={(p) => { setPriceRange(p); setCurrentPage(1); }}
-          onResetFilters={handleResetFilters}
+          onResetFilters={() => {
+            handleResetFilters();
+            if (onCategoryChange) onCategoryChange('Tất cả');
+          }}
           isOpenMobile={mobileFilterOpen}
           onCloseMobile={() => setMobileFilterOpen(false)}
         />
@@ -155,6 +177,8 @@ export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory =
                   product={product}
                   onQuickView={onQuickView}
                   onAddToCart={onAddToCart}
+                  isWishlisted={wishlistIds.includes(product.id)}
+                  onToggleWishlist={onToggleWishlist}
                 />
               ))}
             </div>
