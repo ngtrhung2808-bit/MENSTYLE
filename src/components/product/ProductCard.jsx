@@ -26,6 +26,11 @@ export const ProductCard = ({ product, onQuickView, onAddToCart, isWishlisted = 
         <img
           src={images[currentImageIndex] || images[0]}
           alt={product.name}
+          onError={(e) => {
+            // Tự động thay thế bằng ảnh thời trang chuẩn nếu link ngoài gặp sự cố
+            e.target.onerror = null;
+            e.target.src = 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?q=80&w=800&auto=format&fit=crop';
+          }}
           className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
         />
 
