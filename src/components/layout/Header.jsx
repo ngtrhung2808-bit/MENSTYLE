@@ -27,8 +27,8 @@ export const Header = ({
   return (
     <header className="sticky top-0 z-40 w-full shadow-md">
       {/* 1. TẦNG 1: DẢI CHẠY KHUYẾN MÃI (TOP RUNNING MARQUEE) */}
-      <div className="bg-[#1c1917] text-[#d6d3d1] text-[11px] sm:text-xs py-1.5 overflow-hidden whitespace-nowrap border-b border-neutral-800">
-        <div className="inline-flex items-center gap-8 animate-marquee select-none font-medium">
+      <div className="bg-[#1c1917] text-[#d6d3d1] text-[11px] sm:text-xs py-1.5 overflow-hidden whitespace-nowrap border-b border-neutral-800 flex">
+        <div className="animate-marquee-infinite select-none font-medium shrink-0 flex items-center gap-8 pr-8">
           <span className="flex items-center gap-1.5 text-amber-300">
             <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Voucher lớn - Sale giá độc quyền đến 50%
           </span>
@@ -42,6 +42,18 @@ export const Header = ({
           </span>
           <span className="text-neutral-500">•</span>
           <span className="flex items-center gap-1.5 text-amber-300">
+            <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Giảm ngay 100k cho đơn đầu tiên
+          </span>
+          <span className="text-neutral-500">•</span>
+          <span className="flex items-center gap-1.5">
+            👔 Cam kết chất vải cao cấp chuẩn phong độ quý ông
+          </span>
+          <span className="text-neutral-500">•</span>
+        </div>
+
+        {/* Bản sao chạy tiếp nối không ngắt quãng (Seamless Loop) */}
+        <div className="animate-marquee-infinite select-none font-medium shrink-0 flex items-center gap-8 pr-8" aria-hidden="true">
+          <span className="flex items-center gap-1.5 text-amber-300">
             <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Voucher lớn - Sale giá độc quyền đến 50%
           </span>
           <span className="text-neutral-500">•</span>
@@ -52,6 +64,15 @@ export const Header = ({
           <span className="flex items-center gap-1.5 text-emerald-400">
             🚚 Freeship mọi đơn hàng từ 500k
           </span>
+          <span className="text-neutral-500">•</span>
+          <span className="flex items-center gap-1.5 text-amber-300">
+            <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Giảm ngay 100k cho đơn đầu tiên
+          </span>
+          <span className="text-neutral-500">•</span>
+          <span className="flex items-center gap-1.5">
+            👔 Cam kết chất vải cao cấp chuẩn phong độ quý ông
+          </span>
+          <span className="text-neutral-500">•</span>
         </div>
       </div>
 
