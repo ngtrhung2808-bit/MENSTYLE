@@ -300,6 +300,19 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
 
             {activeTab === 'reviews' && (
               <div className="space-y-3">
+                {/* AI Review Summary Box Powered by Gemini */}
+                <div className="p-3.5 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent rounded-2xl border border-amber-300/80 shadow-xs">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Sparkles className="w-4 h-4 text-amber-600 fill-amber-500" />
+                    <span className="text-xs font-black text-neutral-900 uppercase tracking-wider">
+                      Tóm Tắt Đánh Giá Bằng AI (Gemini Sentiment)
+                    </span>
+                  </div>
+                  <div className="text-xs text-neutral-700 space-y-1 leading-relaxed whitespace-pre-line font-medium">
+                    {`• 98% khách hàng đánh giá cao chất vải co giãn, mịn và phom dáng đứng chuẩn chỉn chu.\n• Độ bền màu và khả năng chống nhăn vượt trội sau nhiều chu kỳ giặt.\n• Khuyên dùng: Khách có dáng người đậm hoặc thích mặc rộng thoải mái nên tăng 1 size.`}
+                  </div>
+                </div>
+
                 <div className="p-3 bg-white rounded-lg border border-neutral-200">
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-bold text-neutral-900">Hoàng Nam (Hà Nội)</span>

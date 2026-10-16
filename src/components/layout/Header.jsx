@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ShoppingBag, Heart, User, Menu, X, ChevronDown, Store, Flame, Sparkles } from 'lucide-react';
+import { Search, ShoppingBag, Heart, User, Menu, X, ChevronDown, Store, Flame, Sparkles, Camera } from 'lucide-react';
 
 export const Header = ({ 
   onOpenCart, 
@@ -12,7 +12,9 @@ export const Header = ({
   searchValue = '',
   onSearchChange,
   wishlistCount = 0,
-  onOpenWishlist
+  onOpenWishlist,
+  onOpenVisualSearch,
+  onOpenOutfitStylist
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -103,7 +105,7 @@ export const Header = ({
               </button>
             </div>
 
-            {/* Giữa: THANH TÌM KIẾM TRẮNG VIỀN BO TRÒN VỚI NÚT KÍNH LÚP ĐEN */}
+            {/* Giữa: THANH TÌM KIẾM TRẮNG VIỀN BO TRÒN VỚI NÚT KÍNH LÚP ĐEN & ICON TÌM BẰNG ẢNH */}
             <form 
               onSubmit={handleSearchSubmit}
               className="flex-1 max-w-xl mx-2 sm:mx-6 relative hidden sm:flex items-center"
@@ -113,19 +115,44 @@ export const Header = ({
                 value={searchValue || ''}
                 onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
                 placeholder="Bạn đang tìm gì..." 
-                className="w-full bg-white text-neutral-900 text-xs sm:text-sm rounded-lg pl-4 pr-12 py-2.5 sm:py-2.5 outline-none font-medium placeholder:text-neutral-400 shadow-inner"
+                className="w-full bg-white text-neutral-900 text-xs sm:text-sm rounded-lg pl-4 pr-20 py-2.5 sm:py-2.5 outline-none font-medium placeholder:text-neutral-400 shadow-inner"
               />
-              <button 
-                type="submit"
-                aria-label="Tìm kiếm"
-                className="absolute right-1 sm:right-1.5 top-1/2 -translate-y-1/2 bg-[#1c1917] hover:bg-neutral-800 text-white w-8 h-8 rounded-md flex items-center justify-center transition cursor-pointer"
-              >
-                <Search className="w-4 h-4 text-white" />
-              </button>
+              <div className="absolute right-1 sm:right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={onOpenVisualSearch}
+                  title="Tìm kiếm bằng hình ảnh (AI Vision)"
+                  className="p-1.5 text-neutral-500 hover:text-amber-600 hover:bg-neutral-100 rounded-md transition cursor-pointer"
+                >
+                  <Camera className="w-4 h-4" />
+                </button>
+                <button 
+                  type="submit"
+                  aria-label="Tìm kiếm"
+                  className="bg-[#1c1917] hover:bg-neutral-800 text-white w-8 h-8 rounded-md flex items-center justify-center transition cursor-pointer"
+                >
+                  <Search className="w-4 h-4 text-white" />
+                </button>
+              </div>
             </form>
 
-            {/* Phải: Cụm 3 Icon (Cửa hàng, Tài khoản, Giỏ hàng) */}
-            <div className="flex items-center gap-3 sm:gap-6">
+            {/* Phải: Cụm Icon (AI Stylist, Cửa hàng, Tài khoản, Giỏ hàng) */}
+            <div className="flex items-center gap-3 sm:gap-5">
+              {/* Nút AI Stylist (Phối Đồ) */}
+              <button
+                onClick={onOpenOutfitStylist}
+                className="flex flex-col items-center justify-center text-amber-400 hover:text-amber-300 transition cursor-pointer group"
+                title="AI Phối Đồ Thông Minh"
+              >
+                <div className="relative">
+                  <Sparkles className="w-5 h-5 text-amber-400 fill-amber-400 group-hover:scale-110 transition-transform mb-0.5" />
+                  <span className="absolute -top-1 -right-2 bg-gradient-to-r from-rose-500 to-amber-500 text-white text-[8px] font-black px-1 rounded-full animate-pulse">
+                    AI
+                  </span>
+                </div>
+                <span className="text-[11px] font-bold text-amber-300 hidden md:inline">Phối Đồ AI</span>
+              </button>
+
               {/* Nút Cửa Hàng */}
               <button
                 onClick={() => {

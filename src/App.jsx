@@ -14,6 +14,8 @@ import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AuthModal } from './components/auth/AuthModal';
 import { ChatbotWidget } from './components/chatbot/ChatbotWidget';
+import { SmartOutfitStylistModal } from './components/ai/SmartOutfitStylistModal';
+import { VisualSearchModal } from './components/ai/VisualSearchModal';
 import { Toast } from './components/common/Toast';
 import { Button } from './components/common/Button';
 import { ArrowRight, Sparkles } from 'lucide-react';
@@ -56,6 +58,8 @@ export default function App() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [isOutfitStylistOpen, setIsOutfitStylistOpen] = useState(false);
+  const [isVisualSearchOpen, setIsVisualSearchOpen] = useState(false);
   const [wishlistItems, setWishlistItems] = useState(() => {
     const saved = localStorage.getItem('menstyle_wishlist');
     return saved ? JSON.parse(saved) : []; // Mặc định rỗng khi khách mới vào web
@@ -68,6 +72,26 @@ export default function App() {
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 4000);
+  };
+
+  const handleAddMultipleToCart = (itemsToAdd) => {
+    setCartItems(prev => {
+      let current = [...prev];
+      itemsToAdd.forEach(prod => {
+        const size = prod.selectedSize || prod.sizes?.[0] || 'L';
+        const color = prod.selectedColor || prod.colors?.[0]?.name || '';
+        const idx = current.findIndex(i => i.id === prod.id && i.selectedSize === size);
+        if (idx >= 0) {
+          current[idx] = { ...current[idx], quantity: current[idx].quantity + 1 };
+        } else {
+          current.push({ ...prod, selectedSize: size, selectedColor: color, quantity: 1 });
+        }
+      });
+      localStorage.setItem('menstyle_cart', JSON.stringify(current));
+      return current;
+    });
+    addToast('Đã Thêm Trọn Bộ Set Đồ', `Đã thêm ${itemsToAdd.length} món từ AI Stylist vào giỏ hàng.`);
+    setIsCartOpen(true);
   };
 
   const handleNavigateWithCategory = (catName) => {
@@ -253,6 +277,8 @@ export default function App() {
         }}
         wishlistCount={wishlistItems.length}
         onOpenWishlist={() => setIsWishlistOpen(true)}
+        onOpenVisualSearch={() => setIsVisualSearchOpen(true)}
+        onOpenOutfitStylist={() => setIsOutfitStylistOpen(true)}
         onNavigate={(tab, catName) => {
           if (tab === 'profile' && !currentUser) {
             setIsAuthOpen(true);
@@ -528,8 +554,27 @@ export default function App() {
         onOpenProductDetail={handleOpenDetail}
       />
 
-      {/* 9. Cửa Sổ Chatbot Trợ Lý Stylist (Tuần 4) */}
-      <ChatbotWidget />
+      {/* 9. Cửa Sổ Chatbot Trợ Lý Stylist (Tích hợp Gemini 2.5 Flash) */}
+      <ChatbotWidget 
+        products={products}
+        onSelectProduct={handleOpenDetail}
+      />
+
+      {/* 9.1. Modal AI Smart Outfit Stylist (Gợi ý trọn bộ set đồ theo hoàn cảnh) */}
+      <SmartOutfitStylistModal 
+        isOpen={isOutfitStylistOpen}
+        onClose={() => setIsOutfitStylistOpen(false)}
+        products={products}
+        onAddMultipleToCart={handleAddMultipleToCart}
+      />
+
+      {/* 9.2. Modal AI Visual Search (Tìm kiếm bằng hình ảnh) */}
+      <VisualSearchModal 
+        isOpen={isVisualSearchOpen}
+        onClose={() => setIsVisualSearchOpen(false)}
+        products={products}
+        onSelectProduct={handleOpenDetail}
+      />
 
       {/* 10. Toast Thông Báo Góc Màn Hình (Tuần 4) */}
       <Toast 

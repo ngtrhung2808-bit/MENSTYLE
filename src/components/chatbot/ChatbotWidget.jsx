@@ -1,38 +1,44 @@
-import React, { useState } from 'react';
-import { 
-  MessageSquare, 
-  X, 
-  Send, 
-  Sparkles, 
-  Bot, 
-  User, 
-  ChevronRight,
-  Shirt,
-  HelpCircle
-} from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { MessageSquare, X, Send, Bot, Sparkles, ShoppingBag, Loader2, Key } from 'lucide-react';
+import { Button } from '../common/Button';
+import { generateStylistChatReply, getGeminiApiKey, setGeminiApiKey } from '../../services/geminiService';
 
-export const ChatbotWidget = ({ onOpenProduct }) => {
+export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'bot',
-      text: 'Xin chào quý ông! Tôi là Stylist AI từ MENSTYLE. Tôi có thể giúp gì cho bạn hôm nay (tư vấn chọn size, phối đồ Blazer hay chọn quà tặng)?',
+      text: 'Xin chào quý ông! Tôi là Stylist AI của MENSTYLE (được tích hợp Gemini AI). Bạn đang tìm trang phục cho dịp nào: công sở, dạ tiệc hay dạo phố cuối tuần?',
       time: 'Vừa xong'
     }
   ]);
   const [inputValue, setInputValue] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState(getGeminiApiKey());
+  const messagesEndRef = useRef(null);
 
-  // Quick prompt suggestions
-  const suggestions = [
-    'Tư vấn chọn size áo sơ mi',
-    'Cách phối đồ Blazer đi tiệc',
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      scrollToBottom();
+    }
+  }, [messages, isOpen]);
+
+  const quickQuestions = [
+    'Tư vấn phối đồ đi tiệc cưới',
+    'Set đồ đi làm công sở lịch sự',
+    'Gợi ý áo polo thoáng mát mùa hè',
     'Chính sách đổi trả hàng'
   ];
 
-  const handleSend = (textToSend) => {
+  const handleSend = async (textToSend) => {
     const text = textToSend || inputValue;
-    if (!text.trim()) return;
+    if (!text.trim() || loading) return;
 
     const userMsg = {
       id: Date.now(),
@@ -43,30 +49,22 @@ export const ChatbotWidget = ({ onOpenProduct }) => {
 
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
+    setLoading(true);
 
-    // Giả lập bot phản hồi sau 600ms
-    setTimeout(() => {
-      let replyText = 'Cảm ơn quý ông đã liên hệ! Stylist MENSTYLE khuyên bạn nên chọn form Slim-fit vừa vặn tôn dáng. Bạn cao và nặng bao nhiêu kg để mình tư vấn size chuẩn nhất nhé?';
+    try {
+      const replyText = await generateStylistChatReply(messages, text.trim(), products);
+      
+      // Tìm sản phẩm liên quan gợi ý kèm tin nhắn nếu có
       let suggestedItem = null;
-
-      if (text.toLowerCase().includes('đổi trả')) {
-        replyText = 'MENSTYLE hỗ trợ đổi hàng miễn phí trong 7 ngày tận nơi theo đúng quy chuẩn chính hãng. Shipper sẽ mang size mới đến và nhận lại hàng tại nhà cho bạn!';
-      } else if (text.toLowerCase().includes('blazer') || text.toLowerCase().includes('tiệc')) {
-        replyText = 'Với sự kiện hoặc tiệc tối, bạn nên phối Áo Blazer Italian Wool Đen cùng Sơ mi trắng Nano và Giày da Oxford để có vẻ ngoài lịch lãm, quyền lực nhất!';
-        suggestedItem = {
-          name: 'Áo Blazer Nam Italian Wool Dáng Slim-fit',
-          price: 1250000,
-          image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop',
-          category: 'Blazer & Suit'
-        };
-      } else if (text.toLowerCase().includes('sơ mi') || text.toLowerCase().includes('size')) {
-        replyText = 'Dòng sơ mi Bamboo kháng khuẩn chống nhăn phom Regular-fit là lựa chọn hoàn hảo nhất cho công sở:';
-        suggestedItem = {
-          name: 'Áo Sơ Mi Trắng Kháng Khuẩn Chống Nhăn Luxury',
-          price: 450000,
-          image: 'https://images.unsplash.com/photo-1620012253295-c15c429fbb3e?q=80&w=600&auto=format&fit=crop',
-          category: 'Áo Sơ Mi'
-        };
+      const lower = text.toLowerCase();
+      if (lower.includes('polo')) {
+        suggestedItem = products.find(p => p.category === 'Áo Polo');
+      } else if (lower.includes('sơ mi')) {
+        suggestedItem = products.find(p => p.category === 'Áo Sơ Mi');
+      } else if (lower.includes('quần') || lower.includes('âu')) {
+        suggestedItem = products.find(p => p.category === 'Quần Âu Công Sở');
+      } else if (lower.includes('blazer') || lower.includes('tiệc')) {
+        suggestedItem = products.find(p => p.category === 'Áo Khoác & Blazer');
       }
 
       setMessages(prev => [
@@ -79,112 +77,185 @@ export const ChatbotWidget = ({ onOpenProduct }) => {
           time: 'Vừa xong'
         }
       ]);
-    }, 600);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveApiKey = (e) => {
+    e.preventDefault();
+    setGeminiApiKey(apiKeyInput);
+    setShowKeyModal(false);
+    setMessages(prev => [
+      ...prev,
+      {
+        id: Date.now(),
+        sender: 'bot',
+        text: 'Đã lưu cấu hình Gemini API Key thành công! Stylist AI hiện đã kết nối trực tiếp với mô hình Gemini AI 2.5 Flash.',
+        time: 'Vừa xong'
+      }
+    ]);
   };
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
       {/* Cửa sổ Chat Popup */}
       {isOpen && (
-        <div className="w-[92vw] sm:w-96 bg-white rounded-2xl shadow-2xl border border-neutral-200 overflow-hidden flex flex-col h-[500px] mb-4 animate-in slide-in-from-bottom-5 duration-300">
+        <div className="w-[92vw] sm:w-[400px] bg-white rounded-3xl shadow-2xl border border-neutral-200 overflow-hidden flex flex-col h-[520px] mb-4 animate-in slide-in-from-bottom-5 duration-300">
           {/* Header Chatbot */}
           <div className="bg-neutral-950 text-white p-4 flex items-center justify-between border-b border-neutral-800">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-amber-500 text-neutral-950 flex items-center justify-center font-black shadow-sm">
-                <Bot className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-neutral-950 flex items-center justify-center font-black shadow-md">
+                <Bot className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-sm font-bold flex items-center gap-1.5">
-                  Stylist AI MENSTYLE <Sparkles className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                  Stylist AI MENSTYLE 
+                  <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded border border-amber-400/30">
+                    Gemini AI
+                  </span>
                 </h3>
                 <p className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                  Trợ lý thời trang trực tuyến
+                  Trợ lý tư vấn gu ăn mặc 24/7
                 </p>
               </div>
             </div>
 
-            <button 
-              onClick={() => setIsOpen(false)}
-              className="p-1 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setShowKeyModal(true)}
+                title="Cài đặt API Key Gemini"
+                className="p-1.5 rounded-lg text-neutral-400 hover:text-amber-400 hover:bg-neutral-800 transition cursor-pointer"
+              >
+                <Key className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={() => setIsOpen(false)}
+                className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
-          {/* Body tin nhắn */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-neutral-50/50">
-            {messages.map((m) => {
-              const isBot = m.sender === 'bot';
-              return (
-                <div key={m.id} className={`flex gap-2 ${isBot ? 'items-start' : 'items-end justify-end'}`}>
-                  {isBot && (
-                    <div className="w-7 h-7 rounded-full bg-neutral-900 text-amber-400 flex items-center justify-center shrink-0 text-xs">
-                      <Bot className="w-3.5 h-3.5" />
-                    </div>
-                  )}
-                  <div className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed ${
-                    isBot 
-                      ? 'bg-white text-neutral-800 border border-neutral-200/80 shadow-2xs rounded-tl-none' 
-                      : 'bg-neutral-950 text-white rounded-br-none shadow-sm'
-                  }`}>
-                    <p>{m.text}</p>
+          {/* Form cài đặt API Key nhanh */}
+          {showKeyModal && (
+            <div className="p-3 bg-amber-50 border-b border-amber-200 text-xs">
+              <div className="flex justify-between items-center mb-1">
+                <span className="font-bold text-amber-900">Cấu hình Gemini API Key:</span>
+                <button onClick={() => setShowKeyModal(false)} className="text-neutral-500">✕</button>
+              </div>
+              <form onSubmit={handleSaveApiKey} className="flex gap-1.5">
+                <input 
+                  type="password"
+                  value={apiKeyInput}
+                  onChange={(e) => setApiKeyInput(e.target.value)}
+                  placeholder="Dán AIzaSy... (Để trống nếu dùng Fallback)"
+                  className="flex-1 px-2.5 py-1 text-xs border border-amber-300 rounded-lg outline-none bg-white font-mono"
+                />
+                <Button type="submit" size="sm" className="bg-neutral-950 text-white text-[11px] px-3 rounded-lg">
+                  Lưu
+                </Button>
+              </form>
+            </div>
+          )}
 
-                    {/* Thẻ gợi ý sản phẩm trực quan */}
-                    {m.suggestedItem && (
-                      <div className="mt-2.5 p-2 rounded-xl bg-neutral-50 border border-neutral-200 flex gap-2.5 items-center">
-                        <img 
-                          src={m.suggestedItem.image} 
-                          alt={m.suggestedItem.name} 
-                          className="w-12 h-14 rounded-lg object-cover shrink-0" 
-                        />
-                        <div className="flex-1 min-w-0">
-                          <span className="text-[9px] font-bold text-amber-600 uppercase block">{m.suggestedItem.category}</span>
-                          <h5 className="font-bold text-[11px] text-neutral-900 truncate">{m.suggestedItem.name}</h5>
-                          <span className="text-[11px] font-black text-neutral-950 block">
-                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(m.suggestedItem.price)}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    <span className={`text-[9px] block mt-1.5 ${isBot ? 'text-neutral-400' : 'text-neutral-400 text-right'}`}>
-                      {m.time}
-                    </span>
-                  </div>
+          {/* Danh sách tin nhắn */}
+          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-neutral-50/50">
+            {messages.map((msg) => (
+              <div 
+                key={msg.id} 
+                className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
+              >
+                <div 
+                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs sm:text-[13px] leading-relaxed shadow-2xs ${
+                    msg.sender === 'user' 
+                      ? 'bg-neutral-950 text-white rounded-tr-none' 
+                      : 'bg-white text-neutral-800 border border-neutral-200/80 rounded-tl-none whitespace-pre-line'
+                  }`}
+                >
+                  {msg.text}
                 </div>
-              );
-            })}
+
+                {/* Sản phẩm gợi ý đính kèm */}
+                {msg.suggestedItem && (
+                  <div 
+                    onClick={() => onSelectProduct && onSelectProduct(msg.suggestedItem)}
+                    className="mt-2 w-64 bg-white p-2.5 rounded-xl border border-amber-200/80 shadow-md flex gap-2.5 cursor-pointer hover:border-amber-500 transition group"
+                  >
+                    <img 
+                      src={msg.suggestedItem.images?.[0] || msg.suggestedItem.image} 
+                      alt={msg.suggestedItem.name} 
+                      className="w-12 h-14 object-cover rounded-lg shrink-0 border border-neutral-100"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-1 py-0.5 rounded">
+                        Đề xuất
+                      </span>
+                      <h4 className="text-[11px] font-bold text-neutral-900 truncate mt-0.5 group-hover:text-amber-600 transition">
+                        {msg.suggestedItem.name}
+                      </h4>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-xs font-black text-neutral-950">
+                          {new Intl.NumberFormat('vi-VN').format(msg.suggestedItem.price)}đ
+                        </span>
+                        <span className="text-[10px] text-amber-600 font-bold group-hover:underline">
+                          Xem chi tiết →
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <span className="text-[10px] text-neutral-400 mt-1 px-1">
+                  {msg.time}
+                </span>
+              </div>
+            ))}
+
+            {loading && (
+              <div className="flex items-center gap-2 text-xs text-neutral-500 bg-white p-2.5 rounded-2xl border border-neutral-200 w-fit">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-500" />
+                <span>AI Stylist đang soạn câu trả lời...</span>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
           </div>
 
-          {/* Gợi ý câu hỏi nhanh */}
+          {/* Câu hỏi gợi ý nhanh */}
           <div className="px-3 py-2 bg-white border-t border-neutral-100 flex gap-1.5 overflow-x-auto scrollbar-none">
-            {suggestions.map((s, idx) => (
+            {quickQuestions.map((q, idx) => (
               <button
                 key={idx}
-                onClick={() => handleSend(s)}
-                className="whitespace-nowrap bg-neutral-100 hover:bg-amber-50 hover:text-amber-800 text-[11px] font-medium text-neutral-700 px-2.5 py-1 rounded-full border border-neutral-200 transition"
+                onClick={() => handleSend(q)}
+                disabled={loading}
+                className="text-[11px] text-neutral-600 hover:text-neutral-950 bg-neutral-100 hover:bg-amber-50 px-2.5 py-1 rounded-full whitespace-nowrap transition border border-neutral-200/60 shrink-0 cursor-pointer"
               >
-                {s}
+                {q}
               </button>
             ))}
           </div>
 
           {/* Ô nhập tin nhắn */}
           <form 
-            onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+            onSubmit={(e) => { e.preventDefault(); handleSend(); }} 
             className="p-3 bg-white border-t border-neutral-200 flex items-center gap-2"
           >
-            <input
-              type="text"
+            <input 
+              type="text" 
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Nhập câu hỏi cần tư vấn..."
-              className="flex-1 bg-neutral-100 text-xs rounded-xl px-3 py-2.5 outline-none focus:ring-1 focus:ring-neutral-950"
+              placeholder="Hỏi Stylist AI về cách phối đồ, chọn size..." 
+              className="flex-1 bg-neutral-100 text-xs sm:text-sm px-3.5 py-2.5 rounded-xl outline-none focus:ring-1 focus:ring-neutral-950 focus:bg-white transition"
             />
-            <button
-              type="submit"
-              className="p-2.5 rounded-xl bg-neutral-950 hover:bg-amber-600 text-amber-400 hover:text-white transition shadow-sm"
+            <button 
+              type="submit" 
+              disabled={loading || !inputValue.trim()}
+              className="w-10 h-10 rounded-xl bg-neutral-950 hover:bg-neutral-800 disabled:opacity-40 text-white flex items-center justify-center transition shrink-0 cursor-pointer"
             >
               <Send className="w-4 h-4" />
             </button>
@@ -192,20 +263,16 @@ export const ChatbotWidget = ({ onOpenProduct }) => {
         </div>
       )}
 
-      {/* Nút bấm nổi mở Chatbot */}
-      <button
+      {/* Nút bấm tròn mở Chatbot với Badge AI */}
+      <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 rounded-full bg-neutral-950 hover:bg-neutral-900 text-white shadow-2xl flex items-center justify-center relative transition-all duration-300 hover:scale-105 group border-2 border-amber-400/80"
-        aria-label="Mở cửa sổ Chatbot"
+        className="w-14 h-14 rounded-full bg-gradient-to-tr from-neutral-950 via-neutral-900 to-amber-950 text-white flex items-center justify-center shadow-xl hover:scale-105 transition-all cursor-pointer border border-amber-500/40 relative group"
+        aria-label="Mở Trợ lý AI Stylist"
       >
-        {isOpen ? (
-          <X className="w-6 h-6 text-amber-400" />
-        ) : (
-          <>
-            <MessageSquare className="w-6 h-6 text-amber-400 group-hover:scale-110 transition" />
-            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-500 rounded-full border-2 border-white ring-2 ring-neutral-950" />
-          </>
-        )}
+        <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-400 to-amber-500 text-neutral-950 text-[9px] font-black px-1.5 py-0.5 rounded-full border border-neutral-900 shadow animate-pulse">
+          AI
+        </span>
+        {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6 text-amber-400" />}
       </button>
     </div>
   );
