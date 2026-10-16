@@ -20,6 +20,19 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 import { MOCK_PRODUCTS } from './data/mockProducts';
 
 export default function App() {
+  const [products, setProducts] = useState(() => {
+    const saved = localStorage.getItem('menstyle_products');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return MOCK_PRODUCTS;
+  });
+
   const [currentTab, setCurrentTab] = useState('home'); // Mặc định luôn là Trang Chủ ('home') dành cho Khách hàng
   const [filterCategory, setFilterCategory] = useState('Tất cả');
   const [searchQuery, setSearchQuery] = useState('');
@@ -197,6 +210,11 @@ export default function App() {
     // Đã đăng nhập => Vào thẳng Dashboard
     return (
       <AdminDashboard 
+        products={products}
+        onUpdateProducts={(updatedProducts) => {
+          setProducts(updatedProducts);
+          localStorage.setItem('menstyle_products', JSON.stringify(updatedProducts));
+        }}
         onBackToClient={() => {
           window.history.replaceState(null, '', window.location.pathname.replace('/admin', '') || '/');
           setCurrentTab('home');
@@ -293,6 +311,7 @@ export default function App() {
         ) : currentTab === 'products' ? (
           /* TRANG DANH SÁCH SẢN PHẨM & BỘ LỌC (PLP) */
           <ProductListingPage 
+            products={products}
             onQuickView={handleOpenDetail}
             onAddToCart={handleAddToCart}
             initialCategory={filterCategory}
@@ -369,7 +388,7 @@ export default function App() {
 
               {/* Grid 8 sản phẩm Torano nổi bật */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
-                {MOCK_PRODUCTS.slice(0, 8).map((product) => (
+                {products.slice(0, 8).map((product) => (
                   <ProductCard 
                     key={product.id} 
                     product={product} 

@@ -5,6 +5,7 @@ import { ArrowUpDown, SlidersHorizontal, Grid, ListFilter } from 'lucide-react';
 import { MOCK_PRODUCTS } from '../../data/mockProducts';
 
 export const ProductListingPage = ({ 
+  products = MOCK_PRODUCTS,
   onQuickView, 
   onAddToCart, 
   initialCategory = 'Tất cả', 
@@ -29,7 +30,7 @@ export const ProductListingPage = ({
 
   // Lọc sản phẩm
   const filteredProducts = useMemo(() => {
-    return MOCK_PRODUCTS.filter((item) => {
+    return products.filter((item) => {
       // Filter Search Query
       if (searchQuery && searchQuery.trim() !== '') {
         const q = searchQuery.toLowerCase().trim();
