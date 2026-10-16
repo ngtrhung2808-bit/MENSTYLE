@@ -3,7 +3,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1057429019,
     "name": "Áo blazer túi cơi ngực FWTV002",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1499000,
     "originalPrice": 1873750,
     "discount": 20,
@@ -35,7 +35,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1057164665,
     "name": "Áo blazer túi cơi viền có nắp FWTV001",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1499000,
     "originalPrice": 1873750,
     "discount": 20,
@@ -375,7 +375,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1074662406,
     "name": "Short khaki HSBK800",
-    "category": "Quần Âu & Jean",
+    "category": "Quần Short",
     "price": 490000,
     "originalPrice": 612500,
     "discount": 20,
@@ -943,7 +943,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1074463070,
     "name": "Quần short nam khaki Khaki Smart co giãn HSBK801",
-    "category": "Quần Âu & Jean",
+    "category": "Quần Short",
     "price": 449000,
     "originalPrice": 561250,
     "discount": 20,
@@ -994,7 +994,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1074463069,
     "name": "Short khaki HSBK802",
-    "category": "Quần Âu & Jean",
+    "category": "Quần Short",
     "price": 449000,
     "originalPrice": 561250,
     "discount": 20,
@@ -1108,7 +1108,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1074341237,
     "name": "Quần short nam đũi Cotton Soft thấm hút HSBI900",
-    "category": "Quần Âu & Jean",
+    "category": "Quần Short",
     "price": 349000,
     "originalPrice": 500000,
     "discount": 30,
@@ -1164,7 +1164,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1074341236,
     "name": "Quần short nam gió Wind Light co giãn HSSB901",
-    "category": "Blazer & Suit",
+    "category": "Quần Short",
     "price": 199000,
     "originalPrice": 400000,
     "discount": 50,
@@ -1289,7 +1289,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1073757669,
     "name": "Quần kaki nam smart pants Khaki Color Max HABF801",
-    "category": "Quần Âu & Jean",
+    "category": "Quần Âu Công Sở",
     "price": 699000,
     "originalPrice": 873750,
     "discount": 20,
@@ -1399,7 +1399,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1073656507,
     "name": "Quần đũi nam basic Cotton Soft thấm hút HABI801",
-    "category": "Quần Âu & Jean",
+    "category": "Quần Jeans & Khaki",
     "price": 599000,
     "originalPrice": 748750,
     "discount": 20,
@@ -1451,7 +1451,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1073656504,
     "name": "Quần đũi basic HABI800",
-    "category": "Quần Âu & Jean",
+    "category": "Quần Jeans & Khaki",
     "price": 749000,
     "originalPrice": 936250,
     "discount": 20,
@@ -1503,7 +1503,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1073656503,
     "name": "Quần âu nam smart pants Flex Motion co giãn HABF802",
-    "category": "Quần Âu & Jean",
+    "category": "Quần Âu Công Sở",
     "price": 799000,
     "originalPrice": 998750,
     "discount": 20,
@@ -1545,7 +1545,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1073656502,
     "name": "Quần âu sidetab HABT808",
-    "category": "Quần Âu & Jean",
+    "category": "Quần Âu Công Sở",
     "price": 749000,
     "originalPrice": 936250,
     "discount": 20,
@@ -1587,7 +1587,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1072427499,
     "name": "Áo khoác 3 lớp lót bông mũ rời nhám dính cổ tay GWCP303",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1399000,
     "originalPrice": 1748750,
     "discount": 20,
@@ -1627,7 +1627,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1072129577,
     "name": "Áo khoác phao 3 lớp lót bông GWCF901",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1299000,
     "originalPrice": 1623750,
     "discount": 20,
@@ -1671,7 +1671,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1072047377,
     "name": "Áo khoác nam gió lót lông fleece Windtherm GWCU055",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 749000,
     "originalPrice": 899000,
     "discount": 17,
@@ -1736,7 +1736,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071954721,
     "name": "Áo khoác phao 3 lớp chần bông mũ liền GWCF303",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1399000,
     "originalPrice": 1748750,
     "discount": 20,
@@ -1794,7 +1794,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071954720,
     "name": "Áo khoác phao 3 lớp trơn chần bông cổ cao GWCF302",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1399000,
     "originalPrice": 1748750,
     "discount": 20,
@@ -1852,7 +1852,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071954719,
     "name": "Áo khoác phao 3 lớp lót bông mũ rời GWCP302",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1399000,
     "originalPrice": 1748750,
     "discount": 20,
@@ -1894,7 +1894,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071914510,
     "name": "Áo khoác 3 lớp lót bông GWCP901",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1299000,
     "originalPrice": 1623750,
     "discount": 20,
@@ -1944,7 +1944,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071556765,
     "name": "Áo khoác da lộn basic cổ bẻ cúc dập logo GWCL502",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1299000,
     "originalPrice": 1623750,
     "discount": 20,
@@ -1993,7 +1993,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071556764,
     "name": "Áo khoác nam bomber lót lông Warm Touch GWCU052",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 599000,
     "originalPrice": 899000,
     "discount": 33,
@@ -2048,7 +2048,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071556763,
     "name": "Áo khoác 2 lớp dạ cổ bẻ thêu logo tay GWCT891",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1299000,
     "originalPrice": 1623750,
     "discount": 20,
@@ -2104,7 +2104,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071401404,
     "name": "Quần gió bộ can phối cạp chun GWCW203 - GWBW203",
-    "category": "Blazer & Suit",
+    "category": "Quần Jeans & Khaki",
     "price": 499000,
     "originalPrice": 623750,
     "discount": 20,
@@ -2141,7 +2141,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071401403,
     "name": "Áo khoác nam gió 2 lớp can phối Wind Flex GWCW203",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 799000,
     "originalPrice": 998750,
     "discount": 20,
@@ -2183,7 +2183,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071365927,
     "name": "Quần Jeans basic slimfit GABJ301",
-    "category": "Quần Âu & Jean",
+    "category": "Quần Jeans & Khaki",
     "price": 699000,
     "originalPrice": 873750,
     "discount": 20,
@@ -2218,7 +2218,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071365918,
     "name": "Áo khoác 3 lớp lót bông mũ liền GWCP301",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1299000,
     "originalPrice": 1623750,
     "discount": 20,
@@ -2267,7 +2267,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071353918,
     "name": "Áo khoác gió 2 lớp cổ bẻ thêu logo GWCW505",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 899000,
     "originalPrice": 1123750,
     "discount": 20,
@@ -2302,7 +2302,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071353834,
     "name": "Áo khoác nam gió 2 lớp Silk Touch Plus GWCW503",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 999000,
     "originalPrice": 1248750,
     "discount": 20,
@@ -2340,7 +2340,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071344167,
     "name": "Quần âu relaxedfit trơn phối cạp chun thêu logo GABT506",
-    "category": "Quần Âu & Jean",
+    "category": "Quần Âu Công Sở",
     "price": 699000,
     "originalPrice": 873750,
     "discount": 20,
@@ -2426,7 +2426,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071344164,
     "name": "Áo khoác nỉ cổ cao thêu logo ngực GWCS503",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1099000,
     "originalPrice": 1373750,
     "discount": 20,
@@ -2468,7 +2468,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071344163,
     "name": "Áo khoác nỉ can phối cổ bomber thêu logo ngực GWCS501",
-    "category": "Blazer & Suit",
+    "category": "Áo Khoác & Blazer",
     "price": 1199000,
     "originalPrice": 1498750,
     "discount": 20,
@@ -2509,12 +2509,14 @@ export const MOCK_PRODUCTS = [
 ];
 
 export const CATEGORIES = [
-  'Tất cả',
-  'Áo Sơ Mi',
-  'Áo Polo',
-  'Blazer & Suit',
-  'Quần Âu & Jean',
-  'Phụ Kiện'
+  "Tất cả",
+  "Áo Sơ Mi",
+  "Áo Polo",
+  "Áo Khoác & Blazer",
+  "Quần Âu Công Sở",
+  "Quần Jeans & Khaki",
+  "Quần Short",
+  "Phụ Kiện"
 ];
 
-export const SIZES = ['S', 'M', 'L', 'XL', '2XL'];
+export const SIZES = ["S", "M", "L", "XL", "2XL"];

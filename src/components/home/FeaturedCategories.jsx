@@ -20,18 +20,18 @@ const CATEGORIES = [
   },
   {
     id: 3,
-    title: 'Quần Âu & Jean',
+    title: 'Quần Âu Công Sở',
     subTitle: 'Co Giãn • Tôn Phom Chân',
-    items: '13+ mẫu hot',
-    targetCategory: 'Quần Âu & Jean',
+    items: 'Thiết kế lịch lãm',
+    targetCategory: 'Quần Âu Công Sở',
     image: 'https://cdn.hstatic.net/products/200000690725/hsbk801_cv_87b8a1c7cf094a1fa9ca9c002a7a62c8.webp'
   },
   {
     id: 4,
-    title: 'Blazer & Suit Nam',
+    title: 'Blazer & Áo Khoác',
     subTitle: 'Chuẩn Phong Độ Quý Ông',
-    items: '20+ mẫu cao cấp',
-    targetCategory: 'Blazer & Suit',
+    items: '18+ mẫu cao cấp',
+    targetCategory: 'Áo Khoác & Blazer',
     image: 'https://cdn.hstatic.net/products/200000690725/hsbk801_to_n_f0a1612b08aa46359ffec2e0d8f83319.webp'
   }
 ];

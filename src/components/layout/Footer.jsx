@@ -86,18 +86,26 @@ export const Footer = ({ onNavigate }) => {
                 </li>
                 <li>
                   <button 
-                    onClick={() => onNavigate && onNavigate('products', 'Blazer & Suit')} 
+                    onClick={() => onNavigate && onNavigate('products', 'Áo Khoác & Blazer')} 
                     className="hover:text-amber-400 transition cursor-pointer text-left"
                   >
-                    Blazer & Suit
+                    Blazer & Áo Khoác
                   </button>
                 </li>
                 <li>
                   <button 
-                    onClick={() => onNavigate && onNavigate('products', 'Quần Âu & Jean')} 
+                    onClick={() => onNavigate && onNavigate('products', 'Quần Âu Công Sở')} 
                     className="hover:text-amber-400 transition cursor-pointer text-left"
                   >
                     Quần Âu Công Sở
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => onNavigate && onNavigate('products', 'Quần Short')} 
+                    className="hover:text-amber-400 transition cursor-pointer text-left"
+                  >
+                    Quần Short Dạo Phố
                   </button>
                 </li>
                 <li>

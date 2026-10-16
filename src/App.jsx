@@ -25,11 +25,18 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Tự động đồng bộ chuẩn hóa danh mục mới nếu bản lưu cũ đang dùng danh mục gộp 'Quần Âu & Jean'
+          const hasOldCategories = parsed.some(p => p.category === 'Quần Âu & Jean' || p.category === 'Blazer & Suit');
+          if (!hasOldCategories) {
+            return parsed;
+          }
+        }
       } catch (e) {
         console.error(e);
       }
     }
+    localStorage.setItem('menstyle_products', JSON.stringify(MOCK_PRODUCTS));
     return MOCK_PRODUCTS;
   });
 
@@ -376,12 +383,20 @@ export default function App() {
                     Sơ Mi Kháng Khuẩn
                   </Button>
                   <Button 
-                    onClick={() => handleNavigateWithCategory('Quần Âu & Jean')}
+                    onClick={() => handleNavigateWithCategory('Quần Âu Công Sở')}
+                    variant="ghost" 
+                    size="sm" 
+                    className="rounded-full text-neutral-800 hover:text-amber-600 font-bold text-xs shrink-0 cursor-pointer"
+                  >
+                    Quần Âu Công Sở
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavigateWithCategory('Quần Short')}
                     variant="ghost" 
                     size="sm" 
                     className="rounded-full text-rose-600 font-bold text-xs shrink-0 cursor-pointer bg-rose-50"
                   >
-                    Khuyến Mãi Hot 🔥
+                    Short & Khaki 🔥
                   </Button>
                 </div>
               </div>

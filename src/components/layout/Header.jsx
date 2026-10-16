@@ -273,7 +273,7 @@ export const Header = ({
                     Áo Polo Nam
                   </button>
                   <button 
-                    onClick={() => { onNavigate && onNavigate('products', 'Blazer & Suit'); setActiveDropdown(null); }}
+                    onClick={() => { onNavigate && onNavigate('products', 'Áo Khoác & Blazer'); setActiveDropdown(null); }}
                     className="block w-full px-4 py-2 text-xs font-semibold text-neutral-700 hover:bg-amber-50 hover:text-amber-600 text-left transition"
                   >
                     Áo Khoác & Blazer
@@ -289,9 +289,9 @@ export const Header = ({
               onMouseLeave={() => setActiveDropdown(null)}
             >
               <button 
-                onClick={() => onNavigate && onNavigate('products', 'Quần Âu & Jean')}
+                onClick={() => onNavigate && onNavigate('products', 'Quần Âu Công Sở')}
                 className={`flex items-center gap-1 hover:text-amber-600 transition cursor-pointer py-2 ${
-                  activeCategory === 'Quần Âu & Jean' ? 'text-amber-600' : 'text-neutral-900'
+                  activeCategory === 'Quần Âu Công Sở' || activeCategory === 'Quần Jeans & Khaki' || activeCategory === 'Quần Short' ? 'text-amber-600' : 'text-neutral-900'
                 }`}
               >
                 <span>QUẦN NAM</span>
@@ -301,13 +301,13 @@ export const Header = ({
               {activeDropdown === 'quannam' && (
                 <div className="absolute top-full left-0 w-48 bg-white border border-neutral-200 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1 text-left normal-case">
                   <button 
-                    onClick={() => { onNavigate && onNavigate('products', 'Quần Âu & Jean'); setActiveDropdown(null); }}
+                    onClick={() => { onNavigate && onNavigate('products', 'Quần Âu Công Sở'); setActiveDropdown(null); }}
                     className="block w-full px-4 py-2 text-xs font-semibold text-neutral-700 hover:bg-amber-50 hover:text-amber-600 text-left transition"
                   >
                     Quần Âu Công Sở
                   </button>
                   <button 
-                    onClick={() => { onNavigate && onNavigate('products', 'Quần Âu & Jean'); setActiveDropdown(null); }}
+                    onClick={() => { onNavigate && onNavigate('products', 'Quần Jeans & Khaki'); setActiveDropdown(null); }}
                     className="block w-full px-4 py-2 text-xs font-semibold text-neutral-700 hover:bg-amber-50 hover:text-amber-600 text-left transition"
                   >
                     Quần Jeans & Khaki
