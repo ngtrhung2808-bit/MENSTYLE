@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from './components/layout/Header';
+
 import { Footer } from './components/layout/Footer';
 import { HeroBanner } from './components/home/HeroBanner';
 import { FeaturedCategories } from './components/home/FeaturedCategories';
@@ -138,17 +139,50 @@ export default function App() {
     window.location.hostname === 'localhost' || 
     window.location.hostname === '127.0.0.1'
   );
-  
-  // Kiểm tra nếu url có admin (?admin, #admin, hoặc pathname /admin)
-  const isTryingAdmin = typeof window !== 'undefined' && (
-    window.location.search.includes('admin') || 
-    window.location.hash.includes('admin') ||
-    window.location.pathname.includes('admin') ||
-    currentTab === 'admin'
-  );
 
-  // Xử lý luồng Quản Trị: Chỉ áp dụng trên Localhost
-  if (isLocalHost && isTryingAdmin) {
+  // Quản lý trạng thái Admin View bằng React state để đảm bảo re-render tức thì
+  const [isAdminView, setIsAdminView] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const hasAdminParam = window.location.search.includes('admin') || 
+                          window.location.hash.includes('admin') ||
+                          window.location.pathname.includes('admin');
+    return isLocal && hasAdminParam;
+  });
+
+  // Lắng nghe sự kiện URL thay đổi (Back / Forward trình duyệt)
+  useEffect(() => {
+    const handlePopState = () => {
+      const hasAdminParam = window.location.search.includes('admin') || 
+                            window.location.hash.includes('admin') ||
+                            window.location.pathname.includes('admin');
+      setIsAdminView(isLocalHost && hasAdminParam);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isLocalHost]);
+
+  // Hàm điều hướng từ Admin quay về Cửa Hàng (Store Homepage)
+  const handleBackToClient = () => {
+    // 1. Tắt trạng thái Admin View trong React state
+    setIsAdminView(false);
+    // 2. Chuyển tab về trang chủ cửa hàng
+    setCurrentTab('home');
+    // 3. Làm sạch URL về route gốc '/' (loại bỏ hoàn toàn ?admin, #admin, /admin)
+    if (typeof window !== 'undefined') {
+      try {
+        const cleanUrl = window.location.origin + '/';
+        window.history.replaceState(null, '', cleanUrl);
+      } catch (err) {
+        console.warn('History replaceState error:', err);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Xử lý luồng Quản Trị: Chỉ áp dụng trên Localhost khi đang mở Admin View
+  if (isLocalHost && (isAdminView || currentTab === 'admin')) {
     // Nếu chưa đăng nhập => Bắt buộc qua trang Login
     if (!isAdminLoggedIn) {
       return (
@@ -157,10 +191,7 @@ export default function App() {
             setIsAdminLoggedIn(true);
             localStorage.setItem('menstyle_admin_auth', 'true');
           }}
-          onBackToClient={() => {
-            window.history.replaceState(null, '', window.location.pathname.replace('/admin', '') || '/');
-            setCurrentTab('home');
-          }}
+          onBackToClient={handleBackToClient}
         />
       );
     }
@@ -168,10 +199,7 @@ export default function App() {
     // Đã đăng nhập => Vào thẳng Dashboard
     return (
       <AdminDashboard 
-        onBackToClient={() => {
-          window.history.replaceState(null, '', window.location.pathname.replace('/admin', '') || '/');
-          setCurrentTab('home');
-        }}
+        onBackToClient={handleBackToClient}
         onLogout={() => {
           setIsAdminLoggedIn(false);
           localStorage.removeItem('menstyle_admin_auth');
@@ -179,6 +207,7 @@ export default function App() {
       />
     );
   }
+
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50 selection:bg-amber-500 selection:text-neutral-950 font-sans overflow-x-hidden w-full relative">

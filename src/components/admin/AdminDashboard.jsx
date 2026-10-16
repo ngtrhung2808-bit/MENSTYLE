@@ -146,11 +146,18 @@ export const AdminDashboard = ({ onBackToClient, onLogout }) => {
         {/* Footer Sidebar: Quay lại Client & Đăng xuất */}
         <div className="p-4 border-t border-neutral-800 space-y-2">
           <button
-            onClick={onBackToClient}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-neutral-200 text-xs font-bold transition border border-neutral-700"
+            onClick={() => {
+              if (onBackToClient) {
+                onBackToClient();
+              } else if (typeof window !== 'undefined') {
+                window.location.href = '/';
+              }
+            }}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-neutral-200 text-xs font-bold transition border border-neutral-700 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" /> Về Cửa Hàng
           </button>
+
           {onLogout && (
             <button
               onClick={onLogout}

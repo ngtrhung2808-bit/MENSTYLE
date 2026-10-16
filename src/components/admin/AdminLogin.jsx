@@ -30,11 +30,18 @@ export const AdminLogin = ({ onLoginSuccess, onBackToClient }) => {
     <div className="min-h-screen bg-neutral-950 flex flex-col justify-center items-center p-4 relative font-sans">
       {/* Nút quay lại trang bán hàng */}
       <button
-        onClick={onBackToClient}
-        className="absolute top-6 left-6 text-neutral-400 hover:text-white text-xs sm:text-sm font-semibold flex items-center gap-2 transition"
+        onClick={() => {
+          if (onBackToClient) {
+            onBackToClient();
+          } else if (typeof window !== 'undefined') {
+            window.location.href = '/';
+          }
+        }}
+        className="absolute top-6 left-6 text-neutral-400 hover:text-white text-xs sm:text-sm font-semibold flex items-center gap-2 transition cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4" /> Về Cửa Hàng
       </button>
+
 
       <div className="max-w-md w-full bg-neutral-900 border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
         {/* Decorative ambient light */}
