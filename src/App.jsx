@@ -28,6 +28,7 @@ export default function App() {
     return saved ? JSON.parse(saved) : null; // Mặc định là null (Khách vãng lai)
   });
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isPendingCheckout, setIsPendingCheckout] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
     return localStorage.getItem('menstyle_admin_auth') === 'true';
   });
@@ -245,6 +246,8 @@ export default function App() {
           /* TRANG CHECKOUT THANH TOÁN (TUẦN 3) */
           <CheckoutPage 
             cartItems={cartItems}
+            currentUser={currentUser}
+            onRequireAuth={() => setIsAuthOpen(true)}
             onBackToShopping={() => setCurrentTab('products')}
             onOrderSuccess={(orderData) => {
               addToast('Đặt Hàng Thành Công', `Mã đơn hàng: ${orderData.orderCode}`);
@@ -442,6 +445,12 @@ export default function App() {
         onRemoveItem={handleRemoveItem}
         onCheckout={() => {
           setIsCartOpen(false);
+          if (!currentUser) {
+            setIsPendingCheckout(true);
+            setIsAuthOpen(true);
+            addToast('Yêu Cầu Đăng Nhập', 'Quý khách vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục thanh toán.', 'info');
+            return;
+          }
           setCurrentTab('checkout');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
@@ -469,11 +478,19 @@ export default function App() {
       {/* 11. Modal Đăng Nhập / Đăng Ký Khách Hàng */}
       <AuthModal 
         isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
+        onClose={() => {
+          setIsAuthOpen(false);
+          setIsPendingCheckout(false);
+        }}
         onLoginSuccess={(userData) => {
           setCurrentUser(userData);
           localStorage.setItem('menstyle_user', JSON.stringify(userData));
           addToast('Chào Mừng Trở Lại', `Xin chào quý ông ${userData.name}!`);
+          if (isPendingCheckout) {
+            setIsPendingCheckout(false);
+            setCurrentTab('checkout');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         }}
       />
     </div>

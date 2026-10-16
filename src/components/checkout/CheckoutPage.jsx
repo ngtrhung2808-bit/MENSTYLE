@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, 
   CreditCard, 
@@ -14,19 +14,38 @@ import {
 } from 'lucide-react';
 import { Button } from '../common/Button';
 
-export const CheckoutPage = ({ cartItems = [], onBackToShopping, onOrderSuccess }) => {
+export const CheckoutPage = ({ 
+  cartItems = [], 
+  onBackToShopping, 
+  onOrderSuccess,
+  currentUser = null,
+  onRequireAuth
+}) => {
   // Form fields
   const [formData, setFormData] = useState({
-    fullName: '',
-    phone: '',
-    email: '',
-    address: '',
+    fullName: currentUser?.name || '',
+    phone: currentUser?.phone || '',
+    email: currentUser?.email || '',
+    address: currentUser?.address || '',
     province: 'Hà Nội',
     district: '',
     note: '',
     paymentMethod: 'cod', // 'cod' | 'vnpay' | 'momo' | 'banking'
     couponCode: '',
   });
+
+  // Tự động điền thông tin khi khách đăng nhập/đăng ký thành công
+  useEffect(() => {
+    if (currentUser) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: prev.fullName || currentUser.name || '',
+        email: prev.email || currentUser.email || '',
+        phone: prev.phone || currentUser.phone || '',
+        address: prev.address || currentUser.address || ''
+      }));
+    }
+  }, [currentUser]);
 
   // Errors state for validation test
   const [errors, setErrors] = useState({});
@@ -81,6 +100,10 @@ export const CheckoutPage = ({ cartItems = [], onBackToShopping, onOrderSuccess 
 
   const handleSubmitOrder = (e) => {
     e.preventDefault();
+    if (!currentUser) {
+      if (onRequireAuth) onRequireAuth();
+      return;
+    }
     if (validateForm()) {
       if (onOrderSuccess) {
         onOrderSuccess({
@@ -119,6 +142,41 @@ export const CheckoutPage = ({ cartItems = [], onBackToShopping, onOrderSuccess 
             <h2 className="text-base sm:text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-amber-600" /> 1. Thông Tin Nhận Hàng
             </h2>
+
+            {currentUser ? (
+              <div className="mb-5 p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center justify-between text-xs sm:text-sm">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-neutral-950 text-amber-400 font-bold flex items-center justify-center shrink-0">
+                    {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  <div>
+                    <p className="font-bold text-neutral-900">
+                      Tài khoản đặt hàng: <span className="text-amber-700">{currentUser.name}</span>
+                    </p>
+                    <p className="text-neutral-500 text-[11px]">{currentUser.email}</p>
+                  </div>
+                </div>
+                <span className="hidden sm:inline-flex items-center gap-1 text-emerald-600 font-bold text-xs bg-emerald-50 px-2 py-1 rounded-full border border-emerald-200">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Đã xác thực
+                </span>
+              </div>
+            ) : (
+              <div className="mb-5 p-4 rounded-xl bg-neutral-900 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+                <div>
+                  <p className="font-bold text-sm text-amber-400">Quý khách chưa đăng nhập tài khoản?</p>
+                  <p className="text-xs text-neutral-300">Vui lòng đăng nhập hoặc tạo tài khoản để hoàn tất đặt hàng.</p>
+                </div>
+                <Button 
+                  type="button"
+                  variant="primary" 
+                  size="sm" 
+                  onClick={onRequireAuth}
+                  className="bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold rounded-lg text-xs shrink-0"
+                >
+                  Đăng nhập / Đăng ký ngay
+                </Button>
+              </div>
+            )}
 
             <form className="space-y-4">
               {/* Họ tên */}
