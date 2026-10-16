@@ -42,7 +42,7 @@ export const FeaturedCategories = ({ onSelectCategory }) => {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-8 gap-2 sm:gap-4">
         <div>
           <span className="text-xs font-bold text-amber-600 uppercase tracking-widest flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> Danh mục thời trang Torano
+            <Sparkles className="w-3.5 h-3.5" /> Danh mục thời trang MENSTYLE
           </span>
           <h2 className="text-2xl sm:text-3xl font-black text-neutral-950 mt-1">Lựa Chọn Hoàn Hảo Cho Quý Ông</h2>
         </div>
@@ -62,7 +62,7 @@ export const FeaturedCategories = ({ onSelectCategory }) => {
             onClick={() => onSelectCategory && onSelectCategory(cat.targetCategory)}
             className="group relative overflow-hidden rounded-2xl bg-neutral-900 aspect-[3/4] shadow-sm hover:shadow-xl transition-all duration-300 text-left cursor-pointer border border-neutral-100"
           >
-            {/* Ảnh danh mục thực tế Torano */}
+            {/* Ảnh danh mục thực tế MENSTYLE */}
             <img
               src={cat.image}
               alt={cat.title}

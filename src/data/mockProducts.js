@@ -1,4 +1,4 @@
-// Dữ liệu sản phẩm thời trang nam đồng bộ CHÍNH THỨC từ hệ thống Torano.vn (Bản quyền đồ án tốt nghiệp)
+// Dữ liệu sản phẩm thời trang nam đồng bộ CHÍNH THỨC từ hệ thống MENSTYLE.vn (Bản quyền đồ án tốt nghiệp)
 export const MOCK_PRODUCTS = [
   {
     "id": 1057429019,
@@ -30,7 +30,7 @@ export const MOCK_PRODUCTS = [
       "L",
       "XL"
     ],
-    "description": "Áo blazer FWTV002&nbsp; là mẫu blazer&nbsp;nam cao cấp chính hãng Torano . Chất vải dày dặn, mềm mịn và không nhăn nhàu lại cực thì thoáng mát. Sản phẩm khi kết..."
+    "description": "Áo blazer FWTV002&nbsp; là mẫu blazer&nbsp;nam cao cấp chính hãng MENSTYLE . Chất vải dày dặn, mềm mịn và không nhăn nhàu lại cực thì thoáng mát. Sản phẩm khi kết..."
   },
   {
     "id": 1057164665,
@@ -61,11 +61,11 @@ export const MOCK_PRODUCTS = [
       "L",
       "XL"
     ],
-    "description": "Áo blazer FWTV001&nbsp; là mẫu blazer&nbsp;nam cao cấp chính hãng Torano. Chất vải dày dặn, mềm mịn và không nhăn nhàu lại cực thì thoáng mát. Sản phẩm khi kết ..."
+    "description": "Áo blazer FWTV001&nbsp; là mẫu blazer&nbsp;nam cao cấp chính hãng MENSTYLE. Chất vải dày dặn, mềm mịn và không nhăn nhàu lại cực thì thoáng mát. Sản phẩm khi kết ..."
   },
   {
     "id": 1071203343,
-    "name": "Thắt lưng da Torano GAAL002",
+    "name": "Thắt lưng da MENSTYLE GAAL002",
     "category": "Phụ Kiện",
     "price": 599000,
     "originalPrice": 748750,
@@ -89,11 +89,11 @@ export const MOCK_PRODUCTS = [
     "sizes": [
       "35"
     ],
-    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, MENSTYLE không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
   },
   {
     "id": 1071203359,
-    "name": "Thắt lưng đầu xoay 2 màu Torano GAAL003",
+    "name": "Thắt lưng đầu xoay 2 màu MENSTYLE GAAL003",
     "category": "Phụ Kiện",
     "price": 599000,
     "originalPrice": 748750,
@@ -117,11 +117,11 @@ export const MOCK_PRODUCTS = [
     "sizes": [
       "35"
     ],
-    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, MENSTYLE không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
   },
   {
     "id": 1071203358,
-    "name": "Thắt lưng đầu xoay 2 hiệu ứng Torano GAAL007",
+    "name": "Thắt lưng đầu xoay 2 hiệu ứng MENSTYLE GAAL007",
     "category": "Phụ Kiện",
     "price": 699000,
     "originalPrice": 873750,
@@ -145,11 +145,11 @@ export const MOCK_PRODUCTS = [
     "sizes": [
       "35"
     ],
-    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, MENSTYLE không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
   },
   {
     "id": 1071203346,
-    "name": "Thắt lưng da Torano GAAL010",
+    "name": "Thắt lưng da MENSTYLE GAAL010",
     "category": "Phụ Kiện",
     "price": 699000,
     "originalPrice": 873750,
@@ -173,11 +173,11 @@ export const MOCK_PRODUCTS = [
     "sizes": [
       "35"
     ],
-    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, MENSTYLE không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
   },
   {
     "id": 1071203347,
-    "name": "Thắt lưng da Torano GAAL011",
+    "name": "Thắt lưng da MENSTYLE GAAL011",
     "category": "Phụ Kiện",
     "price": 699000,
     "originalPrice": 873750,
@@ -201,11 +201,11 @@ export const MOCK_PRODUCTS = [
     "sizes": [
       "35"
     ],
-    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, MENSTYLE không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
   },
   {
     "id": 1071203348,
-    "name": "Thắt lưng da Torano GAAL012",
+    "name": "Thắt lưng da MENSTYLE GAAL012",
     "category": "Phụ Kiện",
     "price": 699000,
     "originalPrice": 873750,
@@ -229,11 +229,11 @@ export const MOCK_PRODUCTS = [
     "sizes": [
       "35"
     ],
-    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, MENSTYLE không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
   },
   {
     "id": 1071203350,
-    "name": "Thắt lưng da Torano GAAL014",
+    "name": "Thắt lưng da MENSTYLE GAAL014",
     "category": "Phụ Kiện",
     "price": 699000,
     "originalPrice": 873750,
@@ -257,11 +257,11 @@ export const MOCK_PRODUCTS = [
     "sizes": [
       "35"
     ],
-    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, MENSTYLE không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
   },
   {
     "id": 1071203351,
-    "name": "Thắt lưng da Torano GAAL015",
+    "name": "Thắt lưng da MENSTYLE GAAL015",
     "category": "Phụ Kiện",
     "price": 799000,
     "originalPrice": 998750,
@@ -285,11 +285,11 @@ export const MOCK_PRODUCTS = [
     "sizes": [
       "35"
     ],
-    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, MENSTYLE không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
   },
   {
     "id": 1071203352,
-    "name": "Thắt lưng da Torano GAAL016",
+    "name": "Thắt lưng da MENSTYLE GAAL016",
     "category": "Phụ Kiện",
     "price": 799000,
     "originalPrice": 998750,
@@ -313,7 +313,7 @@ export const MOCK_PRODUCTS = [
     "sizes": [
       "35"
     ],
-    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, MENSTYLE không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
   },
   {
     "id": 1075102717,
@@ -370,7 +370,7 @@ export const MOCK_PRODUCTS = [
       "XL",
       "XXL"
     ],
-    "description": "Áo polo nam trơn bo kẻ Silk Touch co giãn HSTP904 thuộc dòng Smart Signature — nhóm sản phẩm TORANO làm cho những buổi gặp mà trang phục không nên gây chú ý. Kh..."
+    "description": "Áo polo nam trơn bo kẻ Silk Touch co giãn HSTP904 thuộc dòng Smart Signature — nhóm sản phẩm MENSTYLE làm cho những buổi gặp mà trang phục không nên gây chú ý. Kh..."
   },
   {
     "id": 1074662406,
@@ -411,7 +411,7 @@ export const MOCK_PRODUCTS = [
       "32",
       "33"
     ],
-    "description": "📌CHÍNH SÁCH ĐỔI: • Torano hỗ trợ đổi hàng trong trường hợp: sản phẩm&nbsp;mặc không vừa, khách không ưng sản phẩm&nbsp;đã đặt, sản phẩm&nbsp;có lỗi của nhà sản..."
+    "description": "📌CHÍNH SÁCH ĐỔI: • MENSTYLE hỗ trợ đổi hàng trong trường hợp: sản phẩm&nbsp;mặc không vừa, khách không ưng sản phẩm&nbsp;đã đặt, sản phẩm&nbsp;có lỗi của nhà sản..."
   },
   {
     "id": 1074541031,
@@ -521,7 +521,7 @@ export const MOCK_PRODUCTS = [
       "XL",
       "XXL"
     ],
-    "description": "Nâng cấp diện mạo chỉn chu, bảnh bao với thiết kế sơ mi dài tay SMART LINEN HATB301 mới ra mắt của TORANO . Với thiết kế Smart fit vừa vặn, tôn dáng, item còn t..."
+    "description": "Nâng cấp diện mạo chỉn chu, bảnh bao với thiết kế sơ mi dài tay SMART LINEN HATB301 mới ra mắt của MENSTYLE . Với thiết kế Smart fit vừa vặn, tôn dáng, item còn t..."
   },
   {
     "id": 1074541028,
@@ -661,7 +661,7 @@ export const MOCK_PRODUCTS = [
       "L",
       "XL"
     ],
-    "description": "Áo polo nam active Silk Cool Pro co giãn HSTP305 là mẫu có tỷ lệ Spandex cao nhất dòng polo TORANO: 29.2% trên nền 70.8% Nylon. Trên cùng một chiếc áo, TORANO t..."
+    "description": "Áo polo nam active Silk Cool Pro co giãn HSTP305 là mẫu có tỷ lệ Spandex cao nhất dòng polo MENSTYLE: 29.2% trên nền 70.8% Nylon. Trên cùng một chiếc áo, MENSTYLE t..."
   },
   {
     "id": 1074541026,
@@ -1038,7 +1038,7 @@ export const MOCK_PRODUCTS = [
       "32",
       "33"
     ],
-    "description": "Short khaki HSBK802 thương hiệu Torano mặc dù tối giản trong thiết kế nhưng chỉn chu trong từng chi tiết. Được hoàn thiện từ chất liệu Smart Fabric mang đến cảm..."
+    "description": "Short khaki HSBK802 thương hiệu MENSTYLE mặc dù tối giản trong thiết kế nhưng chỉn chu trong từng chi tiết. Được hoàn thiện từ chất liệu Smart Fabric mang đến cảm..."
   },
   {
     "id": 1074341240,
@@ -1103,7 +1103,7 @@ export const MOCK_PRODUCTS = [
       "XL",
       "XXL"
     ],
-    "description": "Lần đầu TORANO ứng dụng Smart Frabic - Rayon Cotton mỏng nhẹ, thoáng mát và nhanh khô vào sản phẩm hè SS26. Thiết kế sơ mi Smart fit ngắn tay hiện đại, vừa thoả..."
+    "description": "Lần đầu MENSTYLE ứng dụng Smart Frabic - Rayon Cotton mỏng nhẹ, thoáng mát và nhanh khô vào sản phẩm hè SS26. Thiết kế sơ mi Smart fit ngắn tay hiện đại, vừa thoả..."
   },
   {
     "id": 1074341237,
@@ -1284,7 +1284,7 @@ export const MOCK_PRODUCTS = [
       "XL",
       "XXL"
     ],
-    "description": "Áo polo nam active Silk Cool Pro co giãn HSTP305 - Lựa chọn thông minh cho lối sống hiện đại Mẫu Polo trơn bo kẻ HSTP903 mới nhà Torano đã cập bến với nhưng ưu ..."
+    "description": "Áo polo nam active Silk Cool Pro co giãn HSTP305 - Lựa chọn thông minh cho lối sống hiện đại Mẫu Polo trơn bo kẻ HSTP903 mới nhà MENSTYLE đã cập bến với nhưng ưu ..."
   },
   {
     "id": 1073757669,
@@ -1340,7 +1340,7 @@ export const MOCK_PRODUCTS = [
       "32",
       "33"
     ],
-    "description": "Chiếc quần âu smart HABF801 nhà Torano&nbsp; được tạo ra cho mùa hè, nơi sự thoải mái và vẻ ngoài chỉn chu cần song hành. Bề mặt vải phẳng phiu, hạn chế nhăn nh..."
+    "description": "Chiếc quần âu smart HABF801 nhà MENSTYLE&nbsp; được tạo ra cho mùa hè, nơi sự thoải mái và vẻ ngoài chỉn chu cần song hành. Bề mặt vải phẳng phiu, hạn chế nhăn nh..."
   },
   {
     "id": 1073757668,
@@ -1446,7 +1446,7 @@ export const MOCK_PRODUCTS = [
       "32",
       "33"
     ],
-    "description": "Quần đũi nam basic Cotton Soft thấm hút HABI801 có thêu chữ ký Torano — nhưng bạn phải nhìn thật kỹ mới thấy, vì chỉ thêu cùng màu vải. Nền 98.3% Cotton cho bề ..."
+    "description": "Quần đũi nam basic Cotton Soft thấm hút HABI801 có thêu chữ ký MENSTYLE — nhưng bạn phải nhìn thật kỹ mới thấy, vì chỉ thêu cùng màu vải. Nền 98.3% Cotton cho bề ..."
   },
   {
     "id": 1073656504,
@@ -1498,7 +1498,7 @@ export const MOCK_PRODUCTS = [
       "32",
       "33"
     ],
-    "description": "Khẳng định phong cách thanh lịch và chỉn chu qua thiết kế quần đũi linen relaxed fit HABI800 trẻ trung từ TORANO. Chi tiết phối chun lưng vừa giúp anh di chuyển..."
+    "description": "Khẳng định phong cách thanh lịch và chỉn chu qua thiết kế quần đũi linen relaxed fit HABI800 trẻ trung từ MENSTYLE. Chi tiết phối chun lưng vừa giúp anh di chuyển..."
   },
   {
     "id": 1073656503,
@@ -1582,7 +1582,7 @@ export const MOCK_PRODUCTS = [
       "32",
       "33"
     ],
-    "description": "Quần âu sidetab HABT808&nbsp; là mẫu quần âu nam cao cấp chính hãng Torano. Chất vải dày dặn, mềm mịn và không nhăn nhàu lại cực thì thoáng mát. Anh đang tìm ki..."
+    "description": "Quần âu sidetab HABT808&nbsp; là mẫu quần âu nam cao cấp chính hãng MENSTYLE. Chất vải dày dặn, mềm mịn và không nhăn nhàu lại cực thì thoáng mát. Anh đang tìm ki..."
   },
   {
     "id": 1072427499,
@@ -1622,7 +1622,7 @@ export const MOCK_PRODUCTS = [
       "L",
       "XL"
     ],
-    "description": "Miền Bắc chuyển rét, anh em đã tự tin đón gió lạnh&nbsp;với phao béo vừa ấm áp, vừa trẻ trung và nổi bật từ TORANO chưa?&nbsp;Diện ngay áo phao chần bông 3 lớp ..."
+    "description": "Miền Bắc chuyển rét, anh em đã tự tin đón gió lạnh&nbsp;với phao béo vừa ấm áp, vừa trẻ trung và nổi bật từ MENSTYLE chưa?&nbsp;Diện ngay áo phao chần bông 3 lớp ..."
   },
   {
     "id": 1072129577,
@@ -1789,7 +1789,7 @@ export const MOCK_PRODUCTS = [
       "L",
       "XL"
     ],
-    "description": "Miền Bắc chuyển rét, anh em đã tự tin đón gió lạnh&nbsp;với phao béo vừa ấm áp, vừa trẻ trung và nổi bật từ TORANO chưa?&nbsp;Diện ngay áo phao chần bông 3 lớp ..."
+    "description": "Miền Bắc chuyển rét, anh em đã tự tin đón gió lạnh&nbsp;với phao béo vừa ấm áp, vừa trẻ trung và nổi bật từ MENSTYLE chưa?&nbsp;Diện ngay áo phao chần bông 3 lớp ..."
   },
   {
     "id": 1071954720,
@@ -1847,7 +1847,7 @@ export const MOCK_PRODUCTS = [
       "L",
       "XL"
     ],
-    "description": "Dưới nhiệt độ lạnh sâu, áo khoác phao 3 lớp trơn chần bông cổ cao GWCF302 của TORANO sẽ giữ trọn hơi ấm bên trong mà không tạo cảm giác nặng nề nhờ công nghệ ch..."
+    "description": "Dưới nhiệt độ lạnh sâu, áo khoác phao 3 lớp trơn chần bông cổ cao GWCF302 của MENSTYLE sẽ giữ trọn hơi ấm bên trong mà không tạo cảm giác nặng nề nhờ công nghệ ch..."
   },
   {
     "id": 1071954719,
@@ -1889,7 +1889,7 @@ export const MOCK_PRODUCTS = [
       "L",
       "XL"
     ],
-    "description": "Khỏi phải bó mình trong nhiều lớp cồng kềnh, các anh chỉ cần sở hữu ngay áo khoác 3 lớp lót bông mũ rời GWCP302 từ TORANO . Với ưu điểm chống nước, cản gió và g..."
+    "description": "Khỏi phải bó mình trong nhiều lớp cồng kềnh, các anh chỉ cần sở hữu ngay áo khoác 3 lớp lót bông mũ rời GWCP302 từ MENSTYLE . Với ưu điểm chống nước, cản gió và g..."
   },
   {
     "id": 1071914510,
@@ -2262,7 +2262,7 @@ export const MOCK_PRODUCTS = [
       "L",
       "XL"
     ],
-    "description": "Miền Bắc chuyển rét, anh em đã tự tin đón gió Đông với phao 3 lớp&nbsp;vừa ấm áp, vừa trẻ trung và nổi bật từ TORANO chưa? Thiết kế phóng khoáng với bề mặt chốn..."
+    "description": "Miền Bắc chuyển rét, anh em đã tự tin đón gió Đông với phao 3 lớp&nbsp;vừa ấm áp, vừa trẻ trung và nổi bật từ MENSTYLE chưa? Thiết kế phóng khoáng với bề mặt chốn..."
   },
   {
     "id": 1071353918,
@@ -2297,7 +2297,7 @@ export const MOCK_PRODUCTS = [
       "L",
       "XL"
     ],
-    "description": "Với thiết kế cổ bẻ tinh tế, đường cắt gọn và chất liệu hiệu ứng độc đáo, chiếc áo khoác gió 2 lớp cổ bẻ&nbsp;logo thêu&nbsp;GWCW505 mới nhà TORANO sẽ giúp anh g..."
+    "description": "Với thiết kế cổ bẻ tinh tế, đường cắt gọn và chất liệu hiệu ứng độc đáo, chiếc áo khoác gió 2 lớp cổ bẻ&nbsp;logo thêu&nbsp;GWCW505 mới nhà MENSTYLE sẽ giúp anh g..."
   },
   {
     "id": 1071353834,
@@ -2463,7 +2463,7 @@ export const MOCK_PRODUCTS = [
       "L",
       "XL"
     ],
-    "description": "Áo khoác nỉ cổ cao thêu logo ngực GWCS503 ▪️ Được thiết kế theo đúng form chuẩn của nam giới Việt Nam ▪️ Sản phẩm thuộc dòng Áo khoác nỉ cao cấp do TORANO sản x..."
+    "description": "Áo khoác nỉ cổ cao thêu logo ngực GWCS503 ▪️ Được thiết kế theo đúng form chuẩn của nam giới Việt Nam ▪️ Sản phẩm thuộc dòng Áo khoác nỉ cao cấp do MENSTYLE sản x..."
   },
   {
     "id": 1071344163,

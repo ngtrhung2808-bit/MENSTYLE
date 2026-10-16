@@ -5,7 +5,7 @@ import { Button } from '../common/Button';
 const SLIDES = [
   {
     id: 1,
-    badge: 'Bộ Sưu Tập SS26 • Chuẩn Phom Torano',
+    badge: 'Bộ Sưu Tập SS26 • MENSTYLE Premium',
     title: 'Bản Lĩnh Đàn Ông',
     subtitle: 'Lịch Lãm & Phong Độ Mọi Khoảnh Khắc',
     desc: 'Thiết kế Polo dệt tổ ong thoáng mát, Sơ mi Modal Silk chống nhăn và Quần tây co giãn 4 chiều cho quý ông hiện đại.',
@@ -28,7 +28,7 @@ const SLIDES = [
     badge: 'Smart Casual Daily Style',
     title: 'Thoải Mái Tối Đa',
     subtitle: 'Sơ Mi Kháng Khuẩn & Khaki Smart',
-    desc: 'Giải pháp trang phục công sở cả tuần không cần ủi, thấm hút mồ hôi vượt trội chuẩn phong cách Torano.',
+    desc: 'Giải pháp trang phục công sở cả tuần không cần ủi, thấm hút mồ hôi vượt trội chuẩn phong cách quý ông hiện đại.',
     image: 'https://cdn.hstatic.net/products/200000690725/55314495847_3ed29f720b_c_8c6d05461d6b4024a855aa1bfb857754.jpg',
     category: 'Áo Sơ Mi',
     highlight: 'Bán Chạy Nhất'
@@ -99,7 +99,7 @@ export const HeroBanner = ({ onExplore }) => {
           </Button>
         </div>
 
-        {/* 3 Cam kết thương hiệu phong cách Torano */}
+        {/* 3 Cam kết thương hiệu phong cách MENSTYLE */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 pt-8 sm:pt-10 mt-6 sm:mt-8 border-t border-white/10 w-full text-xs text-neutral-300">
           <div className="flex items-center gap-2.5">
             <Truck className="w-4 h-4 text-amber-400 shrink-0" />
@@ -111,7 +111,7 @@ export const HeroBanner = ({ onExplore }) => {
           </div>
           <div className="flex items-center gap-2.5">
             <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>Chất vải cao cấp chuẩn Torano</span>
+            <span>Chất vải cao cấp chuẩn MENSTYLE</span>
           </div>
         </div>
       </div>

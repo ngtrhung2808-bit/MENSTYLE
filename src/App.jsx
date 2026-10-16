@@ -341,12 +341,12 @@ export default function App() {
               }} 
             />
 
-            {/* 4. Best Seller Men Products - Chuẩn Catalog Torano */}
+            {/* 4. Best Seller Men Products - Chuẩn Catalog MENSTYLE */}
             <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-14">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-8 gap-3 sm:gap-4">
                 <div>
                   <span className="text-xs font-bold text-amber-600 uppercase tracking-widest flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> Bán chạy nhất tuần • Chuẩn Torano
+                    <Sparkles className="w-3.5 h-3.5" /> Bán chạy nhất tuần • MENSTYLE Premium
                   </span>
                   <h2 className="text-2xl sm:text-3xl font-black text-neutral-950 mt-1">Được Phái Mạnh Ưa Chuộng Nhất</h2>
                 </div>
@@ -386,7 +386,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Grid 8 sản phẩm Torano nổi bật */}
+              {/* Grid 8 sản phẩm MENSTYLE nổi bật */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
                 {products.slice(0, 8).map((product) => (
                   <ProductCard 
@@ -400,7 +400,7 @@ export default function App() {
                 ))}
               </div>
 
-              {/* Banner Flash Sale Giữa Trang Chuẩn Torano */}
+              {/* Banner Flash Sale Giữa Trang Chuẩn MENSTYLE */}
               <div className="mt-10 sm:mt-14 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-neutral-950 via-neutral-900 to-amber-950 p-6 sm:p-10 text-white flex flex-col md:flex-row items-center justify-between gap-6 border border-neutral-800 shadow-xl">
                 <div className="space-y-2 text-center md:text-left">
                   <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">
@@ -435,7 +435,7 @@ export default function App() {
                   size="lg" 
                   className="rounded-full border-neutral-300 px-6 sm:px-8 hover:border-neutral-950 font-bold text-xs sm:text-base w-full sm:w-auto cursor-pointer"
                 >
-                  Xem toàn bộ 56+ sản phẩm thời trang Torano <ArrowRight className="w-4 h-4 ml-2" />
+                  Xem toàn bộ 56+ sản phẩm thời trang MENSTYLE <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </section>

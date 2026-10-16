@@ -314,7 +314,7 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
         </div>
       </div>
 
-      {/* Modal Đo Size Thông Minh Chuẩn Torano */}
+      {/* Modal Đo Size Thông Minh */}
       <SmartSizeGuideModal 
         isOpen={isSmartSizeOpen}
         onClose={() => setIsSmartSizeOpen(false)}

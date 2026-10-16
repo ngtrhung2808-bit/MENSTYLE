@@ -50,7 +50,7 @@ export const ChatbotWidget = ({ onOpenProduct }) => {
       let suggestedItem = null;
 
       if (text.toLowerCase().includes('đổi trả')) {
-        replyText = 'MENSTYLE hỗ trợ đổi hàng miễn phí trong 7 ngày tận nơi theo đúng quy chuẩn Torano. Shipper sẽ mang size mới đến và nhận lại hàng tại nhà cho bạn!';
+        replyText = 'MENSTYLE hỗ trợ đổi hàng miễn phí trong 7 ngày tận nơi theo đúng quy chuẩn chính hãng. Shipper sẽ mang size mới đến và nhận lại hàng tại nhà cho bạn!';
       } else if (text.toLowerCase().includes('blazer') || text.toLowerCase().includes('tiệc')) {
         replyText = 'Với sự kiện hoặc tiệc tối, bạn nên phối Áo Blazer Italian Wool Đen cùng Sơ mi trắng Nano và Giày da Oxford để có vẻ ngoài lịch lãm, quyền lực nhất!';
         suggestedItem = {

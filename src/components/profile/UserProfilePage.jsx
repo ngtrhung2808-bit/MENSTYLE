@@ -62,7 +62,7 @@ export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
                 image: i.images?.[0] || i.image || 'https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg'
               })) : [
                 {
-                  name: o.items || 'Sản phẩm thời trang Torano',
+                  name: o.items || 'Sản phẩm thời trang MENSTYLE',
                   size: 'L',
                   color: 'Tiêu chuẩn',
                   price: o.total,
@@ -77,25 +77,7 @@ export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
         console.error(e);
       }
     }
-    return [
-      {
-        id: 'MS-892140',
-        date: '20/09/2026',
-        total: 1250000,
-        status: 'delivering', // 'delivering' | 'completed' | 'cancelled'
-        statusLabel: 'Đang giao hàng',
-        items: [
-          {
-            name: 'Áo blazer túi cơi ngực FWTV002',
-            size: 'L',
-            color: 'Đen Sang Trọng',
-            price: 1250000,
-            quantity: 1,
-            image: 'https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg',
-          }
-        ]
-      }
-    ];
+    return [];
   });
 
 
@@ -386,7 +368,7 @@ export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
         </div>
       </div>
 
-      {/* Modal Yêu Cầu Đổi Trả Hàng (Order Return trong 7 ngày - Torano Policy) */}
+      {/* Modal Yêu Cầu Đổi Trả Hàng (Order Return trong 7 ngày) */}
       {isReturnModalOpen && selectedOrderForReturn && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4">
           <div 

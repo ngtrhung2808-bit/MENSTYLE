@@ -124,7 +124,7 @@ export const AdminDashboard = ({
     {
       title: 'Tổng Sản Phẩm Đang Bán',
       value: `${adminProducts.length} sản phẩm`,
-      change: '100% ảnh Torano',
+      change: 'Đang hoạt động',
       isPositive: true,
       icon: Layers,
       color: 'text-purple-500 bg-purple-500/10',
@@ -143,7 +143,7 @@ export const AdminDashboard = ({
       rating: 5.0,
       reviewCount: 1,
       image: 'https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg',
-      description: 'Sản phẩm thời trang nam chính hãng cao cấp Torano...',
+      description: 'Sản phẩm thời trang nam cao cấp MENSTYLE thiết kế hiện đại...',
       isNew: true,
     });
     setIsProductModalOpen(true);
@@ -418,99 +418,121 @@ export const AdminDashboard = ({
                 })}
               </div>
 
-              {/* MOCK BIỂU ĐỒ DOANH THU & ĐƠN HÀNG */}
+              {/* BIỂU ĐỒ DOANH THU & ĐƠN HÀNG THỰC TẾ */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
                 <div className="lg:col-span-8 bg-white p-5 sm:p-6 rounded-2xl border border-neutral-200 shadow-2xs">
                   <div className="flex items-center justify-between mb-6 pb-2 border-b border-neutral-100">
                     <div>
-                      <h3 className="text-base font-bold text-neutral-900">Biểu Đồ Tăng Trưởng Doanh Thu (2026)</h3>
-                      <p className="text-xs text-neutral-400">Cập nhật theo dữ liệu quý gần nhất</p>
+                      <h3 className="text-base font-bold text-neutral-900">Biểu Đồ Doanh Thu Thực Tế (Theo Đơn Đặt)</h3>
+                      <p className="text-xs text-neutral-400">Dữ liệu đơn hàng thực tế ghi nhận từ hệ thống</p>
                     </div>
-                    <span className="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-                      +24.8% So với tháng trước
+                    <span className="text-xs font-bold text-neutral-900 bg-neutral-100 px-3 py-1 rounded-full border border-neutral-200">
+                      Tổng {ordersList.length} đơn hàng
                     </span>
                   </div>
 
-                  {/* Fake CSS Chart Bars */}
-                  <div className="h-48 flex items-end justify-between gap-2 sm:gap-4 pt-4 px-2">
-                    {[
-                      { month: 'T1', val: 40 },
-                      { month: 'T2', val: 55 },
-                      { month: 'T3', val: 35 },
-                      { month: 'T4', val: 65 },
-                      { month: 'T5', val: 50 },
-                      { month: 'T6', val: 78 },
-                      { month: 'T7', val: 90 },
-                      { month: 'T8', val: 68 },
-                      { month: 'T9', val: 95 }
-                    ].map((item, idx) => (
-                      <div key={idx} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
-                        <div className="text-[10px] font-bold text-neutral-700 opacity-0 group-hover:opacity-100 transition">
-                          {item.val}M
-                        </div>
-                        <div 
-                          className={`w-full rounded-t-lg transition-all duration-500 group-hover:brightness-110 ${
-                            idx === 8 ? 'bg-amber-500 shadow-md' : 'bg-neutral-900'
-                          }`}
-                          style={{ height: `${item.val}%` }}
-                        />
-                        <span className="text-[11px] font-medium text-neutral-500">{item.month}</span>
+                  {ordersList.length === 0 ? (
+                    <div className="h-48 flex flex-col items-center justify-center text-center p-4">
+                      <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400 mb-2">
+                        <DollarSign className="w-6 h-6" />
                       </div>
-                    ))}
-                  </div>
+                      <p className="text-xs font-semibold text-neutral-600">Chưa phát sinh doanh thu từ đơn hàng nào</p>
+                      <p className="text-[11px] text-neutral-400 mt-1 max-w-sm">
+                        Khi khách hàng đặt hàng tại trang thanh toán, dữ liệu doanh thu thực tế sẽ tự động thống kê lên biểu đồ tại đây.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 pt-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-200">
+                          <span className="text-[11px] text-neutral-500 font-medium block">Doanh thu chốt (Hoàn thành)</span>
+                          <span className="text-base font-black text-emerald-600">
+                            {formatPrice(ordersList.filter(o => o.status === 'completed').reduce((s, o) => s + (Number(o.total) || 0), 0))}
+                          </span>
+                        </div>
+                        <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-200">
+                          <span className="text-[11px] text-neutral-500 font-medium block">Đang giao & Chờ duyệt</span>
+                          <span className="text-base font-black text-amber-600">
+                            {formatPrice(ordersList.filter(o => o.status === 'pending' || o.status === 'delivering').reduce((s, o) => s + (Number(o.total) || 0), 0))}
+                          </span>
+                        </div>
+                        <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-200">
+                          <span className="text-[11px] text-neutral-500 font-medium block">Đơn hủy</span>
+                          <span className="text-base font-black text-rose-600">
+                            {ordersList.filter(o => o.status === 'cancelled').length} đơn
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="pt-2">
+                        <div className="flex justify-between text-xs font-bold text-neutral-700 mb-1.5">
+                          <span>Tỷ lệ hoàn thành đơn:</span>
+                          <span className="text-emerald-600 font-black">
+                            {ordersList.length > 0 
+                              ? Math.round((ordersList.filter(o => o.status === 'completed').length / ordersList.length) * 100) 
+                              : 0}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-neutral-100 h-2.5 rounded-full overflow-hidden flex">
+                          <div 
+                            className="bg-emerald-500 h-full transition-all duration-500" 
+                            style={{ 
+                              width: `${ordersList.length > 0 ? (ordersList.filter(o => o.status === 'completed').length / ordersList.length) * 100 : 0}%` 
+                            }} 
+                          />
+                          <div 
+                            className="bg-amber-500 h-full transition-all duration-500" 
+                            style={{ 
+                              width: `${ordersList.length > 0 ? (ordersList.filter(o => o.status === 'pending' || o.status === 'delivering').length / ordersList.length) * 100 : 0}%` 
+                            }} 
+                          />
+                          <div 
+                            className="bg-rose-500 h-full transition-all duration-500" 
+                            style={{ 
+                              width: `${ordersList.length > 0 ? (ordersList.filter(o => o.status === 'cancelled').length / ordersList.length) * 100 : 0}%` 
+                            }} 
+                          />
+                        </div>
+                        <div className="flex items-center gap-4 text-[10px] text-neutral-500 mt-2 font-medium">
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Hoàn thành</span>
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Đang xử lý</span>
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Đã hủy</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* Phân loại bán chạy */}
+                {/* Phân loại tỷ trọng danh mục THỰC TẾ theo số lượng sản phẩm */}
                 <div className="lg:col-span-4 bg-white p-5 sm:p-6 rounded-2xl border border-neutral-200 shadow-2xs flex flex-col justify-between">
                   <div>
-                    <h3 className="text-base font-bold text-neutral-900 mb-1">Tỷ Trọng Danh Mục</h3>
-                    <p className="text-xs text-neutral-400 mb-4">Mặt hàng nam bán chạy nhất</p>
+                    <h3 className="text-base font-bold text-neutral-900 mb-1">Tỷ Trọng Danh Mục Thực Tế</h3>
+                    <p className="text-xs text-neutral-400 mb-4">Dựa trên {adminProducts.length} sản phẩm thực tế trong kho</p>
                     
                     <div className="space-y-3.5 text-xs">
-                      <div>
-                        <div className="flex justify-between font-semibold mb-1">
-                          <span>Blazer & Suit Nam</span>
-                          <span>42%</span>
-                        </div>
-                        <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden">
-                          <div className="bg-neutral-950 h-full w-[42%]" />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between font-semibold mb-1">
-                          <span>Áo Sơ Mi & Polo</span>
-                          <span>35%</span>
-                        </div>
-                        <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden">
-                          <div className="bg-amber-500 h-full w-[35%]" />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between font-semibold mb-1">
-                          <span>Quần Âu & Jean</span>
-                          <span>15%</span>
-                        </div>
-                        <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden">
-                          <div className="bg-blue-600 h-full w-[15%]" />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between font-semibold mb-1">
-                          <span>Phụ Kiện Đồ Da</span>
-                          <span>8%</span>
-                        </div>
-                        <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden">
-                          <div className="bg-emerald-500 h-full w-[8%]" />
-                        </div>
-                      </div>
+                      {CATEGORIES.filter(c => c !== 'Tất cả').slice(0, 5).map((catName) => {
+                        const count = adminProducts.filter(p => p.category === catName).length;
+                        const percent = adminProducts.length > 0 ? Math.round((count / adminProducts.length) * 100) : 0;
+                        return (
+                          <div key={catName}>
+                            <div className="flex justify-between font-semibold mb-1">
+                              <span>{catName}</span>
+                              <span className="font-bold text-neutral-950">{count} món ({percent}%)</span>
+                            </div>
+                            <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden">
+                              <div 
+                                className="bg-amber-500 h-full transition-all duration-500" 
+                                style={{ width: `${percent}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
                   <div className="pt-4 border-t border-neutral-100 mt-4 text-center">
-                    <span className="text-xs text-neutral-500">Dữ liệu được cập nhật tự động mỗi 15 phút</span>
+                    <span className="text-xs text-neutral-500">Dữ liệu tự động cập nhật theo kho hàng</span>
                   </div>
                 </div>
               </div>
@@ -890,7 +912,7 @@ export const AdminDashboard = ({
                       required
                       value={productForm.name}
                       onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                      placeholder="Ví dụ: Áo Sơ Mi Torano Oxford Slimfit..."
+                      placeholder="Ví dụ: Áo Sơ Mi MENSTYLE Oxford Slimfit..."
                       className="w-full px-3.5 py-2 border border-neutral-300 rounded-xl text-xs outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                     />
                   </div>

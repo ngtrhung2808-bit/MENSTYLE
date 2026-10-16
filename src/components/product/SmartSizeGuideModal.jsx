@@ -9,7 +9,7 @@ export const SmartSizeGuideModal = ({ isOpen, onClose, productCategory = 'Áo Po
   const [weightKg, setWeightKg] = useState(66);
   const [fitPreference, setFitPreference] = useState('vừa-vặn'); // 'ôm-body' | 'vừa-vặn' | 'thoải-mái'
 
-  // Thuật toán tính toán Size chuẩn thời trang nam Torano.vn
+  // Thuật toán tính toán Size chuẩn thời trang nam MENSTYLE
   const recommendedSize = useMemo(() => {
     let baseScore = 0;
 
@@ -69,7 +69,7 @@ export const SmartSizeGuideModal = ({ isOpen, onClose, productCategory = 'Áo Po
             <Ruler className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-lg font-black text-neutral-950">Gợi Ý Chọn Size Chuẩn Torano</h3>
+            <h3 className="text-lg font-black text-neutral-950">Gợi Ý Chọn Size Chuẩn MENSTYLE</h3>
             <p className="text-xs text-neutral-500">Phù hợp danh mục: <strong>{productCategory}</strong></p>
           </div>
         </div>
@@ -177,7 +177,7 @@ export const SmartSizeGuideModal = ({ isOpen, onClose, productCategory = 'Áo Po
         {/* Bảng Size Chuẩn Chi Tiết (Collapsible hoặc hiển thị ngay) */}
         <div className="mt-5 pt-4 border-t border-neutral-100">
           <p className="text-xs font-bold text-neutral-800 mb-2 flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5 text-neutral-500" /> Bảng quy đổi thông số cơ bản Torano:
+            <Info className="w-3.5 h-3.5 text-neutral-500" /> Bảng quy đổi thông số cơ bản MENSTYLE:
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-center text-xs border border-neutral-200 rounded-lg overflow-hidden">
