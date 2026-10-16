@@ -300,24 +300,54 @@ export default function App() {
               }} 
             />
 
-            {/* 4. Best Seller Men Products */}
-            <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12">
+            {/* 4. Best Seller Men Products - Chuẩn Catalog Torano */}
+            <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-14">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-8 gap-3 sm:gap-4">
                 <div>
-                  <span className="text-xs font-bold text-amber-600 uppercase tracking-wider flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> Bán chạy nhất tuần
+                  <span className="text-xs font-bold text-amber-600 uppercase tracking-widest flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" /> Bán chạy nhất tuần • Chuẩn Torano
                   </span>
-                  <h2 className="text-xl sm:text-3xl font-black text-neutral-900 mt-1">Được Phái Mạnh Ưa Chuộng</h2>
+                  <h2 className="text-2xl sm:text-3xl font-black text-neutral-950 mt-1">Được Phái Mạnh Ưa Chuộng Nhất</h2>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-                  <Button variant="secondary" size="sm" className="rounded-full text-xs shrink-0">Mới nhất</Button>
-                  <Button variant="outline" size="sm" className="rounded-full text-xs shrink-0">Bán chạy</Button>
-                  <Button variant="ghost" size="sm" className="rounded-full text-rose-600 font-semibold text-xs shrink-0">Khuyến mãi</Button>
+                  <Button 
+                    onClick={() => handleNavigateWithCategory('Tất cả')}
+                    variant="secondary" 
+                    size="sm" 
+                    className="rounded-full text-xs shrink-0 cursor-pointer"
+                  >
+                    Tất cả
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavigateWithCategory('Áo Polo')}
+                    variant="outline" 
+                    size="sm" 
+                    className="rounded-full text-xs shrink-0 cursor-pointer"
+                  >
+                    Polo Smart
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavigateWithCategory('Áo Sơ Mi')}
+                    variant="outline" 
+                    size="sm" 
+                    className="rounded-full text-xs shrink-0 cursor-pointer"
+                  >
+                    Sơ Mi Kháng Khuẩn
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavigateWithCategory('Quần Âu & Jean')}
+                    variant="ghost" 
+                    size="sm" 
+                    className="rounded-full text-rose-600 font-bold text-xs shrink-0 cursor-pointer bg-rose-50"
+                  >
+                    Khuyến Mãi Hot 🔥
+                  </Button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-6">
-                {MOCK_PRODUCTS.slice(0, 4).map((product) => (
+              {/* Grid 8 sản phẩm Torano nổi bật */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+                {MOCK_PRODUCTS.slice(0, 8).map((product) => (
                   <ProductCard 
                     key={product.id} 
                     product={product} 
@@ -329,17 +359,42 @@ export default function App() {
                 ))}
               </div>
 
+              {/* Banner Flash Sale Giữa Trang Chuẩn Torano */}
+              <div className="mt-10 sm:mt-14 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-neutral-950 via-neutral-900 to-amber-950 p-6 sm:p-10 text-white flex flex-col md:flex-row items-center justify-between gap-6 border border-neutral-800 shadow-xl">
+                <div className="space-y-2 text-center md:text-left">
+                  <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">
+                    Ưu đãi độc quyền dành riêng quý ông
+                  </span>
+                  <h3 className="text-xl sm:text-3xl font-black">
+                    Bộ Sưu Tập Công Sở <span className="text-amber-400">Giảm Đến 35%</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-neutral-400 max-w-md">
+                    Áp dụng cho dòng Áo Polo Silk Touch, Sơ mi Modal Silk và Quần âu co giãn 4 chiều. Đổi trả miễn phí trong 7 ngày.
+                  </p>
+                </div>
+
+                <Button 
+                  onClick={() => handleNavigateWithCategory('Tất cả')}
+                  variant="primary" 
+                  size="lg" 
+                  className="rounded-xl bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold px-8 py-3 text-xs sm:text-sm shrink-0 cursor-pointer shadow-lg"
+                >
+                  Mua Ngay Kẻo Hết <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+
               <div className="mt-8 sm:mt-12 text-center">
                 <Button 
                   onClick={() => {
+                    setFilterCategory('Tất cả');
                     setCurrentTab('products');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   variant="outline" 
                   size="lg" 
-                  className="rounded-full border-neutral-300 px-6 sm:px-8 hover:border-neutral-900 font-bold text-xs sm:text-base w-full sm:w-auto cursor-pointer"
+                  className="rounded-full border-neutral-300 px-6 sm:px-8 hover:border-neutral-950 font-bold text-xs sm:text-base w-full sm:w-auto cursor-pointer"
                 >
-                  Xem toàn bộ 180+ sản phẩm Nam <ArrowRight className="w-4 h-4 ml-2" />
+                  Xem toàn bộ 45+ sản phẩm Torano <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </section>
