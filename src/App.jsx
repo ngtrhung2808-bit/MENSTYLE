@@ -219,6 +219,7 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
         cartCount={totalCartCount}
         currentTab={currentTab}
+        activeCategory={filterCategory}
         currentUser={currentUser}
         onOpenAuth={() => setIsAuthOpen(true)}
         searchValue={searchQuery}
@@ -273,6 +274,7 @@ export default function App() {
             onQuickView={handleOpenDetail}
             onAddToCart={handleAddToCart}
             initialCategory={filterCategory}
+            onCategoryChange={(cat) => setFilterCategory(cat)}
             searchQuery={searchQuery}
             wishlistIds={wishlistItems.map(w => w.id)}
             onToggleWishlist={handleToggleWishlist}

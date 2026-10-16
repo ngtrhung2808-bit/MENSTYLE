@@ -6,6 +6,7 @@ export const Header = ({
   onOpenCart, 
   cartCount = 0, 
   currentTab = 'home', 
+  activeCategory = 'Tất cả',
   onNavigate, 
   currentUser, 
   onOpenAuth,
@@ -53,37 +54,37 @@ export const Header = ({
           <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-semibold text-neutral-600">
             <button 
               onClick={() => onNavigate && onNavigate('home')} 
-              className={`transition cursor-pointer ${currentTab === 'home' ? 'text-amber-600 font-bold' : 'hover:text-neutral-950'}`}
+              className={`transition cursor-pointer ${currentTab === 'home' ? 'text-amber-600 font-bold border-b-2 border-amber-600 pb-0.5' : 'hover:text-neutral-950'}`}
             >
               Trang chủ
             </button>
             <button 
               onClick={() => onNavigate && onNavigate('products', 'Tất cả')} 
-              className={`transition cursor-pointer ${currentTab === 'products' ? 'text-amber-600 font-bold' : 'hover:text-neutral-950'}`}
+              className={`transition cursor-pointer ${currentTab === 'products' && activeCategory === 'Tất cả' ? 'text-amber-600 font-bold border-b-2 border-amber-600 pb-0.5' : 'hover:text-neutral-950'}`}
             >
               Tất Cả Sản Phẩm
             </button>
             <button 
               onClick={() => onNavigate && onNavigate('products', 'Áo Sơ Mi')} 
-              className="hover:text-neutral-950 transition cursor-pointer"
+              className={`transition cursor-pointer ${currentTab === 'products' && activeCategory === 'Áo Sơ Mi' ? 'text-amber-600 font-bold border-b-2 border-amber-600 pb-0.5' : 'hover:text-neutral-950'}`}
             >
               Áo Sơ Mi
             </button>
             <button 
               onClick={() => onNavigate && onNavigate('products', 'Áo Polo')} 
-              className="hover:text-neutral-950 transition cursor-pointer"
+              className={`transition cursor-pointer ${currentTab === 'products' && activeCategory === 'Áo Polo' ? 'text-amber-600 font-bold border-b-2 border-amber-600 pb-0.5' : 'hover:text-neutral-950'}`}
             >
               Áo Polo
             </button>
             <button 
               onClick={() => onNavigate && onNavigate('products', 'Blazer & Suit')} 
-              className="hover:text-neutral-950 transition cursor-pointer"
+              className={`transition cursor-pointer ${currentTab === 'products' && activeCategory === 'Blazer & Suit' ? 'text-amber-600 font-bold border-b-2 border-amber-600 pb-0.5' : 'hover:text-neutral-950'}`}
             >
               Blazer & Suit
             </button>
             <button 
               onClick={() => onNavigate && onNavigate('products', 'Quần Âu & Jean')} 
-              className="hover:text-neutral-950 transition cursor-pointer"
+              className={`transition cursor-pointer ${currentTab === 'products' && activeCategory === 'Quần Âu & Jean' ? 'text-amber-600 font-bold border-b-2 border-amber-600 pb-0.5' : 'hover:text-neutral-950'}`}
             >
               Quần Âu & Jean
             </button>
