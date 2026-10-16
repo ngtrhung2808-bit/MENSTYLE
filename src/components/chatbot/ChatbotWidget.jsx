@@ -11,7 +11,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 
-export const ChatbotWidget = () => {
+export const ChatbotWidget = ({ onOpenProduct }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -47,10 +47,26 @@ export const ChatbotWidget = () => {
     // Giả lập bot phản hồi sau 600ms
     setTimeout(() => {
       let replyText = 'Cảm ơn quý ông đã liên hệ! Stylist MENSTYLE khuyên bạn nên chọn form Slim-fit vừa vặn tôn dáng. Bạn cao và nặng bao nhiêu kg để mình tư vấn size chuẩn nhất nhé?';
+      let suggestedItem = null;
+
       if (text.toLowerCase().includes('đổi trả')) {
-        replyText = 'MENSTYLE hỗ trợ đổi hàng miễn phí trong 30 ngày tận nơi. Shipper sẽ mang size mới đến và nhận lại sản phẩm cũ tại nhà cho bạn!';
+        replyText = 'MENSTYLE hỗ trợ đổi hàng miễn phí trong 7 ngày tận nơi theo đúng quy chuẩn Torano. Shipper sẽ mang size mới đến và nhận lại hàng tại nhà cho bạn!';
       } else if (text.toLowerCase().includes('blazer') || text.toLowerCase().includes('tiệc')) {
         replyText = 'Với sự kiện hoặc tiệc tối, bạn nên phối Áo Blazer Italian Wool Đen cùng Sơ mi trắng Nano và Giày da Oxford để có vẻ ngoài lịch lãm, quyền lực nhất!';
+        suggestedItem = {
+          name: 'Áo Blazer Nam Italian Wool Dáng Slim-fit',
+          price: 1250000,
+          image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop',
+          category: 'Blazer & Suit'
+        };
+      } else if (text.toLowerCase().includes('sơ mi') || text.toLowerCase().includes('size')) {
+        replyText = 'Dòng sơ mi Bamboo kháng khuẩn chống nhăn phom Regular-fit là lựa chọn hoàn hảo nhất cho công sở:';
+        suggestedItem = {
+          name: 'Áo Sơ Mi Trắng Kháng Khuẩn Chống Nhăn Luxury',
+          price: 450000,
+          image: 'https://images.unsplash.com/photo-1620012253295-c15c429fbb3e?q=80&w=600&auto=format&fit=crop',
+          category: 'Áo Sơ Mi'
+        };
       }
 
       setMessages(prev => [
@@ -59,6 +75,7 @@ export const ChatbotWidget = () => {
           id: Date.now() + 1,
           sender: 'bot',
           text: replyText,
+          suggestedItem,
           time: 'Vừa xong'
         }
       ]);
@@ -106,13 +123,32 @@ export const ChatbotWidget = () => {
                       <Bot className="w-3.5 h-3.5" />
                     </div>
                   )}
-                  <div className={`max-w-[80%] rounded-2xl p-3 text-xs leading-relaxed ${
+                  <div className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed ${
                     isBot 
                       ? 'bg-white text-neutral-800 border border-neutral-200/80 shadow-2xs rounded-tl-none' 
                       : 'bg-neutral-950 text-white rounded-br-none shadow-sm'
                   }`}>
                     <p>{m.text}</p>
-                    <span className={`text-[9px] block mt-1 ${isBot ? 'text-neutral-400' : 'text-neutral-400 text-right'}`}>
+
+                    {/* Thẻ gợi ý sản phẩm trực quan */}
+                    {m.suggestedItem && (
+                      <div className="mt-2.5 p-2 rounded-xl bg-neutral-50 border border-neutral-200 flex gap-2.5 items-center">
+                        <img 
+                          src={m.suggestedItem.image} 
+                          alt={m.suggestedItem.name} 
+                          className="w-12 h-14 rounded-lg object-cover shrink-0" 
+                        />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[9px] font-bold text-amber-600 uppercase block">{m.suggestedItem.category}</span>
+                          <h5 className="font-bold text-[11px] text-neutral-900 truncate">{m.suggestedItem.name}</h5>
+                          <span className="text-[11px] font-black text-neutral-950 block">
+                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(m.suggestedItem.price)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    <span className={`text-[9px] block mt-1.5 ${isBot ? 'text-neutral-400' : 'text-neutral-400 text-right'}`}>
                       {m.time}
                     </span>
                   </div>

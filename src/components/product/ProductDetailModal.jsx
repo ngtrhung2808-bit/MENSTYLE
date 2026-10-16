@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Inputs';
+import { SmartSizeGuideModal } from './SmartSizeGuideModal';
 
 export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
   if (!isOpen || !product) return null;
@@ -23,6 +24,7 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0]?.name || '');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description'); // 'description' | 'sizeGuide' | 'reviews'
+  const [isSmartSizeOpen, setIsSmartSizeOpen] = useState(false);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
@@ -158,10 +160,11 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
                   <div className="flex justify-between items-center text-xs font-semibold text-neutral-800 mb-2">
                     <span>Chọn Kích cỡ: <strong className="text-amber-600">{selectedSize}</strong></span>
                     <button 
-                      onClick={() => setActiveTab('sizeGuide')}
-                      className="text-neutral-500 hover:text-neutral-950 flex items-center gap-1 text-[11px] underline"
+                      type="button"
+                      onClick={() => setIsSmartSizeOpen(true)}
+                      className="text-amber-700 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-md flex items-center gap-1.5 text-xs font-bold transition border border-amber-200 cursor-pointer"
                     >
-                      <Ruler className="w-3.5 h-3.5" /> Hướng dẫn chọn size
+                      <Ruler className="w-3.5 h-3.5" /> Gợi ý đo size chuẩn
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -310,6 +313,16 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
           </div>
         </div>
       </div>
+
+      {/* Modal Đo Size Thông Minh Chuẩn Torano */}
+      <SmartSizeGuideModal 
+        isOpen={isSmartSizeOpen}
+        onClose={() => setIsSmartSizeOpen(false)}
+        productCategory={product.category}
+        onSelectSize={(size) => {
+          setSelectedSize(size);
+        }}
+      />
     </div>
   );
 };

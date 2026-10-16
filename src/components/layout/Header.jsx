@@ -10,7 +10,9 @@ export const Header = ({
   currentUser, 
   onOpenAuth,
   searchValue = '',
-  onSearchChange
+  onSearchChange,
+  wishlistCount = 0,
+  onOpenWishlist
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -106,10 +108,20 @@ export const Header = ({
 
           {/* Cụm Phải: Action Icons */}
           <div className="flex items-center gap-1 sm:gap-2">
-            <Button variant="ghost" size="icon" aria-label="Yêu thích" className="hidden sm:inline-flex relative p-2">
-              <Heart className="w-5 h-5 text-neutral-700" />
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
-            </Button>
+            <button 
+              type="button"
+              onClick={onOpenWishlist}
+              aria-label="Yêu thích" 
+              className="relative p-2 text-neutral-700 hover:text-rose-600 hover:bg-neutral-100 rounded-full transition cursor-pointer"
+              title="Danh sách yêu thích"
+            >
+              <Heart className="w-5 h-5" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
 
             {/* Nút Tài khoản / Đăng nhập */}
             {currentUser ? (

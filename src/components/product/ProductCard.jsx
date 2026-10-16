@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Heart, Eye, ShoppingCart, Star } from 'lucide-react';
 import { Badge } from '../common/Inputs';
 
-export const ProductCard = ({ product, onQuickView, onAddToCart }) => {
+export const ProductCard = ({ product, onQuickView, onAddToCart, isWishlisted = false, onToggleWishlist }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
+  const [localLiked, setLocalLiked] = useState(false);
+
+  const isLiked = onToggleWishlist !== undefined ? isWishlisted : localLiked;
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
@@ -48,7 +50,11 @@ export const ProductCard = ({ product, onQuickView, onAddToCart }) => {
             aria-label="Thêm vào yêu thích" 
             onClick={(e) => {
               e.stopPropagation();
-              setIsLiked(!isLiked);
+              if (onToggleWishlist) {
+                onToggleWishlist(product);
+              } else {
+                setLocalLiked(!localLiked);
+              }
             }}
             className={`w-8 h-8 rounded-full backdrop-blur-sm shadow flex items-center justify-center transition ${
               isLiked 

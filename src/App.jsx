@@ -7,6 +7,7 @@ import { ProductCard } from './components/product/ProductCard';
 import { ProductListingPage } from './components/product/ProductListingPage';
 import { ProductDetailModal } from './components/product/ProductDetailModal';
 import { MiniCartDrawer } from './components/cart/MiniCartDrawer';
+import { WishlistDrawer } from './components/cart/WishlistDrawer';
 import { CheckoutPage } from './components/checkout/CheckoutPage';
 import { UserProfilePage } from './components/profile/UserProfilePage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
@@ -33,6 +34,11 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [wishlistItems, setWishlistItems] = useState(() => {
+    const saved = localStorage.getItem('menstyle_wishlist');
+    return saved ? JSON.parse(saved) : [MOCK_PRODUCTS[0], MOCK_PRODUCTS[1]]; // Khởi tạo 2 món mẫu
+  });
   const [toasts, setToasts] = useState([]);
 
   const addToast = (title, message, type = 'success') => {
@@ -133,6 +139,32 @@ export default function App() {
     addToast('Đã Xóa Khỏi Giỏ', 'Sản phẩm đã được xóa khỏi giỏ hàng của bạn.', 'info');
   };
 
+  // Quản lý Yêu thích (Wishlist)
+  const handleToggleWishlist = (product) => {
+    setWishlistItems(prev => {
+      const exists = prev.some(item => item.id === product.id);
+      let updated;
+      if (exists) {
+        updated = prev.filter(item => item.id !== product.id);
+        addToast('Đã Bỏ Yêu Thích', `Đã xóa "${product.name}" khỏi danh sách lưu.`, 'info');
+      } else {
+        updated = [product, ...prev];
+        addToast('Đã Thêm Yêu Thích', `Đã lưu "${product.name}" vào danh sách yêu thích!`, 'success');
+      }
+      localStorage.setItem('menstyle_wishlist', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleRemoveFromWishlist = (productId) => {
+    setWishlistItems(prev => {
+      const updated = prev.filter(item => item.id !== productId);
+      localStorage.setItem('menstyle_wishlist', JSON.stringify(updated));
+      return updated;
+    });
+    addToast('Đã Xóa Yêu Thích', 'Đã xóa sản phẩm khỏi danh sách yêu thích.', 'info');
+  };
+
   // Kiểm tra môi trường Localhost & URL Admin
   const isLocalHost = typeof window !== 'undefined' && (
     window.location.hostname === 'localhost' || 
@@ -196,6 +228,8 @@ export default function App() {
             setCurrentTab('products');
           }
         }}
+        wishlistCount={wishlistItems.length}
+        onOpenWishlist={() => setIsWishlistOpen(true)}
         onNavigate={(tab, catName) => {
           if (tab === 'profile' && !currentUser) {
             setIsAuthOpen(true);
@@ -240,6 +274,8 @@ export default function App() {
             onAddToCart={handleAddToCart}
             initialCategory={filterCategory}
             searchQuery={searchQuery}
+            wishlistIds={wishlistItems.map(w => w.id)}
+            onToggleWishlist={handleToggleWishlist}
           />
         ) : (
           /* TRANG CHỦ (HOME) */
@@ -285,6 +321,8 @@ export default function App() {
                     product={product} 
                     onQuickView={handleOpenDetail}
                     onAddToCart={handleAddToCart}
+                    isWishlisted={wishlistItems.some(w => w.id === product.id)}
+                    onToggleWishlist={handleToggleWishlist}
                   />
                 ))}
               </div>
@@ -353,6 +391,16 @@ export default function App() {
           setCurrentTab('checkout');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
+      />
+
+      {/* 8.1. Drawer Danh Sách Yêu Thích (Wishlist) */}
+      <WishlistDrawer
+        isOpen={isWishlistOpen}
+        onClose={() => setIsWishlistOpen(false)}
+        wishlistItems={wishlistItems}
+        onRemoveFromWishlist={handleRemoveFromWishlist}
+        onAddToCart={handleAddToCart}
+        onOpenProductDetail={handleOpenDetail}
       />
 
       {/* 9. Cửa Sổ Chatbot Trợ Lý Stylist (Tuần 4) */}

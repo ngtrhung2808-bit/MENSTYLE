@@ -4,7 +4,14 @@ import { ProductCard } from './ProductCard';
 import { ArrowUpDown, SlidersHorizontal, Grid, ListFilter } from 'lucide-react';
 import { MOCK_PRODUCTS } from '../../data/mockProducts';
 
-export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory = 'Tất cả', searchQuery = '' }) => {
+export const ProductListingPage = ({ 
+  onQuickView, 
+  onAddToCart, 
+  initialCategory = 'Tất cả', 
+  searchQuery = '',
+  wishlistIds = [],
+  onToggleWishlist
+}) => {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedSize, setSelectedSize] = useState('');
   const [priceRange, setPriceRange] = useState(2000000);
@@ -155,6 +162,8 @@ export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory =
                   product={product}
                   onQuickView={onQuickView}
                   onAddToCart={onAddToCart}
+                  isWishlisted={wishlistIds.includes(product.id)}
+                  onToggleWishlist={onToggleWishlist}
                 />
               ))}
             </div>
