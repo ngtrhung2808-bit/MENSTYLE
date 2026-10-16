@@ -80,6 +80,12 @@ export const Footer = ({ onNavigate }) => {
           <div className="flex items-center gap-6">
             <a href="#" className="hover:text-neutral-400">Điều khoản dịch vụ</a>
             <a href="#" className="hover:text-neutral-400">Chính sách bảo mật</a>
+            <button 
+              onClick={() => onNavigate && onNavigate('admin')}
+              className="text-neutral-400 hover:text-amber-400 font-bold transition flex items-center gap-1 cursor-pointer"
+            >
+              🔒 Trang Quản Trị (Admin)
+            </button>
           </div>
         </div>
       </div>

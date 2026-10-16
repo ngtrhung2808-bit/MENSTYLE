@@ -63,13 +63,35 @@ export const AdminDashboard = ({ onBackToClient, onLogout }) => {
     }
   ];
 
-  // Mock Recent Orders table
-  const recentOrders = [
-    { id: 'MS-892140', customer: 'Lê Hoàng Nam', items: 'Áo Blazer Italian Wool (x1)', total: 1250000, status: 'delivering', statusText: 'Đang giao', date: '22/09/2026' },
-    { id: 'MS-892139', customer: 'Trần Minh Đức', items: 'Áo Polo Pima Cotton (x2)', total: 760000, status: 'completed', statusText: 'Hoàn thành', date: '22/09/2026' },
-    { id: 'MS-892138', customer: 'Vũ Quốc Khánh', items: 'Quần Tây 4 Chiều (x1)', total: 520000, status: 'pending', statusText: 'Chờ xác nhận', date: '21/09/2026' },
-    { id: 'MS-892137', customer: 'Nguyễn Thành Long', items: 'Áo Sơ Mi Trắng Nano (x1)', total: 450000, status: 'completed', statusText: 'Hoàn thành', date: '21/09/2026' },
-  ];
+  // Danh sách đơn hàng đồng bộ thời gian thực từ Khách hàng
+  const [ordersList, setOrdersList] = useState(() => {
+    const saved = localStorage.getItem('menstyle_orders');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return [
+      { id: 'MS-892140', customer: 'Lê Hoàng Nam', items: 'Áo Blazer Italian Wool (x1)', total: 1250000, status: 'delivering', statusText: 'Đang giao', date: '22/09/2026' },
+      { id: 'MS-892139', customer: 'Trần Minh Đức', items: 'Áo Polo Pima Cotton (x2)', total: 760000, status: 'completed', statusText: 'Hoàn thành', date: '22/09/2026' },
+      { id: 'MS-892138', customer: 'Vũ Quốc Khánh', items: 'Quần Tây 4 Chiều (x1)', total: 520000, status: 'pending', statusText: 'Chờ xác nhận', date: '21/09/2026' },
+      { id: 'MS-892137', customer: 'Nguyễn Thành Long', items: 'Áo Sơ Mi Trắng Nano (x1)', total: 450000, status: 'completed', statusText: 'Hoàn thành', date: '21/09/2026' },
+    ];
+  });
+
+  const handleUpdateOrderStatus = (orderId, newStatus) => {
+    let statusText = 'Chờ xác nhận';
+    if (newStatus === 'delivering') statusText = 'Đang giao';
+    if (newStatus === 'completed') statusText = 'Hoàn thành';
+    if (newStatus === 'cancelled') statusText = 'Đã hủy';
+
+    const updated = ordersList.map(o => o.id === orderId ? { ...o, status: newStatus, statusText } : o);
+    setOrdersList(updated);
+    localStorage.setItem('menstyle_orders', JSON.stringify(updated));
+  };
 
   const formatPrice = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
 
@@ -351,7 +373,7 @@ export const AdminDashboard = ({ onBackToClient, onLogout }) => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-100">
-                      {recentOrders.map((ord) => (
+                      {ordersList.slice(0, 5).map((ord) => (
                         <tr key={ord.id} className="hover:bg-neutral-50/70 transition">
                           <td className="p-4 font-bold text-neutral-900">{ord.id}</td>
                           <td className="p-4 font-semibold text-neutral-800">{ord.customer}</td>
@@ -481,27 +503,44 @@ export const AdminDashboard = ({ onBackToClient, onLogout }) => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-100">
-                    {recentOrders.map((ord) => (
+                    {ordersList.map((ord) => (
                       <tr key={ord.id} className="hover:bg-neutral-50/70 transition">
                         <td className="p-4 font-bold text-neutral-900">{ord.id}</td>
-                        <td className="p-4 font-semibold text-neutral-800">{ord.customer}</td>
-                        <td className="p-4 text-neutral-600">{ord.items}</td>
+                        <td className="p-4 font-semibold text-neutral-800">
+                          <div>{ord.customer}</div>
+                          {ord.phone && <div className="text-[11px] text-neutral-400 font-normal">{ord.phone}</div>}
+                        </td>
+                        <td className="p-4 text-neutral-600 max-w-sm">
+                          <p className="line-clamp-2">{ord.items}</p>
+                          {ord.paymentMethod && (
+                            <span className="text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 mt-1 inline-block">
+                              PT: {ord.paymentMethod === 'cod' ? 'COD' : ord.paymentMethod === 'banking' ? 'VietQR' : 'VNPay'}
+                            </span>
+                          )}
+                        </td>
                         <td className="p-4 font-bold text-neutral-950">{formatPrice(ord.total)}</td>
                         <td className="p-4">
                           <span className={`font-bold px-2.5 py-1 rounded-full border inline-flex items-center gap-1 ${
                             ord.status === 'completed' 
                               ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                              : ord.status === 'cancelled'
+                              ? 'bg-rose-50 text-rose-700 border-rose-200'
                               : 'bg-amber-50 text-amber-700 border-amber-200'
                           }`}>
-                            {ord.statusText}
+                            {ord.statusText || 'Chờ xác nhận'}
                           </span>
                         </td>
                         <td className="p-4 text-neutral-400">{ord.date}</td>
                         <td className="p-4 text-right">
-                          <select className="bg-neutral-100 border border-neutral-300 rounded-lg text-xs px-2 py-1 outline-none">
-                            <option>Đang giao</option>
-                            <option>Hoàn thành</option>
-                            <option>Hủy đơn</option>
+                          <select 
+                            value={ord.status || 'pending'}
+                            onChange={(e) => handleUpdateOrderStatus(ord.id, e.target.value)}
+                            className="bg-neutral-100 border border-neutral-300 rounded-lg text-xs px-2 py-1 outline-none font-medium cursor-pointer"
+                          >
+                            <option value="pending">Chờ xác nhận</option>
+                            <option value="delivering">Đang giao</option>
+                            <option value="completed">Hoàn thành</option>
+                            <option value="cancelled">Hủy đơn</option>
                           </select>
                         </td>
                       </tr>

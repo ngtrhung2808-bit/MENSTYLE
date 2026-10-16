@@ -250,7 +250,29 @@ export default function App() {
             onRequireAuth={() => setIsAuthOpen(true)}
             onBackToShopping={() => setCurrentTab('products')}
             onOrderSuccess={(orderData) => {
-              addToast('Đặt Hàng Thành Công', `Mã đơn hàng: ${orderData.orderCode}`);
+              addToast('Đặt Hàng Thành Công', `Mã đơn hàng: ${orderData.orderCode}. Đơn hàng đã được đồng bộ vào hệ thống quản trị!`);
+              
+              // Lưu vào danh sách đơn hàng toàn hệ thống
+              const existingOrders = JSON.parse(localStorage.getItem('menstyle_orders') || '[]');
+              const newOrder = {
+                id: orderData.orderCode,
+                customer: orderData.fullName || currentUser?.name || 'Quý Ông Khách Hàng',
+                email: orderData.email || currentUser?.email || '',
+                phone: orderData.phone || '',
+                address: `${orderData.address}, ${orderData.district ? orderData.district + ', ' : ''}${orderData.province}`,
+                items: orderData.cartItems.map(i => `${i.name} (${i.selectedSize || 'L'}, x${i.quantity})`).join(', '),
+                cartItems: orderData.cartItems,
+                total: orderData.grandTotal,
+                paymentMethod: orderData.paymentMethod,
+                paymentStatus: orderData.paymentMethod === 'cod' ? 'Chưa thanh toán' : 'Đã thanh toán (Chờ khớp)',
+                status: 'pending',
+                statusText: 'Chờ xác nhận',
+                date: orderData.createdAt
+              };
+              
+              const updatedOrders = [newOrder, ...existingOrders];
+              localStorage.setItem('menstyle_orders', JSON.stringify(updatedOrders));
+
               setCartItems([]);
               localStorage.removeItem('menstyle_cart');
               setCurrentTab(currentUser ? 'profile' : 'home');

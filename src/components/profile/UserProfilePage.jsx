@@ -37,51 +37,67 @@ export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
 
   const [profileSuccess, setProfileSuccess] = useState('');
 
-  // Mock Lịch sử đơn hàng
-  const orders = [
-    {
-      id: 'MS-892140',
-      date: '20/09/2026',
-      total: 1250000,
-      status: 'delivering', // 'delivering' | 'completed' | 'cancelled'
-      statusLabel: 'Đang giao hàng',
-      items: [
-        {
-          name: 'Áo Blazer Nam Italian Wool Dáng Slim-fit',
-          size: 'L',
-          color: 'Đen Sang Trọng',
-          price: 1250000,
-          quantity: 1,
-          image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop',
+  // Lịch sử đơn hàng đồng bộ thời gian thực từ hệ thống
+  const [orders, setOrders] = useState(() => {
+    const saved = localStorage.getItem('menstyle_orders');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Lọc các đơn của tài khoản hiện tại, hoặc hiển thị các đơn mới đặt
+          const userOrders = parsed.filter(o => !o.email || !user?.email || o.email.toLowerCase() === user.email.toLowerCase());
+          if (userOrders.length > 0) {
+            return userOrders.map(o => ({
+              id: o.id,
+              date: o.date,
+              total: o.total,
+              status: o.status || 'delivering',
+              statusLabel: o.statusText || 'Đang xử lý',
+              items: (o.cartItems && o.cartItems.length > 0) ? o.cartItems.map(i => ({
+                name: i.name,
+                size: i.selectedSize || 'L',
+                color: i.selectedColor || 'Mặc định',
+                price: i.price,
+                quantity: i.quantity,
+                image: i.images?.[0] || i.image || 'https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg'
+              })) : [
+                {
+                  name: o.items || 'Sản phẩm thời trang Torano',
+                  size: 'L',
+                  color: 'Tiêu chuẩn',
+                  price: o.total,
+                  quantity: 1,
+                  image: 'https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg'
+                }
+              ]
+            }));
+          }
         }
-      ]
-    },
-    {
-      id: 'MS-771239',
-      date: '05/09/2026',
-      total: 830000,
-      status: 'completed',
-      statusLabel: 'Đã giao thành công',
-      items: [
-        {
-          name: 'Áo Sơ Mi Trắng Kháng Khuẩn Chống Nhăn Luxury',
-          size: 'M',
-          color: 'Trắng Tinh Khôi',
-          price: 450000,
-          quantity: 1,
-          image: 'https://images.unsplash.com/photo-1620012253295-c15c429fbb3e?q=80&w=600&auto=format&fit=crop',
-        },
-        {
-          name: 'Áo Polo Nam Pima Cotton Bo Dệt Cao Cấp',
-          size: 'M',
-          color: 'Xanh Rêu',
-          price: 380000,
-          quantity: 1,
-          image: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=600&auto=format&fit=crop',
-        }
-      ]
+      } catch (e) {
+        console.error(e);
+      }
     }
-  ];
+    return [
+      {
+        id: 'MS-892140',
+        date: '20/09/2026',
+        total: 1250000,
+        status: 'delivering', // 'delivering' | 'completed' | 'cancelled'
+        statusLabel: 'Đang giao hàng',
+        items: [
+          {
+            name: 'Áo blazer túi cơi ngực FWTV002',
+            size: 'L',
+            color: 'Đen Sang Trọng',
+            price: 1250000,
+            quantity: 1,
+            image: 'https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg',
+          }
+        ]
+      }
+    ];
+  });
+
 
   const formatPrice = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
 
