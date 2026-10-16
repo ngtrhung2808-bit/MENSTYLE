@@ -37,7 +37,7 @@ export default function App() {
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [wishlistItems, setWishlistItems] = useState(() => {
     const saved = localStorage.getItem('menstyle_wishlist');
-    return saved ? JSON.parse(saved) : [MOCK_PRODUCTS[0], MOCK_PRODUCTS[1]]; // Khởi tạo 2 món mẫu
+    return saved ? JSON.parse(saved) : []; // Mặc định rỗng khi khách mới vào web
   });
   const [toasts, setToasts] = useState([]);
 
@@ -55,21 +55,11 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Giỏ hàng state giả lập
-  const [cartItems, setCartItems] = useState([
-    {
-      ...MOCK_PRODUCTS[0],
-      selectedSize: 'L',
-      selectedColor: 'Đen Sang Trọng',
-      quantity: 1,
-    },
-    {
-      ...MOCK_PRODUCTS[2],
-      selectedSize: 'M',
-      selectedColor: 'Đen Huyền Bí',
-      quantity: 1,
-    }
-  ]);
+  // Giỏ hàng state (mặc định trống khi khách mới vào web)
+  const [cartItems, setCartItems] = useState(() => {
+    const saved = localStorage.getItem('menstyle_cart');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -89,21 +79,23 @@ export default function App() {
         item => item.id === productToAdd.id && item.selectedSize === size && item.selectedColor === color
       );
 
+      let updated;
       if (existingIndex > -1) {
-        const updated = [...prev];
+        updated = [...prev];
         updated[existingIndex].quantity += (productToAdd.quantity || 1);
-        return updated;
+      } else {
+        updated = [
+          ...prev,
+          {
+            ...productToAdd,
+            selectedSize: size,
+            selectedColor: color,
+            quantity: productToAdd.quantity || 1,
+          }
+        ];
       }
-
-      return [
-        ...prev,
-        {
-          ...productToAdd,
-          selectedSize: size,
-          selectedColor: color,
-          quantity: productToAdd.quantity || 1,
-        }
-      ];
+      localStorage.setItem('menstyle_cart', JSON.stringify(updated));
+      return updated;
     });
 
     setIsDetailOpen(false);
@@ -113,8 +105,8 @@ export default function App() {
 
   // Cập nhật số lượng
   const handleUpdateQuantity = (targetItem, newQuantity) => {
-    setCartItems(prev => 
-      prev.map(item => {
+    setCartItems(prev => {
+      const updated = prev.map(item => {
         if (
           item.id === targetItem.id && 
           item.selectedSize === targetItem.selectedSize && 
@@ -123,19 +115,23 @@ export default function App() {
           return { ...item, quantity: newQuantity };
         }
         return item;
-      })
-    );
+      });
+      localStorage.setItem('menstyle_cart', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   // Xóa món khỏi giỏ
   const handleRemoveItem = (targetItem) => {
-    setCartItems(prev => 
-      prev.filter(item => !(
+    setCartItems(prev => {
+      const updated = prev.filter(item => !(
         item.id === targetItem.id && 
         item.selectedSize === targetItem.selectedSize && 
         item.selectedColor === targetItem.selectedColor
-      ))
-    );
+      ));
+      localStorage.setItem('menstyle_cart', JSON.stringify(updated));
+      return updated;
+    });
     addToast('Đã Xóa Khỏi Giỏ', 'Sản phẩm đã được xóa khỏi giỏ hàng của bạn.', 'info');
   };
 
@@ -253,6 +249,7 @@ export default function App() {
             onOrderSuccess={(orderData) => {
               addToast('Đặt Hàng Thành Công', `Mã đơn hàng: ${orderData.orderCode}`);
               setCartItems([]);
+              localStorage.removeItem('menstyle_cart');
               setCurrentTab(currentUser ? 'profile' : 'home');
             }}
           />
