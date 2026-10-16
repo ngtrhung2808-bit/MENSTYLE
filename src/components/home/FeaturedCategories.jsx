@@ -28,10 +28,10 @@ const CATEGORIES = [
   },
   {
     id: 4,
-    title: 'Áo Khoác & Blazer',
+    title: 'Blazer & Suit Nam',
     subTitle: 'Chuẩn Phong Độ Quý Ông',
-    items: '16+ mẫu cao cấp',
-    targetCategory: 'Áo Khoác & Blazer',
+    items: '20+ mẫu cao cấp',
+    targetCategory: 'Blazer & Suit',
     image: 'https://cdn.hstatic.net/products/200000690725/hsbk801_to_n_f0a1612b08aa46359ffec2e0d8f83319.webp'
   }
 ];

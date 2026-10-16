@@ -88,6 +88,12 @@ export const Header = ({
             >
               Quần Âu & Jean
             </button>
+            <button 
+              onClick={() => onNavigate && onNavigate('products', 'Phụ Kiện')} 
+              className={`transition cursor-pointer ${currentTab === 'products' && activeCategory === 'Phụ Kiện' ? 'text-amber-600 font-bold border-b-2 border-amber-600 pb-0.5' : 'hover:text-neutral-950'}`}
+            >
+              Phụ Kiện
+            </button>
           </nav>
 
           {/* Search Box Desktop */}

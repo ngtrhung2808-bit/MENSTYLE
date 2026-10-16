@@ -394,7 +394,7 @@ export default function App() {
                   size="lg" 
                   className="rounded-full border-neutral-300 px-6 sm:px-8 hover:border-neutral-950 font-bold text-xs sm:text-base w-full sm:w-auto cursor-pointer"
                 >
-                  Xem toàn bộ 45+ sản phẩm Torano <ArrowRight className="w-4 h-4 ml-2" />
+                  Xem toàn bộ 56+ sản phẩm thời trang Torano <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </section>

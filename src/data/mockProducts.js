@@ -1,14 +1,329 @@
 // Dữ liệu sản phẩm thời trang nam đồng bộ CHÍNH THỨC từ hệ thống Torano.vn (Bản quyền đồ án tốt nghiệp)
 export const MOCK_PRODUCTS = [
   {
+    "id": 1057429019,
+    "name": "Áo blazer túi cơi ngực FWTV002",
+    "category": "Blazer & Suit",
+    "price": 1499000,
+    "originalPrice": 1873750,
+    "discount": 20,
+    "rating": 4.9,
+    "reviewCount": 54,
+    "images": [
+      "https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg",
+      "https://product.hstatic.net/200000690725/product/41271cdf-a186-4ca8-96db-540e840e20c2_8d3937f7473b4eb6bfdd030f17b84b29.jpg",
+      "https://product.hstatic.net/200000690725/product/54195016675_3860a176ef_c_d5ecc6c1446f4b50b5681fb70bdc750c.jpg",
+      "https://product.hstatic.net/200000690725/product/54194823283_d2cd6fb72e_c_9a7623fa2d9c452d8aab5d690988283b.jpg",
+      "https://product.hstatic.net/200000690725/product/54194583716_5d61b4a8d1_c_4463691263ea457cb109f5ed4e69fb88.jpg",
+      "https://product.hstatic.net/200000690725/product/54194841664_8857a72182_c_be61dd229759407ebc050cdec51b44a2.jpg"
+    ],
+    "isNew": false,
+    "colors": [
+      {
+        "name": "Đen",
+        "hex": "#1c1917"
+      }
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "description": "Áo blazer FWTV002&nbsp; là mẫu blazer&nbsp;nam cao cấp chính hãng Torano . Chất vải dày dặn, mềm mịn và không nhăn nhàu lại cực thì thoáng mát. Sản phẩm khi kết..."
+  },
+  {
+    "id": 1057164665,
+    "name": "Áo blazer túi cơi viền có nắp FWTV001",
+    "category": "Blazer & Suit",
+    "price": 1499000,
+    "originalPrice": 1873750,
+    "discount": 20,
+    "rating": 4.8,
+    "reviewCount": 94,
+    "images": [
+      "https://product.hstatic.net/200000690725/product/173ea521-123e-4b6d-becf-47bc6be977f4_bee82afb182b463689b19f49b68ab609.jpg",
+      "https://product.hstatic.net/200000690725/product/afb164ab-889d-4333-a3c8-e0691968adac_36e41e9fe4964c81b23c212d401e767f.jpg",
+      "https://product.hstatic.net/200000690725/product/fwtv001-3_54066228300_o_625bea69bb5149d694d41abd0a438d34.jpg",
+      "https://product.hstatic.net/200000690725/product/fwtv001-4_54066026373_o_8143e8635ee648e6972ac9e8d75979e2.jpg",
+      "https://product.hstatic.net/200000690725/product/fwtv001-5_54064898332_o_2775add27b8b46bc92ab1f4c026ffc75.jpg",
+      "https://product.hstatic.net/200000690725/product/fwtv001-fstp073-fabt010_54064898317_o_a1c9c1a5ad3d433b93a064cae2e6f5f6.jpg"
+    ],
+    "isNew": false,
+    "colors": [
+      {
+        "name": "Xám",
+        "hex": "#64748b"
+      }
+    ],
+    "sizes": [
+      "M",
+      "L",
+      "XL"
+    ],
+    "description": "Áo blazer FWTV001&nbsp; là mẫu blazer&nbsp;nam cao cấp chính hãng Torano. Chất vải dày dặn, mềm mịn và không nhăn nhàu lại cực thì thoáng mát. Sản phẩm khi kết ..."
+  },
+  {
+    "id": 1071203343,
+    "name": "Thắt lưng da Torano GAAL002",
+    "category": "Phụ Kiện",
+    "price": 599000,
+    "originalPrice": 748750,
+    "discount": 20,
+    "rating": 5,
+    "reviewCount": 88,
+    "images": [
+      "https://cdn.hstatic.net/products/200000690725/al002_4e1ff963227346adafb51ca0e87efe27.png",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1894_54909154624_o_630ed8bba9234d7f8a2f8e2e08094012.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1896_54908040797_o_c77beb24749e4dcd974fe5dcf2eefc97.jpg",
+      "https://cdn.hstatic.net/products/200000690725/gaal002_54908904401_o_28e6984fa0c34dcdac559a736c27053d.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1833_54908041122_o_83a2edc406ee4375b3101226db294d00.jpg"
+    ],
+    "isNew": true,
+    "colors": [
+      {
+        "name": "Đen",
+        "hex": "#1c1917"
+      }
+    ],
+    "sizes": [
+      "35"
+    ],
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+  },
+  {
+    "id": 1071203359,
+    "name": "Thắt lưng đầu xoay 2 màu Torano GAAL003",
+    "category": "Phụ Kiện",
+    "price": 599000,
+    "originalPrice": 748750,
+    "discount": 20,
+    "rating": 4.7,
+    "reviewCount": 187,
+    "images": [
+      "https://cdn.hstatic.net/products/200000690725/al003_6bbbf5c157ab4eefae2ddae428b4f01c.png",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1871_54909216870_o_39d23a6e33044c67b765c98ce0187e9f.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1875_54908904181_o_0a103d264df34d6aa56386d26b043915.jpg",
+      "https://cdn.hstatic.net/products/200000690725/gaal003_54909154994_o_9e4d00cd51194c7d93d20cf45fd0f0d5.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1834_1_54908904316_o_5805049506e447e8ae6e19b243dbc8bc.jpg"
+    ],
+    "isNew": true,
+    "colors": [
+      {
+        "name": "Phối nâu nhạt - đen",
+        "hex": "#78350f"
+      }
+    ],
+    "sizes": [
+      "35"
+    ],
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+  },
+  {
+    "id": 1071203358,
+    "name": "Thắt lưng đầu xoay 2 hiệu ứng Torano GAAL007",
+    "category": "Phụ Kiện",
+    "price": 699000,
+    "originalPrice": 873750,
+    "discount": 20,
+    "rating": 4.8,
+    "reviewCount": 41,
+    "images": [
+      "https://cdn.hstatic.net/products/200000690725/al007_378e77d4f8244c68897fc748d4665b3a.png",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1887_54908040832_o_aa605015e3fa4051a629bba70656d568.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1888_54909216840_o_8de7291629da4d15a25e0c8582135100.jpg",
+      "https://cdn.hstatic.net/products/200000690725/gaal007_54909129578_o_395c7d7ab04d45aaa0b9caeb0ea75377.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1836_54908041107_o_30528c2884044898807a4195dde2a23d.jpg"
+    ],
+    "isNew": false,
+    "colors": [
+      {
+        "name": "Đen",
+        "hex": "#1c1917"
+      }
+    ],
+    "sizes": [
+      "35"
+    ],
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+  },
+  {
+    "id": 1071203346,
+    "name": "Thắt lưng da Torano GAAL010",
+    "category": "Phụ Kiện",
+    "price": 699000,
+    "originalPrice": 873750,
+    "discount": 20,
+    "rating": 4.9,
+    "reviewCount": 63,
+    "images": [
+      "https://cdn.hstatic.net/products/200000690725/al016_9f2308d9a0ab4e2dafff2fe05b47fa03.png",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1889_54909154629_o_fb2d7286d107477e82fab42526938633.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1893_54909129238_o_6c2a41ec03834fff982102b3205ee796.jpg",
+      "https://cdn.hstatic.net/products/200000690725/gaal016_54909154929_o_356d14ab6b0948db8dfaab9e73ae3b2e.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1841_54908904271_o_cfccf2fb8e3749aa984ef186a9651b21.jpg"
+    ],
+    "isNew": true,
+    "colors": [
+      {
+        "name": "Đen",
+        "hex": "#1c1917"
+      }
+    ],
+    "sizes": [
+      "35"
+    ],
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+  },
+  {
+    "id": 1071203347,
+    "name": "Thắt lưng da Torano GAAL011",
+    "category": "Phụ Kiện",
+    "price": 699000,
+    "originalPrice": 873750,
+    "discount": 20,
+    "rating": 4.8,
+    "reviewCount": 47,
+    "images": [
+      "https://cdn.hstatic.net/products/200000690725/al012_947da67eff0148dc8a4fd823cf583c6f.png",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1868_54909216905_o_ec58515c18584d11b0680e299a56a504.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1869_54908040902_o_ab2938b754f249ad93cbf58884e1e4c4.jpg",
+      "https://cdn.hstatic.net/products/200000690725/gaal012_54909129483_o_e342e3dd38ed4586b436d2f35f8957aa.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1837_1_54908041102_o_699cc160445c4a468ca639131b6b0720.jpg"
+    ],
+    "isNew": false,
+    "colors": [
+      {
+        "name": "Đen",
+        "hex": "#1c1917"
+      }
+    ],
+    "sizes": [
+      "35"
+    ],
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+  },
+  {
+    "id": 1071203348,
+    "name": "Thắt lưng da Torano GAAL012",
+    "category": "Phụ Kiện",
+    "price": 699000,
+    "originalPrice": 873750,
+    "discount": 20,
+    "rating": 4.8,
+    "reviewCount": 180,
+    "images": [
+      "https://cdn.hstatic.net/products/200000690725/al014_a9aad068cdb34d94b21abbbf81c6bbff.png",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1864_54908904191_o_8acc14e65dbb49dc8e7d0dc795217c47.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1866_54909129393_o_bbb865e1102a4304af4ddc746784f76e.jpg",
+      "https://cdn.hstatic.net/products/200000690725/gaal014_54909129563_o_147d697dab174b64ba8042c8fe44dbd3.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1842_54909154849_o_11946ae2fb504f72b36de60248ca692b.jpg"
+    ],
+    "isNew": true,
+    "colors": [
+      {
+        "name": "Đen",
+        "hex": "#1c1917"
+      }
+    ],
+    "sizes": [
+      "35"
+    ],
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+  },
+  {
+    "id": 1071203350,
+    "name": "Thắt lưng da Torano GAAL014",
+    "category": "Phụ Kiện",
+    "price": 699000,
+    "originalPrice": 873750,
+    "discount": 20,
+    "rating": 4.8,
+    "reviewCount": 173,
+    "images": [
+      "https://cdn.hstatic.net/products/200000690725/al015_cb39caf8ae804bc69f748a4e7c5e819e.png",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1861_54909216950_o_221dfca107804a5d8191a031a5d55e68.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1860_54908904246_o_47250ba8f1084ddcbd5bbdc97f0ef244.jpg",
+      "https://cdn.hstatic.net/products/200000690725/gaal015_54909154959_o_0f6c891d104043fc8668ac66f8b38a24.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1843_54909154809_o_4e98c9fec77542988d36caef7ce056b0.jpg"
+    ],
+    "isNew": true,
+    "colors": [
+      {
+        "name": "Đen",
+        "hex": "#1c1917"
+      }
+    ],
+    "sizes": [
+      "35"
+    ],
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+  },
+  {
+    "id": 1071203351,
+    "name": "Thắt lưng da Torano GAAL015",
+    "category": "Phụ Kiện",
+    "price": 799000,
+    "originalPrice": 998750,
+    "discount": 20,
+    "rating": 4.8,
+    "reviewCount": 86,
+    "images": [
+      "https://cdn.hstatic.net/products/200000690725/al010_aa92a95073b0446e86a1d050436111d2.png",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1882_54909154644_o_070297e3c82b495a99d8c2bc56ecde90.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1883_54909129408_o_abe58b9d0e2e468c8f2b41c859155c9e.jpg",
+      "https://cdn.hstatic.net/products/200000690725/gaal010_54909217125_o_6f3f35fb37054376888d398236e9184f.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1838_54908041087_o_35d70d07b4e34b2bb642c28aed38ea0d.jpg"
+    ],
+    "isNew": false,
+    "colors": [
+      {
+        "name": "Đen",
+        "hex": "#1c1917"
+      }
+    ],
+    "sizes": [
+      "35"
+    ],
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+  },
+  {
+    "id": 1071203352,
+    "name": "Thắt lưng da Torano GAAL016",
+    "category": "Phụ Kiện",
+    "price": 799000,
+    "originalPrice": 998750,
+    "discount": 20,
+    "rating": 4.9,
+    "reviewCount": 184,
+    "images": [
+      "https://cdn.hstatic.net/products/200000690725/al011_63e4d647752348dfb69f2538e4e13982.png",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1876_54909216900_o_70343fdd27a14cecac82758192187d11.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1880_54909154664_o_38e9c301f97141d3a10905efded8bf94.jpg",
+      "https://cdn.hstatic.net/products/200000690725/gaal011_54909155019_o_ded4c188ed8b475e9d403a8231818d6c.jpg",
+      "https://cdn.hstatic.net/products/200000690725/_dsc1840_1_54909154819_o_c628acdbe2394ef28a0cd650d4afe117.jpg"
+    ],
+    "isNew": false,
+    "colors": [
+      {
+        "name": "Đen",
+        "hex": "#1c1917"
+      }
+    ],
+    "sizes": [
+      "35"
+    ],
+    "description": "HOÀN THIỆN PHONG ĐỘ VỚI THẮT LƯNG DA Đừng quên, TORANO không chỉ mang đến những thiết kế thời trang chỉn chu, mà còn có những phụ kiện cao cấp dành riêng cho ng..."
+  },
+  {
     "id": 1075102717,
     "name": "Áo polo nam trơn bo kẻ Silk Touch co giãn HSTP904",
     "category": "Áo Polo",
     "price": 449000,
     "originalPrice": 650000,
     "discount": 31,
-    "rating": 4.7,
-    "reviewCount": 98,
+    "rating": 4.8,
+    "reviewCount": 57,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/hstp904_cv__2__3b3713f0f3a64832a607c63b6bdc4bb4.webp",
       "https://cdn.hstatic.net/products/200000690725/hstp904_to_n_9be2bbcfe55544918e40e2f264f681b5.webp",
@@ -64,8 +379,8 @@ export const MOCK_PRODUCTS = [
     "price": 490000,
     "originalPrice": 612500,
     "discount": 20,
-    "rating": 5,
-    "reviewCount": 102,
+    "rating": 4.9,
+    "reviewCount": 93,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/bt506_e7f8c723bf8d430dab1a88ee23374b7e.png",
       "https://cdn.hstatic.net/products/200000690725/_dsc9993_55295650107_o_62b3a4e589f14fd9b00d1114b12108de.jpg",
@@ -78,7 +393,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/_dsc9961_55295649827_o_cd1e2df8c09944b58b9a138f772049c9.jpg",
       "https://cdn.hstatic.net/products/200000690725/_esc9978xam_55296711068_o_f9f0649e40e14a5a813f4f5c4decc8d5.jpg"
     ],
-    "isNew": true,
+    "isNew": false,
     "colors": [
       {
         "name": "DarkNavy",
@@ -105,8 +420,8 @@ export const MOCK_PRODUCTS = [
     "price": 650000,
     "originalPrice": 812500,
     "discount": 20,
-    "rating": 4.7,
-    "reviewCount": 182,
+    "rating": 4.9,
+    "reviewCount": 40,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web__1__03d9a8db42b4430a8c43d3c42f9379b5.png",
       "https://cdn.hstatic.net/products/200000690725/hstb301-32_55265505615_o_8e4a7f80a8964bc0ba32ab4105786b0b.jpg",
@@ -157,8 +472,8 @@ export const MOCK_PRODUCTS = [
     "price": 690000,
     "originalPrice": 862500,
     "discount": 20,
-    "rating": 4.7,
-    "reviewCount": 76,
+    "rating": 4.9,
+    "reviewCount": 96,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web_c897593bd1fb496dbeae9bc4a602e0ad.png",
       "https://cdn.hstatic.net/products/200000690725/hatb301-21_55265211603_o_4f28786ec8844eadbb59f9cc54389e0e.jpg",
@@ -176,7 +491,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/hatb301-19_55265308734_o_534542e349a3469da00081a8f2b2e987.jpg",
       "https://cdn.hstatic.net/products/200000690725/hatb301-18_55265308729_o_77f0c77fa7d54f8fb0596a502177b2f0.jpg"
     ],
-    "isNew": false,
+    "isNew": true,
     "colors": [
       {
         "name": "Xám rêu",
@@ -216,7 +531,7 @@ export const MOCK_PRODUCTS = [
     "originalPrice": 650000,
     "discount": 31,
     "rating": 4.9,
-    "reviewCount": 65,
+    "reviewCount": 153,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/hstp391_cv_082853d05072492ea6a3e744177765c7.webp",
       "https://cdn.hstatic.net/products/200000690725/hstp391_to_n_4153ab30d8ad439a99bdd645044485ed.webp",
@@ -281,8 +596,8 @@ export const MOCK_PRODUCTS = [
     "price": 650000,
     "originalPrice": 812500,
     "discount": 20,
-    "rating": 4.9,
-    "reviewCount": 172,
+    "rating": 4.7,
+    "reviewCount": 158,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/hstp305_cv_1__c07e9d1f32fd46caaa7aab9d8717a46f.webp",
       "https://cdn.hstatic.net/products/200000690725/hstp305_to_n_7faedff32b06458d97045a27e3c4fdc5.webp",
@@ -313,7 +628,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/hstp305_tr_ng_72a7fe5be5b84e23ad2548deeda3cf25.webp",
       "https://cdn.hstatic.net/products/200000690725/hstp305_xanh_da_tr_i_fbf026f369c14698b95bf9e60396130e.webp"
     ],
-    "isNew": true,
+    "isNew": false,
     "colors": [
       {
         "name": "Hồng đất",
@@ -355,8 +670,8 @@ export const MOCK_PRODUCTS = [
     "price": 690000,
     "originalPrice": 862500,
     "discount": 20,
-    "rating": 5,
-    "reviewCount": 159,
+    "rating": 4.8,
+    "reviewCount": 181,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/tp307_5fd4bec265fd4f2497177ec61a4cecf3.png",
       "https://cdn.hstatic.net/products/200000690725/hstp307_55265086086_o_e1465a8fad3e468a9924fb3379d10665.jpg",
@@ -369,7 +684,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/hstp307_55265317509_o_bd1bd6955b034040a96207d9ea2adcee.jpg",
       "https://cdn.hstatic.net/products/200000690725/hstp307_55265220308_o_c2bcd67aa14c45a99fb96d0c9385b201.jpg"
     ],
-    "isNew": false,
+    "isNew": true,
     "colors": [
       {
         "name": "DarkNavy",
@@ -404,7 +719,7 @@ export const MOCK_PRODUCTS = [
     "originalPrice": 862500,
     "discount": 20,
     "rating": 4.9,
-    "reviewCount": 65,
+    "reviewCount": 108,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/tp310_77d17bb9d8be4451817451a14f016136.png",
       "https://cdn.hstatic.net/products/200000690725/hstp310-13_55265094051_o_223dfb3e61504d2caafbd882192c56ad.jpg",
@@ -457,7 +772,7 @@ export const MOCK_PRODUCTS = [
     "originalPrice": 812500,
     "discount": 20,
     "rating": 4.9,
-    "reviewCount": 91,
+    "reviewCount": 47,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/tp309_53b732079b5a496b864c504029268fcd.png",
       "https://cdn.hstatic.net/products/200000690725/hstp309-5_55265798277_o_0efd776ea1d74406921803e841a01c66.jpg",
@@ -475,7 +790,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/hstp309-26_55265520295_o_ab4275013aea45b8b44f55240d096f85.jpg",
       "https://cdn.hstatic.net/products/200000690725/hstp309-27_55265354439_o_6a7210940e8d42f6b32e6da1e0f6fde7.jpg"
     ],
-    "isNew": true,
+    "isNew": false,
     "colors": [
       {
         "name": "Đen",
@@ -505,8 +820,8 @@ export const MOCK_PRODUCTS = [
     "price": 650000,
     "originalPrice": 812500,
     "discount": 20,
-    "rating": 4.9,
-    "reviewCount": 136,
+    "rating": 4.7,
+    "reviewCount": 178,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/tp304_0440fda016124f23af295eafc4f0b607.png",
       "https://cdn.hstatic.net/products/200000690725/img_9799_55269959807_o_4f884385d7234810a47b33e36a220e42.jpg",
@@ -549,8 +864,8 @@ export const MOCK_PRODUCTS = [
     "price": 650000,
     "originalPrice": 812500,
     "discount": 20,
-    "rating": 4.9,
-    "reviewCount": 184,
+    "rating": 4.8,
+    "reviewCount": 69,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/tp302_4bc2b5a5a43f4ae5bba23b267ba35b12.png",
       "https://cdn.hstatic.net/products/200000690725/img_9806_55267142573_o_9dbb6e4753a64daa8d10b6ed725f7e65.jpg",
@@ -594,7 +909,7 @@ export const MOCK_PRODUCTS = [
     "originalPrice": 862500,
     "discount": 20,
     "rating": 5,
-    "reviewCount": 164,
+    "reviewCount": 137,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/tp303_2e7047ffbde94901ba4d59c2dccb8d95.png",
       "https://cdn.hstatic.net/products/200000690725/img_9783_55267008851_o_fd73a325efc343689ec04fb0fa317097.jpg",
@@ -606,7 +921,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/img_9791_55267008891_o_6f3235a64ed7459480340791bcc94027.jpg",
       "https://cdn.hstatic.net/products/200000690725/img_9792_55266100952_o_52dd1cf3c4124a638cc3cd946ee54fc8.jpg"
     ],
-    "isNew": true,
+    "isNew": false,
     "colors": [
       {
         "name": "Phối Navy - Xám",
@@ -633,7 +948,7 @@ export const MOCK_PRODUCTS = [
     "originalPrice": 561250,
     "discount": 20,
     "rating": 4.9,
-    "reviewCount": 185,
+    "reviewCount": 155,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/hsbk801_cv_87b8a1c7cf094a1fa9ca9c002a7a62c8.webp",
       "https://cdn.hstatic.net/products/200000690725/hsbk801_to_n_f0a1612b08aa46359ffec2e0d8f83319.webp",
@@ -683,8 +998,8 @@ export const MOCK_PRODUCTS = [
     "price": 449000,
     "originalPrice": 561250,
     "discount": 20,
-    "rating": 4.9,
-    "reviewCount": 74,
+    "rating": 4.7,
+    "reviewCount": 159,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/bt506__1__e1540ef3f8434394aec9b1a47f0e378d.png",
       "https://cdn.hstatic.net/products/200000690725/hsbk802-18_55323034657_o_c921a8d8ca9b417f845400209117769b.jpg",
@@ -701,7 +1016,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/hsbk802-32_55324167594_o_439eb699057b46189f2efc9e55e59d2e.jpg",
       "https://cdn.hstatic.net/products/200000690725/hsbk802-35_55324360585_o_ca11b6ab206041f5b34c358a3ca02d20.jpg"
     ],
-    "isNew": false,
+    "isNew": true,
     "colors": [
       {
         "name": "Đen",
@@ -732,8 +1047,8 @@ export const MOCK_PRODUCTS = [
     "price": 550000,
     "originalPrice": 687500,
     "discount": 20,
-    "rating": 4.7,
-    "reviewCount": 183,
+    "rating": 5,
+    "reviewCount": 176,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/11_a8021130bb734f90bc56f6c0975728fb.png",
       "https://cdn.hstatic.net/products/200000690725/hstb808-5_55268716986_o_66771566a1d4464ea6d8044f4da7f18c.jpg",
@@ -765,7 +1080,7 @@ export const MOCK_PRODUCTS = [
     "originalPrice": 687500,
     "discount": 20,
     "rating": 5,
-    "reviewCount": 102,
+    "reviewCount": 187,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/10_1f50586475744df49bea1a357113ba3b.png",
       "https://cdn.hstatic.net/products/200000690725/700091833_1405579744948936_6935230746489865815_n_75e154df65c04b61983dbd1fe8bb1e87.jpg",
@@ -797,8 +1112,8 @@ export const MOCK_PRODUCTS = [
     "price": 349000,
     "originalPrice": 500000,
     "discount": 30,
-    "rating": 4.8,
-    "reviewCount": 65,
+    "rating": 4.9,
+    "reviewCount": 110,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/hsbi900_cv_76fcf6a69291460c8d3850e38188d6fd.webp",
       "https://cdn.hstatic.net/products/200000690725/hsbi900_to_n_bd6a3017118a4be0bdcbf31b19a26812.webp",
@@ -814,7 +1129,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/hsbi900_tr_u1eafng_be90706afc384776b1735e8c641f3f4b.webp",
       "https://cdn.hstatic.net/products/200000690725/hsbi900_x_m_nh_t_d6c2025d3c0c4388b19a0fb8e35a7d41.webp"
     ],
-    "isNew": true,
+    "isNew": false,
     "colors": [
       {
         "name": "Trắng",
@@ -849,12 +1164,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1074341236,
     "name": "Quần short nam gió Wind Light co giãn HSSB901",
-    "category": "Quần Âu & Jean",
+    "category": "Blazer & Suit",
     "price": 199000,
     "originalPrice": 400000,
     "discount": 50,
-    "rating": 4.9,
-    "reviewCount": 117,
+    "rating": 4.8,
+    "reviewCount": 83,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/hssb901_navy_01bf17ed67a44a278f9aa0f447e7d562.webp",
       "https://cdn.hstatic.net/products/200000690725/hssb901_to_n_a1583a7349954ade9dcc07032607a5ec.webp",
@@ -906,8 +1221,8 @@ export const MOCK_PRODUCTS = [
     "price": 299000,
     "originalPrice": 500000,
     "discount": 40,
-    "rating": 5,
-    "reviewCount": 124,
+    "rating": 4.8,
+    "reviewCount": 104,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/hstp903_cv__2__6c122e2709f641acacc12363e379f796.webp",
       "https://cdn.hstatic.net/products/200000690725/hstp903_to_n_d414bf8c33ca4afd8475e0d175526ba8.webp",
@@ -978,8 +1293,8 @@ export const MOCK_PRODUCTS = [
     "price": 699000,
     "originalPrice": 873750,
     "discount": 20,
-    "rating": 4.7,
-    "reviewCount": 54,
+    "rating": 4.9,
+    "reviewCount": 90,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/habf801_cv_de8998059d004efb9be00cf41839c26f.png",
       "https://cdn.hstatic.net/products/200000690725/habf801_to_n_cfc1855ff4d1466787e44d8fc5865761.png",
@@ -991,10 +1306,9 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/habf801-37_55221126430_o_11c3c0c302274e20b3786475c227e606.jpg",
       "https://cdn.hstatic.net/products/200000690725/habf801-39_55220721666_o_aef54e4ef0c143f8bcb6c86c1cde512c.jpg",
       "https://cdn.hstatic.net/products/200000690725/habf801_xanh_navy_19e9c4b371054b5f927a122f6d7fab3d.png",
-      "https://cdn.hstatic.net/products/200000690725/habf801_back_1__48420c40ae4343a180440aca30230684.png",
       "https://cdn.hstatic.net/products/200000690725/habf801_den_0efaaeb9d16242b3b0804edc4cf5baeb.png",
       "https://cdn.hstatic.net/products/200000690725/habf801_x_m_b262d46523d14f2ca0dce14b942c4326.png",
-      "https://cdn.hstatic.net/products/200000690725/habi801_back_1__e7ef79f88f9f41cc80f1fd8106089e48.jpg"
+      "https://cdn.hstatic.net/products/200000690725/habf801_back_1__48420c40ae4343a180440aca30230684.png"
     ],
     "isNew": true,
     "colors": [
@@ -1036,7 +1350,7 @@ export const MOCK_PRODUCTS = [
     "originalPrice": 459000,
     "discount": 35,
     "rating": 4.9,
-    "reviewCount": 79,
+    "reviewCount": 45,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/hsst901_navy_106fcf97cfe34265b26462b7e22b1d84.webp",
       "https://cdn.hstatic.net/products/200000690725/hsst901_to_n_b056b15474b14bd9b0f6a71da646215b.webp",
@@ -1054,7 +1368,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/xam-khoi-nhat_e515b20e69fa4852948f22c753df33c2.webp",
       "https://cdn.hstatic.net/products/200000690725/hsst901_back_1__0a2d5654a0664b5d86c453770ca5563a.webp"
     ],
-    "isNew": false,
+    "isNew": true,
     "colors": [
       {
         "name": "Dark Navy",
@@ -1090,7 +1404,7 @@ export const MOCK_PRODUCTS = [
     "originalPrice": 748750,
     "discount": 20,
     "rating": 4.8,
-    "reviewCount": 101,
+    "reviewCount": 112,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/habi801_cv_bea2d894eeda4611b205e301aaa13ad6.webp",
       "https://cdn.hstatic.net/products/200000690725/habi801_to_n_4c426c7ab7ea4704862460a4a5aec567.webp",
@@ -1106,7 +1420,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/habi801_tr_ng_4987abab0b234e50b7f1a13c295c6101.webp",
       "https://cdn.hstatic.net/products/200000690725/habi801_xanh_r_u_d_m_c529f0f25d154a43be0228582bfad511.webp"
     ],
-    "isNew": true,
+    "isNew": false,
     "colors": [
       {
         "name": "Xanh rêu đậm",
@@ -1141,8 +1455,8 @@ export const MOCK_PRODUCTS = [
     "price": 749000,
     "originalPrice": 936250,
     "discount": 20,
-    "rating": 4.9,
-    "reviewCount": 111,
+    "rating": 4.7,
+    "reviewCount": 90,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/bi800_b784c60323d14c319b7d23c6be19c10b.png",
       "https://cdn.hstatic.net/products/200000690725/habi800-20_55265465175_o_a4798669a8504d8db7b04033c631c89d.jpg",
@@ -1162,7 +1476,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/habi800-14_55264160627_o_d29b7407aa484231a5bf6eaa6ac05149.jpg",
       "https://cdn.hstatic.net/products/200000690725/habi800-16_55265201698_o_c489cc38af4d434784d5d8b15f303ade.jpg"
     ],
-    "isNew": false,
+    "isNew": true,
     "colors": [
       {
         "name": "Trắng kem",
@@ -1193,8 +1507,8 @@ export const MOCK_PRODUCTS = [
     "price": 799000,
     "originalPrice": 998750,
     "discount": 20,
-    "rating": 4.8,
-    "reviewCount": 168,
+    "rating": 4.9,
+    "reviewCount": 51,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/habf802__cv_f556f137f5a6470bb5987688b62ecfd2.png",
       "https://cdn.hstatic.net/products/200000690725/habf802__to_n_be1696823ab44808bb7cdd11dd1f512e.png",
@@ -1208,7 +1522,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/xanh_navy_cf052ecfda2f42c1bd6f7c1c7a84e1f9.png",
       "https://cdn.hstatic.net/products/200000690725/habf802_back_1__f92180ffbb7c46a0b6acda2186f1a8a8.png"
     ],
-    "isNew": false,
+    "isNew": true,
     "colors": [
       {
         "name": "Dark Navy",
@@ -1235,8 +1549,8 @@ export const MOCK_PRODUCTS = [
     "price": 749000,
     "originalPrice": 936250,
     "discount": 20,
-    "rating": 5,
-    "reviewCount": 133,
+    "rating": 4.9,
+    "reviewCount": 93,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/bt503_b9078e0f87d44d12842a626f4edf8135.png",
       "https://cdn.hstatic.net/products/200000690725/habt808-8_55203156382_o_7799efba1c8245c9b891df726fb6a595.jpg",
@@ -1250,7 +1564,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/habt808-18_55204053466_o_1fa658be4f8d41ab9667627a200c554c.jpg",
       "https://cdn.hstatic.net/products/200000690725/habt808-21_55204301129_o_aff23451fd2e4192b8f178e06fba3a47.jpg"
     ],
-    "isNew": false,
+    "isNew": true,
     "colors": [
       {
         "name": "Dark Navy",
@@ -1273,12 +1587,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1072427499,
     "name": "Áo khoác 3 lớp lót bông mũ rời nhám dính cổ tay GWCP303",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 1399000,
     "originalPrice": 1748750,
     "discount": 20,
-    "rating": 5,
-    "reviewCount": 103,
+    "rating": 4.8,
+    "reviewCount": 40,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web_2445f8912b174c8fa4a87f99a36f16dc.png",
       "https://cdn.hstatic.net/products/200000690725/54963168850_11a968fe3e_c_58f2c8a5cde24f60b15416df2ff7001f.jpg",
@@ -1313,12 +1627,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1072129577,
     "name": "Áo khoác phao 3 lớp lót bông GWCF901",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 1299000,
     "originalPrice": 1623750,
     "discount": 20,
-    "rating": 5,
-    "reviewCount": 143,
+    "rating": 4.8,
+    "reviewCount": 87,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/img_0326_55045491194_o_8f06a8e7fc3048a097e2034b23ab3660.jpg",
       "https://cdn.hstatic.net/products/200000690725/img_0329_55045491199_o_9cd826aeb7254c3bb2dfbb9c65d3b615.jpg",
@@ -1331,7 +1645,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/img_0362---4-_55045411498_o_3d95da624c8d411b81f5436ced936f30.jpg",
       "https://cdn.hstatic.net/products/200000690725/img_0377_55045411508_o_a9a9c47b6ed54c07b156cda174b6e864.jpg"
     ],
-    "isNew": true,
+    "isNew": false,
     "colors": [
       {
         "name": "Dark Navy",
@@ -1357,12 +1671,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1072047377,
     "name": "Áo khoác nam gió lót lông fleece Windtherm GWCU055",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 749000,
     "originalPrice": 899000,
     "discount": 17,
-    "rating": 4.7,
-    "reviewCount": 157,
+    "rating": 4.8,
+    "reviewCount": 101,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/cv_82da7d7ed42f422d984850d8d4949e25.webp",
       "https://cdn.hstatic.net/products/200000690725/toan_bd06404136794e078a0ec0fcea2fa30b.webp",
@@ -1422,12 +1736,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071954721,
     "name": "Áo khoác phao 3 lớp chần bông mũ liền GWCF303",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 1399000,
     "originalPrice": 1748750,
     "discount": 20,
-    "rating": 4.8,
-    "reviewCount": 103,
+    "rating": 4.9,
+    "reviewCount": 48,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web__1__d2e94ec5ed1f4c26be29ea4ae485ba19.png",
       "https://cdn.hstatic.net/products/200000690725/img_4553_54994026457_o_1b48222141404cba8cec13218b5a8d37.jpg",
@@ -1480,12 +1794,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071954720,
     "name": "Áo khoác phao 3 lớp trơn chần bông cổ cao GWCF302",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 1399000,
     "originalPrice": 1748750,
     "discount": 20,
     "rating": 4.8,
-    "reviewCount": 74,
+    "reviewCount": 76,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web_317e44eb55124b58aab39d139d78f581.png",
       "https://cdn.hstatic.net/products/200000690725/54993602823_e15434c4e7_k_e6a0d51c1e09451c8478d97fb71b2b8d.jpg",
@@ -1538,12 +1852,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071954719,
     "name": "Áo khoác phao 3 lớp lót bông mũ rời GWCP302",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 1399000,
     "originalPrice": 1748750,
     "discount": 20,
-    "rating": 5,
-    "reviewCount": 45,
+    "rating": 4.9,
+    "reviewCount": 126,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web_60251e880b624b5eaad952affc0cfead.png",
       "https://cdn.hstatic.net/products/200000690725/img_6231_55015242209_o_b29b021c210f4b14ab2aa96d42e7bd3d.jpg",
@@ -1580,12 +1894,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071914510,
     "name": "Áo khoác 3 lớp lót bông GWCP901",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 1299000,
     "originalPrice": 1623750,
     "discount": 20,
     "rating": 4.9,
-    "reviewCount": 93,
+    "reviewCount": 152,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web_58108c13a9e24a4bbf98364b016e9a2d.png",
       "https://cdn.hstatic.net/products/200000690725/img_8317_55037709662_o_63d8df18ec014b84bc5d957004b7dafe.jpg",
@@ -1604,7 +1918,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/img_8278_55038955180_o_808402104f804c8a94e219e553dc7067.jpg",
       "https://cdn.hstatic.net/products/200000690725/img_8288_55038955160_o_3b0251119ca044ab8fef142a507808fd.jpg"
     ],
-    "isNew": false,
+    "isNew": true,
     "colors": [
       {
         "name": "Đen",
@@ -1630,12 +1944,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071556765,
     "name": "Áo khoác da lộn basic cổ bẻ cúc dập logo GWCL502",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 1299000,
     "originalPrice": 1623750,
     "discount": 20,
-    "rating": 4.7,
-    "reviewCount": 106,
+    "rating": 4.9,
+    "reviewCount": 174,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web__1__7d50a7083c4048c09a9e6360ffbe914a.png",
       "https://cdn.hstatic.net/products/200000690725/gwcl502-10_55029650356_o_3fdf3ade84374dfc99f55c018a68357c.jpg",
@@ -1679,7 +1993,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071556764,
     "name": "Áo khoác nam bomber lót lông Warm Touch GWCU052",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 599000,
     "originalPrice": 899000,
     "discount": 33,
@@ -1700,7 +2014,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/gwcu052_tr_ng_kem_d_m_9aa1325cad40409b8d684e6d7a138180.png",
       "https://cdn.hstatic.net/products/200000690725/gwcu052_xanh_d__8cb84ca43cd84aca83a4c2209c201d0c.png"
     ],
-    "isNew": true,
+    "isNew": false,
     "colors": [
       {
         "name": "Dark Navy",
@@ -1734,12 +2048,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071556763,
     "name": "Áo khoác 2 lớp dạ cổ bẻ thêu logo tay GWCT891",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 1299000,
     "originalPrice": 1623750,
     "discount": 20,
-    "rating": 4.8,
-    "reviewCount": 86,
+    "rating": 4.7,
+    "reviewCount": 134,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web__1__e65a63a838bc4a5b8251862b4ab26ea5.png",
       "https://cdn.hstatic.net/products/200000690725/gwct891-5_54975114514_o_3d3cc1a692ba45d0935c734ea1fcbf15.jpg",
@@ -1790,12 +2104,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071401404,
     "name": "Quần gió bộ can phối cạp chun GWCW203 - GWBW203",
-    "category": "Quần Âu & Jean",
+    "category": "Blazer & Suit",
     "price": 499000,
     "originalPrice": 623750,
     "discount": 20,
-    "rating": 4.9,
-    "reviewCount": 113,
+    "rating": 4.8,
+    "reviewCount": 65,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/qu_n_web_96d63eca50394dcb9101c6f830c7cb17.png",
       "https://cdn.hstatic.net/products/200000690725/gwcw203-gwbw203-8_54958766944_o_45448845f01a483f845f9a253770bf45.jpg",
@@ -1805,7 +2119,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/gwcw203-gwbw203-9_54958766884_o_5dccc278b5bb4e77bd158be17bc02dae.jpg",
       "https://cdn.hstatic.net/products/200000690725/gwbw203_54987186356_o_df434709ca024cf88b21a37688dcc8e2.jpg"
     ],
-    "isNew": false,
+    "isNew": true,
     "colors": [
       {
         "name": "Xám",
@@ -1827,12 +2141,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071401403,
     "name": "Áo khoác nam gió 2 lớp can phối Wind Flex GWCW203",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 799000,
     "originalPrice": 998750,
     "discount": 20,
-    "rating": 5,
-    "reviewCount": 70,
+    "rating": 4.7,
+    "reviewCount": 170,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/gwcw203_cv_097b6ddd101146b3abd8e5bd9bbcb5a2.webp",
       "https://cdn.hstatic.net/products/200000690725/gwcw203_to_n_dc18c10cfd4a434fa9ad542e97c94b7e.webp",
@@ -1873,7 +2187,7 @@ export const MOCK_PRODUCTS = [
     "price": 699000,
     "originalPrice": 873750,
     "discount": 20,
-    "rating": 4.9,
+    "rating": 4.8,
     "reviewCount": 122,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/bj301_69baed4892ad4084a5a035253f233b39.png",
@@ -1904,12 +2218,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071365918,
     "name": "Áo khoác 3 lớp lót bông mũ liền GWCP301",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 1299000,
     "originalPrice": 1623750,
     "discount": 20,
-    "rating": 4.8,
-    "reviewCount": 149,
+    "rating": 5,
+    "reviewCount": 93,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web_9399461bd02442758775e399e8d2d960.png",
       "https://cdn.hstatic.net/products/200000690725/gwcp301-7_54931348206_o_342c960f191a42489444fcc388f05803.jpg",
@@ -1927,7 +2241,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/151_2519e994a03c4fe88ec37f2373c923fe.png",
       "https://cdn.hstatic.net/products/200000690725/gwcp301-8_54931653560_o_e739a0c28d484b82be5832c9ee64b9af.jpg"
     ],
-    "isNew": true,
+    "isNew": false,
     "colors": [
       {
         "name": "Đen",
@@ -1953,12 +2267,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071353918,
     "name": "Áo khoác gió 2 lớp cổ bẻ thêu logo GWCW505",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 899000,
     "originalPrice": 1123750,
     "discount": 20,
-    "rating": 4.9,
-    "reviewCount": 135,
+    "rating": 4.8,
+    "reviewCount": 71,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web_3b2942fceadc46408ee21184550cccd8.png",
       "https://cdn.hstatic.net/products/200000690725/54947149811_02e5e698a8_k_e943f1095ba846f0b97468759adf3318.jpg",
@@ -1988,12 +2302,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071353834,
     "name": "Áo khoác nam gió 2 lớp Silk Touch Plus GWCW503",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 999000,
     "originalPrice": 1248750,
     "discount": 20,
-    "rating": 5,
-    "reviewCount": 78,
+    "rating": 4.8,
+    "reviewCount": 113,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/gwcw503_cv_6a58cd791d464a15ac59b6ed43484ed2.webp",
       "https://cdn.hstatic.net/products/200000690725/gwcw503_to_n_662a0fa2be4148ccb66b955e359315b6.webp",
@@ -2031,7 +2345,7 @@ export const MOCK_PRODUCTS = [
     "originalPrice": 873750,
     "discount": 20,
     "rating": 4.8,
-    "reviewCount": 43,
+    "reviewCount": 117,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/bt506_7c8b9ff440fb4afeb027dd1c8944beea.png",
       "https://cdn.hstatic.net/products/200000690725/img_1531_54962761744_o_2d2dd797bf3143aaa165e872e0eaeb26.jpg",
@@ -2045,7 +2359,7 @@ export const MOCK_PRODUCTS = [
       "https://cdn.hstatic.net/products/200000690725/img_1570_54962761659_o_4990ae57a3fb4080b8e2c8908bc32ba7.jpg",
       "https://cdn.hstatic.net/products/200000690725/gabt506_54987438224_o_a8a5093cf741468ea20e8fc04e8970a5.jpg"
     ],
-    "isNew": false,
+    "isNew": true,
     "colors": [
       {
         "name": "Đen",
@@ -2073,7 +2387,7 @@ export const MOCK_PRODUCTS = [
     "originalPrice": 873750,
     "discount": 20,
     "rating": 4.8,
-    "reviewCount": 70,
+    "reviewCount": 40,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web__2__85e02af752c1443aa16633aa1ac4076b.png",
       "https://cdn.hstatic.net/products/200000690725/gwtp502-1_54960748023_o_35e9356cc4f94580ad424d7881867cf1.jpg",
@@ -2112,12 +2426,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071344164,
     "name": "Áo khoác nỉ cổ cao thêu logo ngực GWCS503",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 1099000,
     "originalPrice": 1373750,
     "discount": 20,
-    "rating": 4.7,
-    "reviewCount": 84,
+    "rating": 5,
+    "reviewCount": 47,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web_4a6c0b807aff45b78bfaf5686132f0cb.png",
       "https://cdn.hstatic.net/products/200000690725/600532210_1285691930271052_7217001211690083350_n_4f122840c25e45779b311cf4929e9544.jpg",
@@ -2154,12 +2468,12 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071344163,
     "name": "Áo khoác nỉ can phối cổ bomber thêu logo ngực GWCS501",
-    "category": "Áo Khoác & Blazer",
+    "category": "Blazer & Suit",
     "price": 1199000,
     "originalPrice": 1498750,
     "discount": 20,
     "rating": 4.9,
-    "reviewCount": 164,
+    "reviewCount": 75,
     "images": [
       "https://cdn.hstatic.net/products/200000690725/_o_web__3__4c93fbdee51544b9be3f41c7e8008aad.png",
       "https://cdn.hstatic.net/products/200000690725/img_5783_55007417533_o_ed771560e6334ffbb0033419fbc7a945.jpg",
