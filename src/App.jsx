@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation, useNavigate, Routes, Route } from 'react-router-dom';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { HeroBanner } from './components/home/HeroBanner';
@@ -21,7 +22,11 @@ import { Button } from './components/common/Button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { MOCK_PRODUCTS } from './data/mockProducts';
 
+
 export default function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [products, setProducts] = useState(() => {
     const saved = localStorage.getItem('menstyle_products_v2');
     if (saved) {
@@ -210,12 +215,13 @@ export default function App() {
   );
   
   // Kiểm tra nếu url có admin (?admin, #admin, hoặc pathname /admin)
-  const isTryingAdmin = typeof window !== 'undefined' && (
-    window.location.search.includes('admin') || 
-    window.location.hash.includes('admin') ||
-    window.location.pathname.includes('admin') ||
-    currentTab === 'admin'
-  );
+  
+const isTryingAdmin =
+  location.pathname === '/admin' ||
+  location.search.includes('admin') ||
+  location.hash.includes('admin') ||
+  currentTab === 'admin';
+
 
   // Xử lý luồng Quản Trị: Chỉ áp dụng trên Localhost
   if (isLocalHost && isTryingAdmin) {
@@ -228,7 +234,7 @@ export default function App() {
             localStorage.setItem('menstyle_admin_auth', 'true');
           }}
           onBackToClient={() => {
-            window.history.replaceState(null, '', window.location.pathname.replace('/admin', '') || '/');
+            navigate('/');
             setCurrentTab('home');
           }}
         />
@@ -244,7 +250,7 @@ export default function App() {
           localStorage.setItem('menstyle_products', JSON.stringify(updatedProducts));
         }}
         onBackToClient={() => {
-          window.history.replaceState(null, '', window.location.pathname.replace('/admin', '') || '/');
+          navigate('/');
           setCurrentTab('home');
         }}
         onLogout={() => {
