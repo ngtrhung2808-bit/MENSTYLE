@@ -997,7 +997,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1073757669,
     "name": "Quần kaki nam smart pants Khaki Color Max HABF801",
-    "category": "Quần Âu Công Sở",
+    "category": "Quần Jeans & Khaki",
     "price": 699000,
     "originalPrice": 873750,
     "discount": 20,
@@ -1281,7 +1281,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1072427499,
     "name": "Áo khoác 3 lớp lót bông mũ rời nhám dính cổ tay GWCP303",
-    "category": "Quần Jeans & Khaki",
+    "category": "Áo Khoác & Blazer",
     "price": 1399000,
     "originalPrice": 1748750,
     "discount": 20,
@@ -1933,7 +1933,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071365921,
     "name": "Áo nỉ họa tiết thêu hình Unbridled ambition GWTW826",
-    "category": "Quần Jeans & Khaki",
+    "category": "Áo Khoác & Blazer",
     "price": 599000,
     "originalPrice": 748750,
     "discount": 20,
@@ -1980,7 +1980,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1071365919,
     "name": "Áo nỉ họa tiết in tràn GWTW824",
-    "category": "Quần Jeans & Khaki",
+    "category": "Áo Khoác & Blazer",
     "price": 599000,
     "originalPrice": 748750,
     "discount": 20,
@@ -3262,7 +3262,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1070620921,
     "name": "Quần jeans nam cơ bản Denim Cotton 99 GABJ896",
-    "category": "Phụ Kiện",
+    "category": "Quần Jeans & Khaki",
     "price": 599000,
     "originalPrice": 748750,
     "discount": 20,
@@ -3668,7 +3668,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1070285822,
     "name": "Quần nỉ bộ trơn basic slimfit túi chìm thêu logo GWCS821 - GWBS821",
-    "category": "Áo Khoác & Blazer",
+    "category": "Quần Jeans & Khaki",
     "price": 599000,
     "originalPrice": 748750,
     "discount": 20,
@@ -3712,7 +3712,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1070285821,
     "name": "Quần nỉ bộ trơn basic regularfit túi chéo GWCS502 - GWBS502",
-    "category": "Áo Khoác & Blazer",
+    "category": "Quần Jeans & Khaki",
     "price": 599000,
     "originalPrice": 748750,
     "discount": 20,
@@ -4479,7 +4479,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1070067642,
     "name": "Quần nỉ bộ can phối sườn GWTW901 - GWBS901",
-    "category": "Quần Âu Công Sở",
+    "category": "Quần Jeans & Khaki",
     "price": 449000,
     "originalPrice": 669000,
     "discount": 33,
@@ -4633,7 +4633,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1070067628,
     "name": "Áo len trơn cổ trụ thêu logo ngực GWTE824",
-    "category": "Áo Polo",
+    "category": "Áo Khoác & Blazer",
     "price": 490000,
     "originalPrice": 612500,
     "discount": 20,
@@ -5128,7 +5128,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1067515427,
     "name": "Áo polo trơn bo kẻ in logo ngực GSTP845",
-    "category": "Phụ Kiện",
+    "category": "Áo Polo",
     "price": 499000,
     "originalPrice": 623750,
     "discount": 20,
@@ -5289,7 +5289,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1067483432,
     "name": "Áo polo kẻ bo tay phối màu GSTP042",
-    "category": "Phụ Kiện",
+    "category": "Áo Polo",
     "price": 550000,
     "originalPrice": 687500,
     "discount": 20,
@@ -5334,7 +5334,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1067483390,
     "name": "Áo polo kẻ bo tay phối màu GSTP067",
-    "category": "Phụ Kiện",
+    "category": "Áo Polo",
     "price": 550000,
     "originalPrice": 687500,
     "discount": 20,
@@ -5575,7 +5575,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1066978068,
     "name": "Áo polo trơn in logo ngực TRN GSTP843",
-    "category": "Phụ Kiện",
+    "category": "Áo Polo",
     "price": 499000,
     "originalPrice": 623750,
     "discount": 20,
@@ -6833,7 +6833,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1057429019,
     "name": "Áo blazer túi cơi ngực FWTV002",
-    "category": "Quần Âu Công Sở",
+    "category": "Áo Khoác & Blazer",
     "price": 1499000,
     "originalPrice": 1873750,
     "discount": 20,
@@ -6953,7 +6953,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1057164665,
     "name": "Áo blazer túi cơi viền có nắp FWTV001",
-    "category": "Quần Âu Công Sở",
+    "category": "Áo Khoác & Blazer",
     "price": 1499000,
     "originalPrice": 1873750,
     "discount": 20,
@@ -7086,7 +7086,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1056510328,
     "name": "Áo len trơn cổ tròn thêu logo FWTE001",
-    "category": "Áo Polo",
+    "category": "Áo Khoác & Blazer",
     "price": 420000,
     "originalPrice": 525000,
     "discount": 20,
@@ -7287,7 +7287,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1056131043,
     "name": "Áo thun nam dài tay giữ nhiệt Heat Flow FWTL001",
-    "category": "Áo Khoác & Blazer",
+    "category": "Áo Polo",
     "price": 219000,
     "originalPrice": 250000,
     "discount": 12,
@@ -7393,7 +7393,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1056131041,
     "name": "Quần nỉ bộ trơn basic FWTW024 - FWBS024",
-    "category": "Quần Âu Công Sở",
+    "category": "Quần Jeans & Khaki",
     "price": 499000,
     "originalPrice": 699000,
     "discount": 29,
@@ -7611,7 +7611,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1054264295,
     "name": "Quần short nam đũi basic có Cotton Soft FSBI004",
-    "category": "Phụ Kiện",
+    "category": "Quần Short",
     "price": 400000,
     "originalPrice": 500000,
     "discount": 20,
@@ -8084,7 +8084,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1053707911,
     "name": "Quần kaki nam dài basic cạp Khaki Flex FABK001",
-    "category": "Phụ Kiện",
+    "category": "Quần Jeans & Khaki",
     "price": 419000,
     "originalPrice": 650000,
     "discount": 36,
@@ -8282,7 +8282,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1053707869,
     "name": "Quần short nam khaki cạp thường Khaki Flex FSBK012",
-    "category": "Phụ Kiện",
+    "category": "Quần Short",
     "price": 319000,
     "originalPrice": 450000,
     "discount": 29,
@@ -8643,7 +8643,7 @@ export const MOCK_PRODUCTS = [
   {
     "id": 1053707829,
     "name": "Quần short nam gió basic phối Wind Light FSBW001",
-    "category": "Phụ Kiện",
+    "category": "Quần Short",
     "price": 189000,
     "originalPrice": 249000,
     "discount": 24,

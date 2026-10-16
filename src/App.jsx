@@ -23,20 +23,18 @@ import { MOCK_PRODUCTS } from './data/mockProducts';
 
 export default function App() {
   const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('menstyle_products');
+    const saved = localStorage.getItem('menstyle_products_v2');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length >= MOCK_PRODUCTS.length) {
-          const hasOldCategories = parsed.some(p => p.category === 'Quần Âu & Jean' || p.category === 'Blazer & Suit');
-          if (!hasOldCategories) {
-            return parsed;
-          }
+          return parsed;
         }
       } catch (e) {
         console.error(e);
       }
     }
+    localStorage.setItem('menstyle_products_v2', JSON.stringify(MOCK_PRODUCTS));
     localStorage.setItem('menstyle_products', JSON.stringify(MOCK_PRODUCTS));
     return MOCK_PRODUCTS;
   });
