@@ -1,20 +1,13 @@
 import { GoogleGenAI } from '@google/genai';
 
-// Lấy API Key từ biến môi trường Vite (.env) hoặc từ localStorage khi người dùng cấu hình
+// Lấy API Key độc quyền từ biến môi trường máy chủ (.env), tuyệt đối không để lộ ra UI hay LocalStorage
 export const getGeminiApiKey = () => {
-  return (
-    import.meta.env.VITE_GEMINI_API_KEY ||
-    localStorage.getItem('menstyle_gemini_api_key') ||
-    ''
-  );
-};
-
-export const setGeminiApiKey = (key) => {
-  if (key) {
-    localStorage.setItem('menstyle_gemini_api_key', key.trim());
-  } else {
+  const envKey = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GEMINI_API_KEY) || (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY);
+  // Dọn dẹp key cũ trong localStorage nếu có để ngăn đối thủ/khách hàng F12 đánh cắp
+  if (typeof localStorage !== 'undefined' && localStorage.getItem('menstyle_gemini_api_key')) {
     localStorage.removeItem('menstyle_gemini_api_key');
   }
+  return envKey || '';
 };
 
 const getClient = () => {
@@ -52,7 +45,7 @@ ${JSON.stringify(catalogContext)}
     try {
       const ai = getClient();
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.5-flash-lite',
         contents: [
           { role: 'user', parts: [{ text: `${systemInstruction}\n\nNgười dùng hỏi: ${userMessage}` }] }
         ]
@@ -85,24 +78,105 @@ ${JSON.stringify(catalogContext)}
 export async function generateOutfitRecommendation(occasion, userPreference = '', catalogProducts = []) {
   const apiKey = getGeminiApiKey();
 
+  // 1. Phân loại sản phẩm thông minh theo ngữ cảnh hoàn cảnh trước khi đưa cho AI và Fallback
+  const blazers = catalogProducts.filter(p => {
+    const name = p.name.toLowerCase();
+    return name.includes('blazer') || name.includes('vest') || name.includes('suit');
+  });
+  const dressShirts = catalogProducts.filter(p => p.category === 'Áo Sơ Mi');
+  const polos = catalogProducts.filter(p => p.category === 'Áo Polo');
+  const dressTrousers = catalogProducts.filter(p => p.category === 'Quần Âu Công Sở');
+  const casualPants = catalogProducts.filter(p => p.category === 'Quần Jeans & Khaki');
+  const shorts = catalogProducts.filter(p => p.category === 'Quần Short');
+  const winterJackets = catalogProducts.filter(p => {
+    const name = p.name.toLowerCase();
+    return p.category === 'Áo Khoác & Blazer' && !name.includes('blazer') && !name.includes('vest');
+  });
+  const belts = catalogProducts.filter(p => p.category === 'Phụ Kiện');
+
+  // Chuẩn bị tập ứng viên phù hợp nhất theo từng hoàn cảnh cụ thể
+  let candidateTops = [];
+  let candidateBottoms = [];
+  let occasionRulePrompt = '';
+
+  const occ = occasion.toLowerCase();
+
+  if (occ.includes('tiệc') || occ.includes('cưới')) {
+    // Dạ tiệc & đám cưới: TUYỆT ĐỐI KHÔNG mặc áo khoác phao, áo gió dã ngoại, quần đùi
+    // Ưu tiên: Áo Blazer / Áo Vest hoặc Áo Sơ Mi cao cấp + Quần Âu Công Sở + Thắt Lưng Da
+    candidateTops = [...blazers, ...dressShirts.slice(0, 15)];
+    candidateBottoms = dressTrousers.length > 0 ? dressTrousers.slice(0, 15) : casualPants.slice(0, 10);
+    occasionRulePrompt = `
+QUY TẮC BẮT BUỘC CHO DẠ TIỆC & ĐÁM CƯỚI:
+- BẮT BUỘC ÁO PHẢI LÀ: Áo Blazer/Vest sang trọng hoặc Áo Sơ Mi lịch lãm.
+- TUYỆT ĐỐI CẤM: Không bao giờ chọn áo khoác phao, áo khoác gió thể thao, áo mũ dã ngoại, áo thun cho dạ tiệc đám cưới!
+- QUẦN: Bắt buộc là Quần Âu Công Sở chỉn chu hoặc Quần Kaki phẳng phiu.
+`;
+  } else if (occ.includes('công sở') || occ.includes('đối tác') || occ.includes('phỏng vấn')) {
+    candidateTops = [...dressShirts.slice(0, 15), ...blazers, ...polos.slice(0, 10)];
+    candidateBottoms = dressTrousers.length > 0 ? dressTrousers.slice(0, 15) : casualPants.slice(0, 10);
+    occasionRulePrompt = `
+QUY TẮC CÔNG SỞ & GẶP ĐỐI TÁC:
+- Áo: Sơ mi chuẩn mực, Áo Blazer hoặc Áo Polo có cổ thanh lịch.
+- Quần: Quần Âu hoặc Quần Kaki Smart, thắt lưng da sang trọng.
+`;
+  } else if (occ.includes('golf') || occ.includes('thể thao')) {
+    candidateTops = polos.slice(0, 20);
+    candidateBottoms = [...shorts.slice(0, 15), ...casualPants.slice(0, 10)];
+    occasionRulePrompt = `
+QUY TẮC THỂ THAO & ĐÁNH GOLF:
+- Áo: Bắt buộc Áo Polo có cổ thể thao co giãn, thoáng mát.
+- Quần: Quần Short năng động hoặc Quần Kaki co giãn.
+`;
+  } else {
+    // Dạo phố & hẹn hò
+    candidateTops = [...polos.slice(0, 15), ...dressShirts.slice(0, 10), ...winterJackets.slice(0, 8)];
+    candidateBottoms = [...shorts.slice(0, 10), ...casualPants.slice(0, 15), ...dressTrousers.slice(0, 5)];
+    occasionRulePrompt = `
+QUY TẮC DẠO PHỐ & HẸN HÒ:
+- Trẻ trung, phóng khoáng: Áo Polo hoặc Sơ mi mở cúc cổ, phối Quần Jeans/Khaki hoặc Quần Short.
+`;
+  }
+
   if (apiKey) {
     try {
       const ai = getClient();
-      const prompt = `
-Hãy là một Master Stylist thời trang nam. Người dùng muốn phối đồ cho hoàn cảnh: "${occasion}".
-Ghi chú sở thích: "${userPreference}".
-Kho sản phẩm: ${JSON.stringify(catalogProducts.map(p => ({ id: p.id, name: p.name, category: p.category, price: p.price })))}
+      const selectedPool = [
+        ...candidateTops.slice(0, 20),
+        ...candidateBottoms.slice(0, 15),
+        ...belts.slice(0, 8)
+      ].map(p => ({
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        price: p.price
+      }));
 
-Hãy chọn ra 1 set đồ hoàn chỉnh gồm: 1 áo (Áo Sơ Mi / Áo Polo / Áo Khoác), 1 quần (Quần Âu / Quần Jeans / Quần Short) và 1 phụ kiện (Thắt Lưng).
-Trả về duy nhất định dạng JSON chuẩn:
+      const prompt = `
+Bạn là Giám đốc Sáng tạo & Master Stylist thời trang nam cao cấp của thương hiệu MENSTYLE.
+Khách hàng cần bạn tư vấn set đồ:
+- Hoàn cảnh: "${occasion}".
+- Yêu cầu / Prompt riêng của khách: "${userPreference || 'Phối đồ chuẩn gu, sang trọng và chuẩn mực nhất'}".
+
+${occasionRulePrompt}
+
+DANH SÁCH SẢN PHẨM PHÙ HỢP CÓ SẴN:
+${JSON.stringify(selectedPool)}
+
+YÊU CẦU ĐẦU RA:
+1. Hãy chọn chính xác 1 bộ gồm: 1 Áo phù hợp hoàn cảnh, 1 Quần phù hợp hoàn cảnh, 1 Thắt Lưng.
+2. Đặt một tên phong cách xuất sắc (ví dụ: "Black Tie Royal", "Gentleman Gala", "Executive Confidence", "Preppy Casual").
+3. Lời giải thích tinh tế: nêu rõ tại sao trang phục này thể hiện đẳng cấp đúng với hoàn cảnh "${occasion}", kèm lời khuyên chọn giày hoặc phụ kiện đi kèm.
+
+Trả về DUY NHẤT một chuỗi JSON thuần:
 {
-  "outfitTitle": "Tên phong cách set đồ",
-  "reasoning": "Lý do phối đồ này trong 2 câu ngắn",
-  "selectedProductIds": [id1, id2, id3]
+  "outfitTitle": "Tên phong cách sang trọng",
+  "reasoning": "Lời giải thích vì sao phối set đồ này phù hợp hoàn hảo với hoàn cảnh",
+  "selectedProductIds": [id_ao, id_quan, id_thatlung]
 }
 `;
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.5-flash-lite',
         contents: prompt
       });
       const text = response.text || '';
@@ -110,55 +184,66 @@ Trả về duy nhất định dạng JSON chuẩn:
       const parsed = JSON.parse(cleanJson);
       if (parsed && Array.isArray(parsed.selectedProductIds)) {
         const items = catalogProducts.filter(p => parsed.selectedProductIds.includes(p.id));
-        if (items.length > 0) {
+        if (items.length >= 2) {
           return {
-            title: parsed.outfitTitle || 'Set Đồ Chuẩn Phong Độ',
+            title: parsed.outfitTitle || 'Set Đồ Chuẩn Phong Độ Quý Ông',
             reason: parsed.reasoning || 'Sự kết hợp tinh tế nâng tầm đẳng cấp quý ông.',
-            items
+            items,
+            isGemini: true
           };
         }
       }
     } catch (err) {
-      console.warn('Gemini Outfit Generation Error, using rule-based selection:', err);
+      console.warn('Gemini Outfit Generation Error, using context-aware rule-based fallback:', err);
     }
   }
 
-  // Fallback Rule-based theo sản phẩm có sẵn
-  let tops = catalogProducts.filter(p => p.category === 'Áo Sơ Mi' || p.category === 'Áo Polo');
-  let bottoms = catalogProducts.filter(p => p.category === 'Quần Âu Công Sở' || p.category === 'Quần Jeans & Khaki');
-  let accessories = catalogProducts.filter(p => p.category === 'Phụ Kiện');
-  let blazers = catalogProducts.filter(p => p.category === 'Áo Khoác & Blazer');
-
-  if (occasion.includes('Tiệc') || occasion.includes('Cưới')) {
-    const b = blazers[0] || tops[0];
-    const bot = bottoms[0];
-    const acc = accessories[0];
+  // Fallback thông minh theo chuẩn mực thời trang nếu API bận
+  if (occ.includes('tiệc') || occ.includes('cưới')) {
+    const formalTop = blazers[0] || dressShirts.find(s => s.name.toLowerCase().includes('trắng')) || dressShirts[0];
+    const formalPant = dressTrousers[0] || casualPants[0];
+    const formalBelt = belts[0];
     return {
       title: 'Quý Ông Lịch Lãm & Đẳng Cấp Dạ Tiệc',
-      reason: 'Sự kết hợp giữa Blazer sang trọng và Quần âu cao cấp tạo nên phong thái đĩnh đạc, thu hút mọi ánh nhìn.',
-      items: [b, bot, acc].filter(Boolean)
+      reason: 'Sự kết hợp giữa Blazer sang trọng (hoặc Sơ mi cao cấp) phối cùng Quần Âu may đo tạo nên phong thái đĩnh đạc, chuẩn mực cho các sự kiện trang trọng.',
+      items: [formalTop, formalPant, formalBelt].filter(Boolean),
+      isGemini: false
     };
   }
 
-  if (occasion.includes('Dạo Phố') || occasion.includes('Hè')) {
-    const p = tops.find(t => t.category === 'Áo Polo') || tops[0];
-    const shorts = catalogProducts.filter(p => p.category === 'Quần Short')[0] || bottoms[0];
-    const acc = accessories[1] || accessories[0];
+  if (occ.includes('golf') || occ.includes('thể thao')) {
+    const polo = polos[0];
+    const golfPant = shorts[0] || casualPants[0];
+    const belt = belts[0];
     return {
-      title: 'Smart Casual Dạo Phố & Hè Năng Động',
-      reason: 'Chất liệu thoáng mát tối đa cùng gam màu tinh tế mang lại sự tự tin, phóng khoáng trong mọi hoạt động thường nhật.',
-      items: [p, shorts, acc].filter(Boolean)
+      title: 'Phong Thái Thể Thao & Đẳng Cấp Golf',
+      reason: 'Chất liệu co giãn 4 chiều thoáng mát tối đa cùng gam màu tinh tế mang lại sự tự tin, phóng khoáng trên sân tập.',
+      items: [polo, golfPant, belt].filter(Boolean),
+      isGemini: false
+    };
+  }
+
+  if (occ.includes('dạo phố') || occ.includes('hè') || occ.includes('hẹn hò')) {
+    const casualTop = polos[0] || dressShirts[0];
+    const casualBottom = shorts[0] || casualPants[0];
+    const belt = belts[0];
+    return {
+      title: 'Smart Casual Dạo Phố & Hẹn Hò Cuốn Hút',
+      reason: 'Phong cách năng động, trẻ trung nhưng vẫn giữ được nét chỉn chu lịch thiệp của quý ông hiện đại.',
+      items: [casualTop, casualBottom, belt].filter(Boolean),
+      isGemini: false
     };
   }
 
   // Mặc định Công sở
-  const shirt = tops.find(t => t.category === 'Áo Sơ Mi') || tops[0];
-  const trousers = bottoms.find(b => b.category === 'Quần Âu Công Sở') || bottoms[0];
-  const belt = accessories[0];
+  const shirt = dressShirts[0] || polos[0];
+  const trousers = dressTrousers[0] || casualPants[0];
+  const belt = belts[0];
   return {
     title: 'Phong Thái Doanh Nhân & Công Sở Hiện Đại',
     reason: 'Sơ mi thanh lịch phối cùng quần âu cao cấp là biểu tượng chuẩn mực của người đàn ông thành công.',
-    items: [shirt, trousers, belt].filter(Boolean)
+    items: [shirt, trousers, belt].filter(Boolean),
+    isGemini: false
   };
 }
 
@@ -183,7 +268,7 @@ Trả về duy nhất JSON:
 }
 `;
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.5-flash-lite',
         contents: [
           {
             role: 'user',
@@ -247,7 +332,7 @@ Hãy tóm tắt thành 3 gạch đầu dòng ngắn gọn:
 3. Lời khuyên chọn size cho khách hàng mới
 `;
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.5-flash-lite',
         contents: prompt
       });
       return response.text;
@@ -258,3 +343,106 @@ Hãy tóm tắt thành 3 gạch đầu dòng ngắn gọn:
 
   return `• 98% khách hàng đánh giá cao chất liệu vải thoáng mát, mềm mịn và đứng phom tự nhiên.\n• Khả năng chống nhăn và bền màu vượt trội sau nhiều lần giặt máy.\n• Form dáng Regular Fit chuẩn vóc dáng người Việt, nên chọn đúng size theo bảng đề xuất.`;
 }
+
+/**
+ * 5. AI SEMANTIC SEARCH - Hiểu ý định tìm kiếm tự nhiên của người dùng
+ * Ví dụ: "đồ thu đông", "áo đi tiệc sang trọng", "đồ đi chơi biển mát mẻ"
+ */
+export async function parseSemanticSearchWithAI(query, availableCategories = []) {
+  const apiKey = getGeminiApiKey();
+
+  if (apiKey && query && query.trim().length >= 2) {
+    try {
+      const ai = getClient();
+      const prompt = `
+Bạn là công cụ tìm kiếm thông minh cho thương hiệu thời trang nam MENSTYLE.
+Người dùng đang tìm kiếm cụm từ: "${query}".
+Các danh mục hiện có: ${JSON.stringify(availableCategories)}.
+
+Quy tắc phân loại và loại trừ nghiêm ngặt:
+1. Nếu người dùng tìm "quần" (quần ngủ, quần âu, quần short, quần dài, quần jean...):
+   - "typeConstraint" phải là "bottom" (chỉ quần). TUYỆT ĐỐI KHÔNG được trả về áo.
+   - "relatedCategories" CHỈ ĐƯỢC CHỨA các danh mục Quần: "Quần Short", "Quần Âu Công Sở", "Quần Jeans & Khaki".
+2. Nếu người dùng tìm "áo" (áo sơ mi, áo polo, áo thun, áo khoác...):
+   - "typeConstraint" phải là "top" (chỉ áo). TUYỆT ĐỐI KHÔNG được trả về quần.
+   - "relatedCategories" CHỈ ĐƯỢC CHỨA các danh mục Áo: "Áo Sơ Mi", "Áo Polo", "Áo Khoác & Blazer".
+3. Nếu người dùng tìm phụ kiện (thắt lưng, ví, cà vạt...):
+   - "typeConstraint" là "accessory". "relatedCategories": ["Phụ Kiện"].
+4. Nếu người dùng tìm hoàn cảnh chung (đồ thu đông, đồ đi biển, đồ công sở):
+   - "typeConstraint" là "all" (cả áo và quần đều được).
+
+Trả về DUY NHẤT định dạng JSON:
+{
+  "typeConstraint": "bottom" | "top" | "accessory" | "all",
+  "relatedCategories": ["Tên danh mục 1"],
+  "expandedKeywords": ["từ khóa cụ thể 1", "từ khóa cụ thể 2"],
+  "aiExplanation": "Giải thích ngắn dưới 15 chữ gợi ý cho người dùng"
+}
+`;
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.5-flash-lite',
+        contents: prompt
+      });
+
+      const text = response.text || '';
+      const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(cleanJson);
+      if (parsed) {
+        return {
+          typeConstraint: parsed.typeConstraint || 'all',
+          relatedCategories: parsed.relatedCategories || [],
+          expandedKeywords: parsed.expandedKeywords || [],
+          aiExplanation: parsed.aiExplanation || 'AI đã phân tích ngữ cảnh phù hợp cho bạn'
+        };
+      }
+    } catch (e) {
+      console.warn('Gemini Semantic Search parse error:', e);
+    }
+  }
+
+  // Fallback Rule-based cho các từ khóa phổ biến khi API bận
+  const q = query.toLowerCase();
+  const isLookingForPant = q.includes('quần');
+  const isLookingForShirt = q.includes('áo');
+
+  if (isLookingForPant) {
+    let cats = ['Quần Short', 'Quần Âu Công Sở', 'Quần Jeans & Khaki'];
+    if (q.includes('ngủ') || q.includes('đùi') || q.includes('mặc nhà') || q.includes('ngắn')) {
+      cats = ['Quần Short'];
+    } else if (q.includes('âu') || q.includes('tây') || q.includes('công sở')) {
+      cats = ['Quần Âu Công Sở'];
+    } else if (q.includes('jean') || q.includes('khaki') || q.includes('bò')) {
+      cats = ['Quần Jeans & Khaki'];
+    }
+    return {
+      typeConstraint: 'bottom',
+      relatedCategories: cats,
+      expandedKeywords: ['quần'],
+      aiExplanation: `Gợi ý các mẫu ${cats.join(', ')} phù hợp nhất`
+    };
+  }
+
+  if (isLookingForShirt) {
+    let cats = ['Áo Sơ Mi', 'Áo Polo', 'Áo Khoác & Blazer'];
+    if (q.includes('sơ mi') || q.includes('dài tay')) {
+      cats = ['Áo Sơ Mi'];
+    } else if (q.includes('polo') || q.includes('cộc') || q.includes('thun')) {
+      cats = ['Áo Polo'];
+    } else if (q.includes('khoác') || q.includes('blazer') || q.includes('ấm')) {
+      cats = ['Áo Khoác & Blazer'];
+    }
+    return {
+      typeConstraint: 'top',
+      relatedCategories: cats,
+      expandedKeywords: ['áo'],
+      aiExplanation: `Gợi ý các mẫu ${cats.join(', ')} phù hợp nhất`
+    };
+  }
+
+  return {
+    relatedCategories: [],
+    expandedKeywords: [],
+    aiExplanation: ''
+  };
+}
+

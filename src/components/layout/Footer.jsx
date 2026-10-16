@@ -125,6 +125,15 @@ export const Footer = ({ onNavigate }) => {
               <ul className="space-y-2.5 text-sm text-neutral-400">
                 <li>
                   <button 
+                    onClick={() => onNavigate && onNavigate('blog')}
+                    className="text-amber-400 hover:text-amber-300 font-bold transition cursor-pointer text-left flex items-center gap-1.5"
+                  >
+                    <span>Tin tức & BST Fall Winter</span>
+                    <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1 rounded border border-amber-500/30">Mới</span>
+                  </button>
+                </li>
+                <li>
+                  <button 
                     onClick={() => setIsSizeGuideOpen(true)}
                     className="hover:text-amber-400 transition cursor-pointer text-left"
                   >

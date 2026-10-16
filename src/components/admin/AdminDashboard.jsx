@@ -44,6 +44,13 @@ export const AdminDashboard = ({
   const [productSearch, setProductSearch] = useState('');
   const [productCategoryFilter, setProductCategoryFilter] = useState('Tất cả');
 
+  // Luôn đồng bộ khi products prop thay đổi
+  useEffect(() => {
+    if (products && Array.isArray(products)) {
+      setAdminProducts(products);
+    }
+  }, [products]);
+
   // Modal Thêm / Sửa Sản Phẩm
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);

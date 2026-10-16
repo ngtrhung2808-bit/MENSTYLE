@@ -103,18 +103,47 @@ export const SmartOutfitStylistModal = ({ isOpen, onClose, products = [], onAddM
             </div>
           </div>
 
-          {/* Ghi chú thêm (Optional) */}
+          {/* Ghi chú thêm / Prompt tùy biến linh hoạt */}
           <div>
-            <label className="block text-xs font-bold text-neutral-800 mb-1">
-              2. Ghi chú thêm gu phối màu hoặc vóc dáng (Không bắt buộc):
-            </label>
-            <input 
-              type="text"
-              value={userNote}
-              onChange={(e) => setUserNote(e.target.value)}
-              placeholder="Ví dụ: Thích gam màu tối trầm, dáng người hơi gầy, form ôm nhẹ..."
-              className="w-full text-xs px-3.5 py-2.5 border border-neutral-300 rounded-xl outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-            />
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold text-neutral-800">
+                2. Nhập yêu cầu phối đồ (Prompt) theo ý muốn của bạn:
+              </label>
+              <span className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full font-semibold border border-amber-200">
+                AI xử lý theo thời gian thực
+              </span>
+            </div>
+            
+            <div className="relative">
+              <textarea 
+                rows={2}
+                value={userNote}
+                onChange={(e) => setUserNote(e.target.value)}
+                placeholder="Ví dụ: Phối tone đen huyền bí cho người cao 1m75, thích sơ mi và quần âu lịch sự để đi tiệc tối..."
+                className="w-full text-xs px-3.5 py-2.5 bg-neutral-50/80 focus:bg-white border border-neutral-300 rounded-xl outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition resize-none font-medium"
+              />
+            </div>
+
+            {/* Gợi ý prompt nhanh (Quick Prompt Pills) */}
+            <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+              <span className="text-[10px] text-neutral-400 font-semibold">Gợi ý nhanh:</span>
+              {[
+                'Tone đen huyền bí (All Black)',
+                'Minimalist Tối giản',
+                'Tone trầm ấm thu đông',
+                'Người gầy thích form gọn',
+                'Phong cách Quý tộc Old Money'
+              ].map((pill, idx) => (
+                <button
+                  type="button"
+                  key={idx}
+                  onClick={() => setUserNote(pill)}
+                  className="text-[10px] px-2.5 py-1 bg-white hover:bg-amber-50 hover:text-amber-800 text-neutral-600 border border-neutral-200 rounded-lg transition font-medium cursor-pointer"
+                >
+                  {pill}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Nút Kích Hoạt Phối Đồ AI */}
@@ -122,17 +151,17 @@ export const SmartOutfitStylistModal = ({ isOpen, onClose, products = [], onAddM
             <Button 
               onClick={handleGenerate}
               disabled={loading}
-              className="w-full bg-gradient-to-r from-neutral-950 via-neutral-900 to-amber-950 hover:to-neutral-950 text-white font-bold text-xs py-3 rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+              className="w-full bg-gradient-to-r from-neutral-950 via-neutral-900 to-amber-950 hover:to-neutral-950 text-white font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-[0.99] transition"
             >
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
-                  <span>AI Đang Phân Tích & Phối Đồ...</span>
+                  <span>Gemini AI Đang Thiết Kế Set Đồ Riêng Cho Bạn...</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 text-amber-400 fill-amber-400" />
-                  <span>{outfit ? 'Gợi Ý Set Đồ Khác Bằng AI' : 'Bắt Đầu Phối Set Đồ Bằng AI'}</span>
+                  <span>{outfit ? 'Đổi Yêu Cầu & Tạo Lại Set Đồ Ngay' : 'Kích Hoạt Gemini Phối Set Đồ Chuẩn Gu'}</span>
                 </>
               )}
             </Button>
@@ -143,9 +172,17 @@ export const SmartOutfitStylistModal = ({ isOpen, onClose, products = [], onAddM
             <div className="mt-4 p-4 rounded-2xl bg-neutral-50 border border-neutral-200 animate-in fade-in slide-in-from-bottom-2">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest block">
-                    Đề Xuất Dành Cho Bạn
-                  </span>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest block">
+                      Đề Xuất Dành Cho Bạn
+                    </span>
+                    {outfit.isGemini && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 border border-emerald-300">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Gemini AI Trực Tiếp
+                      </span>
+                    )}
+                  </div>
                   <h4 className="text-sm sm:text-base font-black text-neutral-950">{outfit.title}</h4>
                 </div>
                 <div className="text-right">

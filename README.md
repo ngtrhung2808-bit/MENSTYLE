@@ -42,4 +42,4 @@
 - **AI & Computer Vision:** Google Gen AI SDK (`@google/genai`), Model `gemini-2.5-flash`
 - **Icons:** Lucide React
 - **Quản lý dữ liệu:** Dynamic JSON Architecture & LocalStorage Database Sync
-- **Deployment:** Vercel / Netlify
+- **Môi trường vận hành:** Localhost (Vite Dev Server)

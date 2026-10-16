@@ -5,147 +5,140 @@ import { Button } from '../common/Button';
 const SLIDES = [
   {
     id: 1,
-    badge: 'Bộ Sưu Tập SS26 • MENSTYLE Premium',
-    title: 'Bản Lĩnh Đàn Ông',
-    subtitle: 'Lịch Lãm & Phong Độ Mọi Khoảnh Khắc',
-    desc: 'Thiết kế Polo dệt tổ ong thoáng mát, Sơ mi Modal Silk chống nhăn và Quần tây co giãn 4 chiều cho quý ông hiện đại.',
-    image: 'https://cdn.hstatic.net/products/200000690725/_tdt3784_55384861295_o_05e198e142ed4422a7c3d79e1e3bea3c.jpg',
-    category: 'Áo Polo',
-    highlight: 'Giảm 30% Đơn Đầu'
+    title: 'BỘ SƯU TẬP THU ĐÔNG 2026',
+    subtitle: 'URBAN ELEGANCE • ĐẲNG CẤP PHÁI MẠNH',
+    desc: 'Thiết kế Áo Khoác Gió 2 lớp Wind Light & Măng tô len Ý may đo phom chuẩn quý ông hiện đại.',
+    image: '/banners/banner_fall_winter.jpg',
+    category: 'Áo Khoác & Blazer',
+    ctaText: 'Khám Phá BST'
   },
   {
     id: 2,
-    badge: 'Executive Tailored Collection',
-    title: 'Phong Thái Quý Tộc',
-    subtitle: 'Blazer & Quần Âu May Đo Đẳng Cấp',
-    desc: 'Chất vải nhập khẩu cao cấp, tôn vóc dáng mạnh mẽ, đĩnh đạc trong mọi cuộc gặp gỡ và sự kiện quan trọng.',
-    image: 'https://cdn.hstatic.net/products/200000690725/hsbk801_to_n_f0a1612b08aa46359ffec2e0d8f83319.webp',
-    category: 'Blazer & Suit',
-    highlight: 'Hàng Mới Về'
+    title: 'POLO SILK TOUCH CO GIÃN',
+    subtitle: 'THOÁNG MÁT TỐI ĐA • ĐỨNG FORM CẢ NGÀY',
+    desc: 'Chất liệu dệt tổ ong DiamondAir kháng khuẩn, giải pháp trang phục hàng ngày thanh lịch.',
+    image: '/banners/banner_polo_silk.jpg',
+    category: 'Áo Polo',
+    ctaText: 'Mua Ngay'
   },
   {
     id: 3,
-    badge: 'Smart Casual Daily Style',
-    title: 'Thoải Mái Tối Đa',
-    subtitle: 'Sơ Mi Kháng Khuẩn & Khaki Smart',
-    desc: 'Giải pháp trang phục công sở cả tuần không cần ủi, thấm hút mồ hôi vượt trội chuẩn phong cách quý ông hiện đại.',
-    image: 'https://cdn.hstatic.net/products/200000690725/55314495847_3ed29f720b_c_8c6d05461d6b4024a855aa1bfb857754.jpg',
+    title: 'SMART CASUAL OFFICE COMBO',
+    subtitle: 'SƠ MI MODAL SILK & QUẦN ÂU CO GIÃN 4 CHIỀU',
+    desc: 'Giải pháp trang phục công sở cả tuần không cần ủi, tôn trọn vóc dáng nam tính.',
+    image: '/banners/banner_smart_casual.jpg',
     category: 'Áo Sơ Mi',
-    highlight: 'Bán Chạy Nhất'
+    ctaText: 'Xem Bộ Sưu Tập'
   }
 ];
 
 export const HeroBanner = ({ onExplore }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Tự động chuyển slide sau mỗi 5 giây
+  // Tự động chuyển slide sau mỗi 6 giây
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % SLIDES.length);
-    }, 5000);
+    }, 6000);
     return () => clearInterval(timer);
   }, []);
 
   const slide = SLIDES[currentSlide];
 
   return (
-    <section className="relative overflow-hidden bg-neutral-950 text-white rounded-2xl sm:rounded-3xl mx-3 sm:mx-6 lg:mx-8 mt-3 sm:mt-6 border border-neutral-800 shadow-2xl">
-      {/* Background Image với transition mượt mà */}
-      <div className="absolute inset-0 z-0">
-        <img
-          key={slide.id}
-          src={slide.image}
-          alt={slide.title}
-          className="w-full h-full object-cover object-top filter brightness-[0.45] transition-all duration-1000 ease-in-out scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/80 to-transparent z-10" />
-      </div>
-
-      <div className="relative z-20 max-w-7xl mx-auto px-5 sm:px-12 py-14 sm:py-24 lg:py-32 flex flex-col items-start max-w-2xl">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold mb-4 animate-in fade-in duration-300">
-          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          <span>{slide.badge}</span>
-        </div>
-
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] mb-3 sm:mb-4 animate-in fade-in duration-500">
-          {slide.title} <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-white">
-            {slide.subtitle}
-          </span>
-        </h1>
-
-        <p className="text-xs sm:text-base text-neutral-300 mb-6 sm:mb-8 leading-relaxed font-normal max-w-lg">
-          {slide.desc}
-        </p>
-
-        {/* Nút hành động */}
-        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-          <Button 
-            onClick={() => onExplore && onExplore(slide.category)}
-            variant="primary" 
-            size="lg" 
-            className="rounded-xl bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold px-7 shadow-lg shadow-amber-500/20 justify-center cursor-pointer text-xs sm:text-sm"
+    <div className="relative w-full overflow-hidden bg-neutral-950 select-none">
+      {/* Khung ảnh Full Width Banner tỉ lệ thời trang chuẩn Torano */}
+      <div className="relative w-full h-[360px] sm:h-[480px] md:h-[560px] lg:h-[640px] overflow-hidden">
+        {SLIDES.map((s, idx) => (
+          <div
+            key={s.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            }`}
           >
-            Khám Phá {slide.category} <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-
-          <Button 
-            onClick={() => onExplore && onExplore('Tất cả')}
-            variant="outline" 
-            size="lg" 
-            className="rounded-xl !bg-white/10 !text-white !border-white/20 hover:!bg-white/20 backdrop-blur-sm justify-center cursor-pointer text-xs sm:text-sm font-semibold"
-          >
-            Xem Tất Cả 45+ Mẫu
-          </Button>
-        </div>
-
-        {/* 3 Cam kết thương hiệu phong cách MENSTYLE */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 pt-8 sm:pt-10 mt-6 sm:mt-8 border-t border-white/10 w-full text-xs text-neutral-300">
-          <div className="flex items-center gap-2.5">
-            <Truck className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>Freeship từ 500k toàn quốc</span>
-          </div>
-          <div className="flex items-center gap-2.5">
-            <RotateCcw className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>Đổi size miễn phí 7 ngày</span>
-          </div>
-          <div className="flex items-center gap-2.5">
-            <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>Chất vải cao cấp chuẩn MENSTYLE</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Nút điều hướng Carousel (Next / Prev) */}
-      <div className="absolute bottom-6 right-6 z-20 hidden sm:flex items-center gap-2">
-        <button 
-          onClick={() => setCurrentSlide((currentSlide - 1 + SLIDES.length) % SLIDES.length)}
-          className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/15 transition cursor-pointer"
-          aria-label="Previous slide"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-
-        {/* Dots */}
-        <div className="flex gap-1.5 px-2">
-          {SLIDES.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentSlide(i)}
-              className={`h-2 rounded-full transition-all cursor-pointer ${currentSlide === i ? 'w-6 bg-amber-400' : 'w-2 bg-white/30'}`}
-              aria-label={`Go to slide ${i + 1}`}
+            {/* Ảnh chụp mẫu MenStyle riêng biệt, độ nét cao */}
+            <img
+              src={s.image}
+              alt={s.title}
+              className="w-full h-full object-cover object-right sm:object-center transform transition-transform duration-7000 ease-out scale-100 hover:scale-105"
             />
-          ))}
-        </div>
+            {/* Lớp gradient tinh tế bên trái để chữ cực kỳ dễ đọc mà ảnh người mẫu bên phải vẫn sáng đẹp tự nhiên */}
+            <div className="absolute inset-0 bg-gradient-to-r from-neutral-950/85 via-neutral-950/40 to-transparent sm:w-2/3" />
 
-        <button 
-          onClick={() => setCurrentSlide((currentSlide + 1) % SLIDES.length)}
-          className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/15 transition cursor-pointer"
-          aria-label="Next slide"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
+            {/* Nội dung Banner Chuẩn Phong Cách Thời Trang */}
+            <div className="absolute inset-0 flex items-center z-20">
+              <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 w-full">
+                <div className="max-w-lg lg:max-w-xl text-white space-y-3 sm:space-y-4">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/25 border border-amber-400/40 text-amber-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider backdrop-blur-xs">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Bộ Sưu Tập Độc Quyền MENSTYLE</span>
+                  </div>
+
+                  <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight uppercase drop-shadow-md text-white">
+                    {s.title}
+                  </h1>
+
+                  <p className="text-amber-400 text-xs sm:text-sm md:text-base font-bold tracking-wide uppercase drop-shadow-sm">
+                    {s.subtitle}
+                  </p>
+
+                  <p className="text-neutral-200 text-xs sm:text-sm leading-relaxed max-w-md drop-shadow">
+                    {s.desc}
+                  </p>
+
+                  <div className="pt-2 sm:pt-4 flex items-center gap-3">
+                    <button
+                      onClick={() => onExplore && onExplore(s.category)}
+                      className="rounded-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm shadow-xl transition-all cursor-pointer flex items-center gap-2"
+                    >
+                      <span>{s.ctaText}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+
+                    <button
+                      onClick={() => onExplore && onExplore('Tất cả')}
+                      className="rounded-full bg-neutral-950/60 hover:bg-neutral-900/90 text-white border border-white/30 backdrop-blur-md px-5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold transition-all cursor-pointer"
+                    >
+                      Xem Toàn Bộ
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
-    </section>
+
+      {/* Cụm Nút Điều Hướng Trái / Phải dạng mũi tên mờ */}
+      <button
+        onClick={() => setCurrentSlide((currentSlide - 1 + SLIDES.length) % SLIDES.length)}
+        className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-neutral-950/40 hover:bg-neutral-950/80 text-white backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg"
+        aria-label="Previous slide"
+      >
+        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+      </button>
+
+      <button
+        onClick={() => setCurrentSlide((currentSlide + 1) % SLIDES.length)}
+        className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-neutral-950/40 hover:bg-neutral-950/80 text-white backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg"
+        aria-label="Next slide"
+      >
+        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+      </button>
+
+      {/* Dải Indicator Dots dạng gạch thanh lịch ở đáy */}
+      <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
+        {SLIDES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentSlide(i)}
+            className={`h-1.5 transition-all duration-300 rounded-full cursor-pointer ${
+              currentSlide === i ? 'w-8 bg-amber-400' : 'w-2.5 bg-white/50 hover:bg-white'
+            }`}
+            aria-label={`Slide ${i + 1}`}
+          />
+        ))}
+      </div>
+    </div>
   );
 };

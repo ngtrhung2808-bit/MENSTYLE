@@ -29,52 +29,54 @@ export const Header = ({
   return (
     <header className="sticky top-0 z-40 w-full shadow-md">
       {/* 1. TẦNG 1: DẢI CHẠY KHUYẾN MÃI (TOP RUNNING MARQUEE) */}
-      <div className="bg-[#1c1917] text-[#d6d3d1] text-[11px] sm:text-xs py-1.5 overflow-hidden whitespace-nowrap border-b border-neutral-800 flex">
-        <div className="animate-marquee-infinite select-none font-medium shrink-0 flex items-center gap-8 pr-8">
-          <span className="flex items-center gap-1.5 text-amber-300">
-            <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Voucher lớn - Sale giá độc quyền đến 50%
-          </span>
-          <span className="text-neutral-500">•</span>
-          <span className="flex items-center gap-1.5">
-            🔥 Đổi hàng trong 30 ngày tận nơi miễn phí
-          </span>
-          <span className="text-neutral-500">•</span>
-          <span className="flex items-center gap-1.5 text-emerald-400">
-            🚚 Freeship mọi đơn hàng từ 500k
-          </span>
-          <span className="text-neutral-500">•</span>
-          <span className="flex items-center gap-1.5 text-amber-300">
-            <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Giảm ngay 100k cho đơn đầu tiên
-          </span>
-          <span className="text-neutral-500">•</span>
-          <span className="flex items-center gap-1.5">
-            👔 Cam kết chất vải cao cấp chuẩn phong độ quý ông
-          </span>
-          <span className="text-neutral-500">•</span>
-        </div>
+      <div className="bg-[#1c1917] text-[#d6d3d1] text-[11px] sm:text-xs py-1.5 overflow-hidden whitespace-nowrap border-b border-neutral-800">
+        <div className="animate-marquee-infinite select-none font-medium flex items-center">
+          <div className="shrink-0 flex items-center gap-8 pr-8">
+            <span className="flex items-center gap-1.5 text-amber-300">
+              <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Voucher lớn - Sale giá độc quyền đến 50%
+            </span>
+            <span className="text-neutral-500">•</span>
+            <span className="flex items-center gap-1.5">
+              🔥 Đổi hàng trong 30 ngày tận nơi miễn phí
+            </span>
+            <span className="text-neutral-500">•</span>
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              🚚 Freeship mọi đơn hàng từ 500k
+            </span>
+            <span className="text-neutral-500">•</span>
+            <span className="flex items-center gap-1.5 text-amber-300">
+              <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Giảm ngay 100k cho đơn đầu tiên
+            </span>
+            <span className="text-neutral-500">•</span>
+            <span className="flex items-center gap-1.5">
+              👔 Cam kết chất vải cao cấp chuẩn phong độ quý ông
+            </span>
+            <span className="text-neutral-500">•</span>
+          </div>
 
-        {/* Bản sao chạy tiếp nối không ngắt quãng (Seamless Loop) */}
-        <div className="animate-marquee-infinite select-none font-medium shrink-0 flex items-center gap-8 pr-8" aria-hidden="true">
-          <span className="flex items-center gap-1.5 text-amber-300">
-            <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Voucher lớn - Sale giá độc quyền đến 50%
-          </span>
-          <span className="text-neutral-500">•</span>
-          <span className="flex items-center gap-1.5">
-            🔥 Đổi hàng trong 30 ngày tận nơi miễn phí
-          </span>
-          <span className="text-neutral-500">•</span>
-          <span className="flex items-center gap-1.5 text-emerald-400">
-            🚚 Freeship mọi đơn hàng từ 500k
-          </span>
-          <span className="text-neutral-500">•</span>
-          <span className="flex items-center gap-1.5 text-amber-300">
-            <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Giảm ngay 100k cho đơn đầu tiên
-          </span>
-          <span className="text-neutral-500">•</span>
-          <span className="flex items-center gap-1.5">
-            👔 Cam kết chất vải cao cấp chuẩn phong độ quý ông
-          </span>
-          <span className="text-neutral-500">•</span>
+          {/* Bản sao chạy tiếp nối không ngắt quãng (Seamless Loop) */}
+          <div className="shrink-0 flex items-center gap-8 pr-8" aria-hidden="true">
+            <span className="flex items-center gap-1.5 text-amber-300">
+              <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Voucher lớn - Sale giá độc quyền đến 50%
+            </span>
+            <span className="text-neutral-500">•</span>
+            <span className="flex items-center gap-1.5">
+              🔥 Đổi hàng trong 30 ngày tận nơi miễn phí
+            </span>
+            <span className="text-neutral-500">•</span>
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              🚚 Freeship mọi đơn hàng từ 500k
+            </span>
+            <span className="text-neutral-500">•</span>
+            <span className="flex items-center gap-1.5 text-amber-300">
+              <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Giảm ngay 100k cho đơn đầu tiên
+            </span>
+            <span className="text-neutral-500">•</span>
+            <span className="flex items-center gap-1.5">
+              👔 Cam kết chất vải cao cấp chuẩn phong độ quý ông
+            </span>
+            <span className="text-neutral-500">•</span>
+          </div>
         </div>
       </div>
 
@@ -114,8 +116,8 @@ export const Header = ({
                 type="text" 
                 value={searchValue || ''}
                 onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
-                placeholder="Bạn đang tìm gì..." 
-                className="w-full bg-white text-neutral-900 text-xs sm:text-sm rounded-lg pl-4 pr-20 py-2.5 sm:py-2.5 outline-none font-medium placeholder:text-neutral-400 shadow-inner"
+                placeholder="Tìm sản phẩm, phong cách (vd: Đồ thu đông, Áo đi tiệc...)" 
+                className="w-full bg-white text-neutral-900 text-xs sm:text-sm rounded-lg pl-4 pr-24 py-2.5 sm:py-2.5 outline-none font-medium placeholder:text-neutral-400 shadow-inner"
               />
               <div className="absolute right-1 sm:right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                 <button
@@ -128,10 +130,10 @@ export const Header = ({
                 </button>
                 <button 
                   type="submit"
-                  aria-label="Tìm kiếm"
-                  className="bg-[#1c1917] hover:bg-neutral-800 text-white w-8 h-8 rounded-md flex items-center justify-center transition cursor-pointer"
+                  aria-label="Tìm kiếm AI"
+                  className="bg-[#1c1917] hover:bg-neutral-800 text-white px-2.5 h-8 rounded-md flex items-center gap-1 transition cursor-pointer text-xs font-bold"
                 >
-                  <Search className="w-4 h-4 text-white" />
+                  <Search className="w-3.5 h-3.5 text-amber-400" />
                 </button>
               </div>
             </form>
@@ -383,12 +385,15 @@ export const Header = ({
               )}
             </div>
 
-            {/* TIN TỨC */}
+            {/* TIN TỨC (TORANO JOURNAL) */}
             <button 
-              onClick={() => onNavigate && onNavigate('home')}
-              className="hover:text-amber-600 transition cursor-pointer text-neutral-900"
+              onClick={() => onNavigate && onNavigate('blog')}
+              className={`hover:text-amber-600 transition cursor-pointer flex items-center gap-1.5 ${
+                currentTab === 'blog' ? 'text-amber-600 font-black' : 'text-neutral-900'
+              }`}
             >
-              TIN TỨC
+              <span>TIN TỨC</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
             </button>
           </nav>
         </div>
@@ -404,6 +409,12 @@ export const Header = ({
             TRANG CHỦ
           </button>
           <button 
+            onClick={() => { onNavigate && onNavigate('blog'); setMobileMenuOpen(false); }}
+            className="block w-full text-left py-2.5 text-sm font-bold border-b border-neutral-800 text-amber-400"
+          >
+            TIN TỨC & BỘ SƯU TẬP (JOURNAL) 📖
+          </button>
+          <button 
             onClick={() => { onNavigate && onNavigate('products', 'Tất cả'); setMobileMenuOpen(false); }}
             className="block w-full text-left py-2.5 text-sm font-bold border-b border-neutral-800 text-rose-400"
           >
@@ -416,7 +427,7 @@ export const Header = ({
             ÁO NAM (Sơ Mi, Polo, Blazer)
           </button>
           <button 
-            onClick={() => { onNavigate && onNavigate('products', 'Quần Âu & Jean'); setMobileMenuOpen(false); }}
+            onClick={() => { onNavigate && onNavigate('products', 'Quần Âu Công Sở'); setMobileMenuOpen(false); }}
             className="block w-full text-left py-2 text-sm text-neutral-300 border-b border-neutral-800"
           >
             QUẦN NAM (Quần Âu, Jeans, Shorts)

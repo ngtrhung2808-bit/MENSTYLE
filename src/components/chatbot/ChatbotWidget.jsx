@@ -5,15 +5,14 @@ import {
   Bot, 
   Sparkles, 
   Loader2, 
-  Key, 
   Phone, 
   ArrowUp,
   MessageCircle
 } from 'lucide-react';
 import { Button } from '../common/Button';
-import { generateStylistChatReply, getGeminiApiKey, setGeminiApiKey } from '../../services/geminiService';
+import { generateStylistChatReply } from '../../services/geminiService';
 
-export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
+export const ChatbotWidget = ({ products = [], onSelectProduct, currentUser, onRequireAuth }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isWidgetExpanded, setIsWidgetExpanded] = useState(true); // Mở/đóng cụm nút liên hệ
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -28,8 +27,6 @@ export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showKeyModal, setShowKeyModal] = useState(false);
-  const [apiKeyInput, setApiKeyInput] = useState(getGeminiApiKey());
   const messagesEndRef = useRef(null);
 
   // Theo dõi cuộn trang để hiện nút Back to top
@@ -113,21 +110,6 @@ export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
     }
   };
 
-  const handleSaveApiKey = (e) => {
-    e.preventDefault();
-    setGeminiApiKey(apiKeyInput);
-    setShowKeyModal(false);
-    setMessages(prev => [
-      ...prev,
-      {
-        id: Date.now(),
-        sender: 'bot',
-        text: 'Đã lưu cấu hình Gemini API Key thành công! Stylist AI hiện đã kết nối trực tiếp với mô hình Gemini AI 2.5 Flash.',
-        time: 'Vừa xong'
-      }
-    ]);
-  };
-
   return (
     <div className="fixed bottom-6 right-5 sm:right-6 z-50 flex flex-col items-end gap-2.5">
       {/* Cửa sổ Chat Popup AI */}
@@ -154,13 +136,6 @@ export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
             </div>
 
             <div className="flex items-center gap-1">
-              <button
-                onClick={() => setShowKeyModal(true)}
-                title="Cài đặt API Key Gemini"
-                className="p-1.5 rounded-lg text-neutral-400 hover:text-amber-400 hover:bg-neutral-800 transition cursor-pointer"
-              >
-                <Key className="w-4 h-4" />
-              </button>
               <button 
                 onClick={() => setIsOpen(false)}
                 className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition cursor-pointer"
@@ -169,28 +144,6 @@ export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
               </button>
             </div>
           </div>
-
-          {/* Form cài đặt API Key nhanh */}
-          {showKeyModal && (
-            <div className="p-3 bg-amber-50 border-b border-amber-200 text-xs">
-              <div className="flex justify-between items-center mb-1">
-                <span className="font-bold text-amber-900">Cấu hình Gemini API Key:</span>
-                <button onClick={() => setShowKeyModal(false)} className="text-neutral-500">✕</button>
-              </div>
-              <form onSubmit={handleSaveApiKey} className="flex gap-1.5">
-                <input 
-                  type="password"
-                  value={apiKeyInput}
-                  onChange={(e) => setApiKeyInput(e.target.value)}
-                  placeholder="Dán AIzaSy... (Để trống nếu dùng Fallback)"
-                  className="flex-1 px-2.5 py-1 text-xs border border-amber-300 rounded-lg outline-none bg-white font-mono"
-                />
-                <Button type="submit" size="sm" className="bg-neutral-950 text-white text-[11px] px-3 rounded-lg">
-                  Lưu
-                </Button>
-              </form>
-            </div>
-          )}
 
           {/* Danh sách tin nhắn */}
           <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-neutral-50/50">
@@ -298,13 +251,19 @@ export const ChatbotWidget = ({ products = [], onSelectProduct }) => {
           <div className="flex flex-col items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
             {/* 1. Nút Chat AI Stylist (Đặc quyền nổi bật với huy hiệu AI) */}
             <button
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => {
+                if (!currentUser) {
+                  onRequireAuth && onRequireAuth();
+                  return;
+                }
+                setIsOpen(!isOpen);
+              }}
               className={`w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer relative ${
                 isOpen 
                   ? 'bg-amber-500 text-neutral-950 ring-2 ring-neutral-950' 
                   : 'bg-gradient-to-tr from-neutral-950 to-neutral-800 text-amber-400 border border-amber-500/50'
               }`}
-              title="Trò chuyện cùng AI Stylist"
+              title={currentUser ? "Trò chuyện cùng AI Stylist" : "Đăng ký/Đăng nhập để trò chuyện cùng AI Stylist"}
             >
               <span className="absolute -top-1 -right-1 bg-amber-500 text-neutral-950 text-[8px] font-black px-1 rounded-full shadow">
                 AI

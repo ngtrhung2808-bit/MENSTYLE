@@ -17,6 +17,10 @@ import { AuthModal } from './components/auth/AuthModal';
 import { ChatbotWidget } from './components/chatbot/ChatbotWidget';
 import { SmartOutfitStylistModal } from './components/ai/SmartOutfitStylistModal';
 import { VisualSearchModal } from './components/ai/VisualSearchModal';
+import { BlogPage } from './components/blog/BlogPage';
+import { HomeVouchersSection } from './components/home/HomeVouchersSection';
+import { HomeMixMatchSection } from './components/home/HomeMixMatchSection';
+import { HomeFabricTechSection } from './components/home/HomeFabricTechSection';
 import { Toast } from './components/common/Toast';
 import { Button } from './components/common/Button';
 import { ArrowRight, Sparkles } from 'lucide-react';
@@ -28,7 +32,7 @@ export default function App() {
   const navigate = useNavigate();
 
   const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('menstyle_products_v2');
+    const saved = localStorage.getItem('menstyle_products') || localStorage.getItem('menstyle_products_v2');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -36,11 +40,11 @@ export default function App() {
           return parsed;
         }
       } catch (e) {
-        console.error(e);
+        console.error('Lỗi đọc menstyle_products:', e);
       }
     }
-    localStorage.setItem('menstyle_products_v2', JSON.stringify(MOCK_PRODUCTS));
     localStorage.setItem('menstyle_products', JSON.stringify(MOCK_PRODUCTS));
+    localStorage.setItem('menstyle_products_v2', JSON.stringify(MOCK_PRODUCTS));
     return MOCK_PRODUCTS;
   });
 
@@ -94,6 +98,20 @@ export default function App() {
     });
     addToast('Đã Thêm Trọn Bộ Set Đồ', `Đã thêm ${itemsToAdd.length} món từ AI Stylist vào giỏ hàng.`);
     setIsCartOpen(true);
+  };
+
+  // Kiểm tra đăng nhập bắt buộc cho tất cả tính năng AI
+  const handleOpenAiFeature = (featureAction, featureName = 'tính năng AI') => {
+    if (!currentUser) {
+      addToast(
+        'Yêu Cầu Đăng Ký Tài Khoản',
+        `Vui lòng đăng ký hoặc đăng nhập tài khoản để trải nghiệm ${featureName} của MENSTYLE!`,
+        'info'
+      );
+      setIsAuthOpen(true);
+      return;
+    }
+    featureAction();
   };
 
   const handleNavigateWithCategory = (catName) => {
@@ -280,8 +298,8 @@ const isTryingAdmin =
         }}
         wishlistCount={wishlistItems.length}
         onOpenWishlist={() => setIsWishlistOpen(true)}
-        onOpenVisualSearch={() => setIsVisualSearchOpen(true)}
-        onOpenOutfitStylist={() => setIsOutfitStylistOpen(true)}
+        onOpenVisualSearch={() => handleOpenAiFeature(() => setIsVisualSearchOpen(true), 'AI Tìm Kiếm Bằng Hình Ảnh (Visual Search)')}
+        onOpenOutfitStylist={() => handleOpenAiFeature(() => setIsOutfitStylistOpen(true), 'Trợ Lý AI Phối Đồ Thông Minh (Smart Stylist)')}
         onNavigate={(tab, catName) => {
           if (tab === 'profile' && !currentUser) {
             setIsAuthOpen(true);
@@ -289,6 +307,7 @@ const isTryingAdmin =
           }
           if (catName) {
             setFilterCategory(catName);
+            setSearchQuery(''); // Xóa từ khóa tìm kiếm cũ để danh mục hiển thị đầy đủ
           }
           setCurrentTab(tab);
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -344,6 +363,16 @@ const isTryingAdmin =
               addToast('Đã Đăng Xuất', 'Bạn đã quay trở lại giao diện khách vãng lai.', 'info');
             }}
           />
+        ) : currentTab === 'blog' ? (
+          /* TRANG TIN TỨC & BỘ SƯU TẬP (BLOG / TORANO JOURNAL) */
+          <BlogPage 
+            onSelectCategory={(catName) => {
+              setFilterCategory(catName);
+              setCurrentTab('products');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onOpenOutfitStylist={() => handleOpenAiFeature(() => setIsOutfitStylistOpen(true), 'Trợ Lý AI Phối Đồ Thông Minh')}
+          />
         ) : currentTab === 'products' ? (
           /* TRANG DANH SÁCH SẢN PHẨM & BỘ LỌC (PLP) */
           <ProductListingPage 
@@ -355,26 +384,40 @@ const isTryingAdmin =
             searchQuery={searchQuery}
             wishlistIds={wishlistItems.map(w => w.id)}
             onToggleWishlist={handleToggleWishlist}
+            currentUser={currentUser}
+            onRequireAuth={() => handleOpenAiFeature(() => {}, 'Tính năng AI Tìm Kiếm Thông Minh')}
           />
         ) : (
           /* TRANG CHỦ (HOME) */
           <>
-            {/* 2. Hero Banner */}
+            {/* 2. Hero Banner (Full-Width Slider chuẩn Torano) */}
             <HeroBanner 
-              onExplore={() => {
-                setFilterCategory('Tất cả');
+              onExplore={(cat) => {
+                setFilterCategory(cat || 'Tất cả');
                 setCurrentTab('products');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }} 
             />
 
-            {/* 3. Featured Categories (Nam) */}
+            {/* 2.1. Độc quyền trên Website (Vouchers độc quyền 30k, 60k, 100k, 150k chuẩn Torano) */}
+            <HomeVouchersSection onToast={addToast} />
+
+            {/* 3. Featured Categories (Bộ Sưu Tập Phái Mạnh) */}
             <FeaturedCategories 
               onSelectCategory={(catName) => {
                 setFilterCategory(catName);
                 setCurrentTab('products');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }} 
+            />
+
+            {/* 3.1. Combo Mix & Match (Gợi ý trang phục theo bộ tiết kiệm chuẩn Torano) */}
+            <HomeMixMatchSection 
+              onSelectCategory={(catName) => {
+                setFilterCategory(catName);
+                setCurrentTab('products');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
 
             {/* 4. Best Seller Men Products - Chuẩn Catalog MENSTYLE */}
@@ -484,6 +527,15 @@ const isTryingAdmin =
               </div>
             </section>
 
+            {/* 4.1. Khối Công Nghệ Chất Vải (Fabric Tech) chuẩn Torano */}
+            <HomeFabricTechSection 
+              onSelectCategory={(catName) => {
+                setFilterCategory(catName);
+                setCurrentTab('products');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+
             {/* 5. Newsletter Promotion Bar Nam Tính */}
             <section className="bg-neutral-950 text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 mt-8 sm:mt-12 border-t border-neutral-800">
               <div className="max-w-3xl mx-auto text-center space-y-3 sm:space-y-4">
@@ -525,6 +577,8 @@ const isTryingAdmin =
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
         onAddToCart={handleAddToCart}
+        currentUser={currentUser}
+        onRequireAuth={() => handleOpenAiFeature(() => {}, 'AI Tóm Tắt Đánh Giá')}
       />
 
       {/* 8. Drawer Giỏ Hàng Mini (Mini Cart) */}
@@ -557,10 +611,12 @@ const isTryingAdmin =
         onOpenProductDetail={handleOpenDetail}
       />
 
-      {/* 9. Cửa Sổ Chatbot Trợ Lý Stylist (Tích hợp Gemini 2.5 Flash) */}
+      {/* 9. Cửa Sổ Chatbot Trợ Lý Stylist (Tích hợp Gemini AI - Bắt buộc tài khoản) */}
       <ChatbotWidget 
         products={products}
         onSelectProduct={handleOpenDetail}
+        currentUser={currentUser}
+        onRequireAuth={() => handleOpenAiFeature(() => {}, 'Trợ Lý Chatbot AI Stylist')}
       />
 
       {/* 9.1. Modal AI Smart Outfit Stylist (Gợi ý trọn bộ set đồ theo hoàn cảnh) */}
