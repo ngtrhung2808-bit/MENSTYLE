@@ -19,8 +19,6 @@ export const EWalletGatewayModal = ({
   orderInfo = {},
   onPaymentSuccess
 }) => {
-  if (!isOpen) return null;
-
   const [step, setStep] = useState('gateway'); // 'gateway' | 'processing' | 'success'
   const [countdown, setCountdown] = useState(300); // 5 phút đếm ngược
 
@@ -62,11 +60,14 @@ export const EWalletGatewayModal = ({
   const config = walletConfigs[walletType] || walletConfigs.momo;
 
   useEffect(() => {
+    if (!isOpen) return undefined;
     const timer = setInterval(() => {
       setCountdown(prev => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const minutes = Math.floor(countdown / 60);
   const seconds = countdown % 60;

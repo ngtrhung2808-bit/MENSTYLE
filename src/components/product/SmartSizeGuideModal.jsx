@@ -3,8 +3,6 @@ import { X, Ruler, Sparkles, CheckCircle2, ChevronRight, Info } from 'lucide-rea
 import { Button } from '../common/Button';
 
 export const SmartSizeGuideModal = ({ isOpen, onClose, productCategory = 'Áo Polo', onSelectSize }) => {
-  if (!isOpen) return null;
-
   const [heightCm, setHeightCm] = useState(172);
   const [weightKg, setWeightKg] = useState(66);
   const [fitPreference, setFitPreference] = useState('vừa-vặn'); // 'ôm-body' | 'vừa-vặn' | 'thoải-mái'
@@ -44,6 +42,8 @@ export const SmartSizeGuideModal = ({ isOpen, onClose, productCategory = 'Áo Po
 
     return sizeMap[Math.min(5, Math.max(1, finalScore))] || 'L';
   }, [heightCm, weightKg, fitPreference]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4">
