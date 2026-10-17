@@ -128,7 +128,7 @@ export const ProductListingPage = ({
       if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
       return 0; // featured
     });
-  }, [selectedCategory, selectedSize, priceRange, sortBy, searchQuery, aiSemanticResult]);
+  }, [products, selectedCategory, selectedSize, priceRange, sortBy, searchQuery, aiSemanticResult]);
 
   const handleResetFilters = () => {
     setSelectedCategory('Tất cả');
