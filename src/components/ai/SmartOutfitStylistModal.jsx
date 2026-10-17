@@ -62,7 +62,7 @@ export const SmartOutfitStylistModal = ({ isOpen, onClose, products = [], onAddM
               <h3 className="text-base sm:text-lg font-black text-neutral-950 flex items-center gap-2">
                 MENSTYLE AI Smart Stylist
                 <span className="text-[10px] font-bold bg-amber-500/20 text-amber-700 px-2 py-0.5 rounded-full border border-amber-300">
-                  Powered by Gemini
+                  AI Stylist Pro
                 </span>
               </h3>
               <p className="text-xs text-neutral-500">Phối nguyên set đồ chuẩn gu quý ông theo từng hoàn cảnh cụ thể</p>
@@ -156,12 +156,12 @@ export const SmartOutfitStylistModal = ({ isOpen, onClose, products = [], onAddM
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
-                  <span>Gemini AI Đang Thiết Kế Set Đồ Riêng Cho Bạn...</span>
+                  <span>AI Stylist Đang Thiết Kế Set Đồ Riêng Cho Bạn...</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 text-amber-400 fill-amber-400" />
-                  <span>{outfit ? 'Đổi Yêu Cầu & Tạo Lại Set Đồ Ngay' : 'Kích Hoạt Gemini Phối Set Đồ Chuẩn Gu'}</span>
+                  <span>{outfit ? 'Đổi Yêu Cầu & Tạo Lại Set Đồ Ngay' : 'Kích Hoạt AI Phối Set Đồ Chuẩn Gu'}</span>
                 </>
               )}
             </Button>
@@ -179,7 +179,7 @@ export const SmartOutfitStylistModal = ({ isOpen, onClose, products = [], onAddM
                     {outfit.isGemini && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 border border-emerald-300">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Gemini AI Trực Tiếp
+                        AI Stylist Đề Xuất
                       </span>
                     )}
                   </div>

@@ -165,7 +165,7 @@ export const BlogPage = ({ onSelectCategory, onSelectProduct, onOpenOutfitStylis
             <div className="bg-gradient-to-br from-neutral-950 via-neutral-900 to-amber-950 text-white p-6 rounded-3xl shadow-xl border border-neutral-800 relative overflow-hidden">
               <div className="flex items-center gap-2 text-amber-400 text-xs font-black uppercase tracking-wider mb-2">
                 <Sparkles className="w-4 h-4 fill-amber-400" />
-                <span>Trợ Lý Gemini AI Stylist</span>
+                <span>Trợ Lý AI Stylist Thông Minh</span>
               </div>
               <h4 className="text-lg font-black text-white leading-tight mb-2">
                 Chưa Biết Phối Đồ Cho Mùa Thu Đông?

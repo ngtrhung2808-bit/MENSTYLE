@@ -167,7 +167,7 @@ export const ProductListingPage = ({
               {searchQuery && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-800 border border-amber-300">
                   <Sparkles className="w-3.5 h-3.5 fill-amber-500 text-amber-600" />
-                  Gemini Semantic Search
+                  AI Semantic Search
                 </span>
               )}
             </h1>
@@ -200,7 +200,7 @@ export const ProductListingPage = ({
                       {isAiSearching ? 'AI Đang Phân Tích Ý Định...' : 'AI Phân Tích Ý Định Tìm Kiếm'}
                     </span>
                     <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-neutral-300 border border-white/10">
-                      Gemini 3.5 Active
+                      Smart AI Active
                     </span>
                   </div>
                   <p className="text-xs text-neutral-200 mt-0.5">
@@ -232,7 +232,7 @@ export const ProductListingPage = ({
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-black text-amber-400 uppercase tracking-wider">
-                      Gemini AI Semantic Search
+                      Smart AI Semantic Search
                     </span>
                     <span className="text-[10px] bg-neutral-800 text-neutral-300 px-2 py-0.5 rounded-full border border-neutral-700">
                       Tính năng đặc quyền thành viên

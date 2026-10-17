@@ -61,7 +61,7 @@ export const VisualSearchModal = ({ isOpen, onClose, products = [], onSelectProd
               <h3 className="text-base sm:text-lg font-black text-neutral-950 flex items-center gap-2">
                 Tìm Kiếm Bằng Hình Ảnh (AI Vision)
                 <span className="text-[10px] font-bold bg-amber-500/20 text-amber-700 px-2 py-0.5 rounded-full border border-amber-300">
-                  Gemini Vision
+                  AI Vision
                 </span>
               </h3>
               <p className="text-xs text-neutral-500">Tải ảnh trang phục bạn thích để AI tìm sản phẩm tương tự trong kho</p>
@@ -148,7 +148,7 @@ export const VisualSearchModal = ({ isOpen, onClose, products = [], onSelectProd
           {loading && (
             <div className="p-6 text-center">
               <Loader2 className="w-6 h-6 animate-spin text-amber-500 mx-auto mb-2" />
-              <p className="text-xs font-bold text-neutral-800">AI Gemini Vision đang nhận diện chi tiết vải và phom dáng...</p>
+              <p className="text-xs font-bold text-neutral-800">Hệ thống AI Vision đang nhận diện chi tiết vải và phom dáng...</p>
             </div>
           )}
 
