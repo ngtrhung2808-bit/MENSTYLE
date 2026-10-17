@@ -4,7 +4,6 @@ import {
   Truck, 
   RotateCcw, 
   ShieldCheck, 
-  Heart, 
   ShoppingBag, 
   Minus, 
   Plus, 
@@ -15,14 +14,14 @@ import { Button } from '../common/Button';
 import { Badge } from '../common/Inputs';
 
 export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
-  if (!isOpen || !product) return null;
-
-  const images = product.images && product.images.length > 0 ? product.images : [product.image];
+  const images = product?.images?.length ? product.images : [product?.image].filter(Boolean);
   const [selectedImg, setSelectedImg] = useState(0);
-  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || 'L');
-  const [selectedColor, setSelectedColor] = useState(product.colors?.[0]?.name || '');
+  const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || 'L');
+  const [selectedColor, setSelectedColor] = useState(product?.colors?.[0]?.name || '');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description'); // 'description' | 'sizeGuide' | 'reviews'
+
+  if (!isOpen || !product) return null;
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
@@ -30,8 +29,14 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
 
   const handleAdd = () => {
     if (onAddToCart) {
+      const selectedVariant = product.variants?.find((variant) => (
+        String(variant.size) === String(selectedSize)
+        && (variant.color?.name || variant.colorName || '') === selectedColor
+        && variant.isActive !== false
+      ));
       onAddToCart({
         ...product,
+        price: Number(selectedVariant?.price ?? product.price),
         selectedSize,
         selectedColor,
         quantity,
@@ -63,8 +68,12 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
             {/* Ảnh lớn chính */}
             <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-neutral-100 shadow-inner">
               <img 
-                src={images[selectedImg]} 
+                src={images[selectedImg] || '/images/product-fallback.avif'}
                 alt={product.name} 
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = '/images/product-fallback.avif';
+                }}
                 className="w-full h-full object-cover object-center transition-all duration-300"
               />
               {product.discount && (
@@ -85,7 +94,15 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
                       selectedImg === idx ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-transparent opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <img src={img} alt="thumb" className="w-full h-full object-cover" />
+                    <img
+                      src={img}
+                      alt={`${product.name} ảnh ${idx + 1}`}
+                      onError={(event) => {
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = '/images/product-fallback.avif';
+                      }}
+                      className="w-full h-full object-cover"
+                    />
                   </button>
                 ))}
               </div>

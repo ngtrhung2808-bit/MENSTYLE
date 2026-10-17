@@ -4,6 +4,7 @@ import { Badge } from '../common/Inputs';
 
 export const ProductCard = ({ product, onQuickView, onAddToCart }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [failedImages, setFailedImages] = useState(() => new Set());
   const [isLiked, setIsLiked] = useState(false);
 
   const formatPrice = (price) => {
@@ -11,6 +12,8 @@ export const ProductCard = ({ product, onQuickView, onAddToCart }) => {
   };
 
   const images = product.images && product.images.length > 0 ? product.images : [product.image];
+  const availableImages = images.filter((image) => image && !failedImages.has(image));
+  const currentImage = availableImages[currentImageIndex] || availableImages[0] || '/images/product-fallback.avif';
 
   return (
     <div className="group relative flex flex-col bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-neutral-100 hover:border-neutral-300 transition-all duration-300 hover:shadow-xl">
@@ -22,8 +25,13 @@ export const ProductCard = ({ product, onQuickView, onAddToCart }) => {
         onClick={() => onQuickView && onQuickView(product)}
       >
         <img
-          src={images[currentImageIndex] || images[0]}
+          src={currentImage}
           alt={product.name}
+          onError={() => {
+            if (currentImage !== '/images/product-fallback.avif') {
+              setFailedImages((failed) => new Set(failed).add(currentImage));
+            }
+          }}
           className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
         />
 
@@ -119,6 +127,12 @@ export const ProductCard = ({ product, onQuickView, onAddToCart }) => {
               />
             ))}
           </div>
+        )}
+
+        {product.sizes && product.sizes.length > 0 && (
+          <p className="mt-1.5 text-[10px] text-neutral-500 truncate" title={`Size: ${product.sizes.join(', ')}`}>
+            Size: {product.sizes.join(' · ')}
+          </p>
         )}
 
         {/* Giá */}

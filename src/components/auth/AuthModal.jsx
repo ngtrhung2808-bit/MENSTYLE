@@ -3,8 +3,6 @@ import { Mail, Lock, User, ArrowRight, CheckCircle2, ShieldCheck, X } from 'luci
 import { Button } from '../common/Button';
 
 export const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
-  if (!isOpen) return null;
-
   const [mode, setMode] = useState('login'); // 'login' | 'register'
   const [formData, setFormData] = useState({
     name: '',
@@ -13,6 +11,8 @@ export const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
     confirmPassword: '',
   });
   const [error, setError] = useState('');
+
+  if (!isOpen) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();

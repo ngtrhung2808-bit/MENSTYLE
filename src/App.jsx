@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
+import axiosInstance from './api/axiosInstance';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { HeroBanner } from './components/home/HeroBanner';
@@ -16,9 +17,54 @@ import { ChatbotWidget } from './components/chatbot/ChatbotWidget';
 import { Toast } from './components/common/Toast';
 import { Button } from './components/common/Button';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import { MOCK_PRODUCTS } from './data/mockProducts';
+import { extractProducts } from './utils/productAdapter';
 
 export default function App() {
+  console.log('MENSTYLE APP ĐANG CHẠY');
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [productsError, setProductsError] = useState('');
+
+  const requestProducts = useCallback(async () => {
+    const response = await axiosInstance.get('/products');
+    return extractProducts(response.data);
+  }, []);
+
+  const fetchProducts = useCallback(async () => {
+    setLoadingProducts(true);
+    setProductsError('');
+    try {
+      const apiProducts = await requestProducts();
+      setProducts(apiProducts);
+      console.log(`Đã tải ${apiProducts.length} sản phẩm từ MongoDB.`);
+    } catch (error) {
+      console.error('Lỗi lấy sản phẩm:', error);
+      setProductsError(error.response?.data?.message || error.message || 'Không thể tải sản phẩm.');
+    } finally {
+      setLoadingProducts(false);
+    }
+  }, [requestProducts]);
+
+  useEffect(() => {
+    let isCurrent = true;
+    requestProducts()
+      .then((apiProducts) => {
+        if (isCurrent) setProducts(apiProducts);
+      })
+      .catch((error) => {
+        console.error('Lỗi lấy sản phẩm:', error);
+        if (isCurrent) {
+          setProductsError(error.response?.data?.message || error.message || 'Không thể tải sản phẩm.');
+        }
+      })
+      .finally(() => {
+        if (isCurrent) setLoadingProducts(false);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [requestProducts]);
   const [currentTab, setCurrentTab] = useState('home'); // Mặc định luôn là Trang Chủ ('home') dành cho Khách hàng
   const [filterCategory, setFilterCategory] = useState('Tất cả');
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,27 +89,9 @@ export default function App() {
     }, 4000);
   };
 
-  const handleNavigateWithCategory = (catName) => {
-    setFilterCategory(catName);
-    setCurrentTab('products');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   // Giỏ hàng state giả lập
-  const [cartItems, setCartItems] = useState([
-    {
-      ...MOCK_PRODUCTS[0],
-      selectedSize: 'L',
-      selectedColor: 'Đen Sang Trọng',
-      quantity: 1,
-    },
-    {
-      ...MOCK_PRODUCTS[2],
-      selectedSize: 'M',
-      selectedColor: 'Đen Huyền Bí',
-      quantity: 1,
-    }
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+
 
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -236,6 +264,11 @@ export default function App() {
         ) : currentTab === 'products' ? (
           /* TRANG DANH SÁCH SẢN PHẨM & BỘ LỌC (PLP) */
           <ProductListingPage 
+            key={filterCategory}
+            products={products}
+            loading={loadingProducts}
+            error={productsError}
+            onRetry={fetchProducts}
             onQuickView={handleOpenDetail}
             onAddToCart={handleAddToCart}
             initialCategory={filterCategory}
@@ -255,6 +288,8 @@ export default function App() {
 
             {/* 3. Featured Categories (Nam) */}
             <FeaturedCategories 
+              products={products}
+              loading={loadingProducts}
               onSelectCategory={(catName) => {
                 setFilterCategory(catName);
                 setCurrentTab('products');
@@ -279,7 +314,14 @@ export default function App() {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-6">
-                {MOCK_PRODUCTS.slice(0, 4).map((product) => (
+                {loadingProducts ? Array.from({ length: 4 }, (_, index) => (
+                  <div key={`product-skeleton-${index}`} className="bg-white rounded-2xl p-3 border border-neutral-100 animate-pulse">
+                    <div className="aspect-[3/4] rounded-xl bg-neutral-200 mb-3" />
+                    <div className="h-3 w-1/3 bg-neutral-200 rounded mb-2" />
+                    <div className="h-4 w-5/6 bg-neutral-200 rounded mb-3" />
+                    <div className="h-4 w-1/2 bg-neutral-200 rounded" />
+                  </div>
+                )) : products.slice(0, 4).map((product) => (
                   <ProductCard 
                     key={product.id} 
                     product={product} 
@@ -299,7 +341,7 @@ export default function App() {
                   size="lg" 
                   className="rounded-full border-neutral-300 px-6 sm:px-8 hover:border-neutral-900 font-bold text-xs sm:text-base w-full sm:w-auto cursor-pointer"
                 >
-                  Xem toàn bộ 180+ sản phẩm Nam <ArrowRight className="w-4 h-4 ml-2" />
+                  Xem toàn bộ {products.length} sản phẩm Nam <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </section>
@@ -335,6 +377,7 @@ export default function App() {
 
       {/* 7. Modal Chi Tiết Sản Phẩm (PDP) */}
       <ProductDetailModal 
+        key={selectedProduct?.id || 'no-product'}
         product={selectedProduct}
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}

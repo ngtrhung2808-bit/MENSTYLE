@@ -1,21 +1,42 @@
 import React, { useState, useMemo } from 'react';
 import { SidebarFilter } from './SidebarFilter';
 import { ProductCard } from './ProductCard';
-import { ArrowUpDown, SlidersHorizontal, Grid, ListFilter } from 'lucide-react';
-import { MOCK_PRODUCTS } from '../../data/mockProducts';
+import { SlidersHorizontal, ListFilter } from 'lucide-react';
+import { ProductGridSkeleton } from '../common/FeedbackStates';
 
-export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory = 'Tất cả', searchQuery = '' }) => {
+export const ProductListingPage = ({
+  products = [],
+  loading = false,
+  error = '',
+  onRetry,
+  onQuickView,
+  onAddToCart,
+  initialCategory = 'Tất cả',
+  searchQuery = '',
+}) => {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedSize, setSelectedSize] = useState('');
-  const [priceRange, setPriceRange] = useState(2000000);
+  const [priceRange, setPriceRange] = useState(null);
   const [sortBy, setSortBy] = useState('featured'); // 'featured' | 'price-asc' | 'price-desc' | 'rating'
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 12;
+  const maxProductPrice = Math.max(2000000, ...products.map((product) => product.price || 0));
+
+  const activePriceRange = priceRange ?? maxProductPrice;
+
+  const categories = useMemo(() => [
+    'Tất cả',
+    ...new Set(products.map((product) => product.category).filter(Boolean)),
+  ], [products]);
+
+  const sizes = useMemo(() => [
+    ...new Set(products.flatMap((product) => product.sizes || []).map(String)),
+  ], [products]);
 
   // Lọc sản phẩm
   const filteredProducts = useMemo(() => {
-    return MOCK_PRODUCTS.filter((item) => {
+    return products.filter((item) => {
       // Filter Search Query
       if (searchQuery && searchQuery.trim() !== '') {
         const q = searchQuery.toLowerCase().trim();
@@ -28,7 +49,7 @@ export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory =
         return false;
       }
       // Filter Price
-      if (item.price > priceRange) {
+      if (item.price > activePriceRange) {
         return false;
       }
       // Filter Size
@@ -42,12 +63,12 @@ export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory =
       if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
       return 0; // featured
     });
-  }, [selectedCategory, selectedSize, priceRange, sortBy, searchQuery]);
+  }, [products, selectedCategory, selectedSize, activePriceRange, sortBy, searchQuery]);
 
   const handleResetFilters = () => {
     setSelectedCategory('Tất cả');
     setSelectedSize('');
-    setPriceRange(2000000);
+    setPriceRange(null);
     setSortBy('featured');
     setCurrentPage(1);
   };
@@ -103,9 +124,12 @@ export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory =
           onSelectCategory={(c) => { setSelectedCategory(c); setCurrentPage(1); }}
           selectedSize={selectedSize}
           onSelectSize={(s) => { setSelectedSize(s); setCurrentPage(1); }}
-          priceRange={priceRange}
+          priceRange={activePriceRange}
           onPriceChange={(p) => { setPriceRange(p); setCurrentPage(1); }}
           onResetFilters={handleResetFilters}
+          categories={categories}
+          sizes={sizes}
+          maxPrice={maxProductPrice}
           isOpenMobile={mobileFilterOpen}
           onCloseMobile={() => setMobileFilterOpen(false)}
         />
@@ -134,7 +158,22 @@ export const ProductListingPage = ({ onQuickView, onAddToCart, initialCategory =
           </div>
 
           {/* Grid Sản Phẩm */}
-          {paginatedProducts.length === 0 ? (
+          {loading ? (
+            <ProductGridSkeleton count={6} />
+          ) : error ? (
+            <div className="bg-white rounded-2xl border border-rose-200 p-8 sm:p-12 text-center">
+              <p className="text-base font-semibold text-neutral-800">Không tải được danh sách sản phẩm</p>
+              <p className="text-xs text-neutral-500 mt-2">{error}</p>
+              {onRetry && (
+                <button
+                  onClick={onRetry}
+                  className="mt-4 px-5 py-2 bg-neutral-950 text-amber-400 text-xs font-bold rounded-full hover:bg-neutral-800 transition"
+                >
+                  Thử tải lại
+                </button>
+              )}
+            </div>
+          ) : paginatedProducts.length === 0 ? (
             <div className="bg-white rounded-2xl border border-neutral-200 p-12 text-center">
               <p className="text-base font-semibold text-neutral-800">Không tìm thấy sản phẩm phù hợp!</p>
               <p className="text-xs text-neutral-400 mt-1 max-w-sm mx-auto">

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Filter, X, Check, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { Button } from '../common/Button';
-import { CATEGORIES, SIZES } from '../../data/mockProducts';
 
 export const SidebarFilter = ({ 
   selectedCategory, 
@@ -11,6 +10,9 @@ export const SidebarFilter = ({
   priceRange, 
   onPriceChange,
   onResetFilters,
+  categories = ['Tất cả'],
+  sizes = [],
+  maxPrice = 2000000,
   isOpenMobile,
   onCloseMobile
 }) => {
@@ -52,7 +54,7 @@ export const SidebarFilter = ({
         </button>
         {openSections.categories && (
           <div className="space-y-2">
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => onSelectCategory(cat)}
@@ -88,7 +90,7 @@ export const SidebarFilter = ({
             <input 
               type="range" 
               min="200000" 
-              max="2000000" 
+              max={maxPrice}
               step="50000"
               value={priceRange}
               onChange={(e) => onPriceChange(Number(e.target.value))}
@@ -96,7 +98,7 @@ export const SidebarFilter = ({
             />
             <div className="flex justify-between text-[11px] text-neutral-400 mt-1.5">
               <span>200.000đ</span>
-              <span>2.000.000đ+</span>
+              <span>{formatPrice(maxPrice)}+</span>
             </div>
           </div>
         )}
@@ -113,7 +115,7 @@ export const SidebarFilter = ({
         </button>
         {openSections.sizes && (
           <div className="grid grid-cols-3 gap-2">
-            {SIZES.map((size) => {
+            {sizes.map((size) => {
               const active = selectedSize === size;
               return (
                 <button
