@@ -7,7 +7,9 @@ import {
   Loader2, 
   Phone, 
   ArrowUp,
-  MessageCircle
+  MessageCircle,
+  Move,
+  RotateCcw
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { generateStylistChatReply } from '../../services/geminiService';
@@ -17,17 +19,65 @@ export const ChatbotWidget = ({ products = [], onSelectProduct, currentUser, onR
   const [isWidgetExpanded, setIsWidgetExpanded] = useState(true); // Mở/đóng cụm nút liên hệ
   const [showScrollTop, setShowScrollTop] = useState(false);
   
+  // Tọa độ vị trí kéo thả của cửa sổ chat (mặc định null: tự căn góc dưới phải)
+  const [position, setPosition] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragRef = useRef({ startX: 0, startY: 0, posX: 0, posY: 0 });
+
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'bot',
-      text: 'Xin chào quý ông! Tôi là Stylist AI của MENSTYLE (tích hợp Gemini AI 2.5). Quý khách cần tư vấn chọn size, phối outfit đi làm, dạ tiệc hay dạo phố hôm nay?',
+      text: 'Xin chào quý ông! Tôi là Stylist AI của MENSTYLE. Quý khách cần tư vấn chọn size, phối outfit đi làm, dạ tiệc hay dạo phố hôm nay?',
       time: 'Vừa xong'
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
+
+  // Kéo thả cửa sổ chat khắp màn hình
+  const handleMouseDown = (e) => {
+    // Chỉ kéo khi bấm vào header hoặc handle
+    if (e.target.closest('button') || e.target.closest('input')) return;
+    
+    setIsDragging(true);
+    const initialX = position ? position.x : (window.innerWidth - (window.innerWidth < 640 ? window.innerWidth * 0.92 : 400) - 24);
+    const initialY = position ? position.y : (window.innerHeight - 560);
+
+    dragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      posX: initialX,
+      posY: initialY
+    };
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - dragRef.current.startX;
+      const dy = e.clientY - dragRef.current.startY;
+      
+      const newX = Math.max(10, Math.min(window.innerWidth - 380, dragRef.current.posX + dx));
+      const newY = Math.max(10, Math.min(window.innerHeight - 300, dragRef.current.posY + dy));
+      
+      setPosition({ x: newX, y: newY });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
 
   // Theo dõi cuộn trang để hiện nút Back to top
   useEffect(() => {
@@ -111,22 +161,28 @@ export const ChatbotWidget = ({ products = [], onSelectProduct, currentUser, onR
   };
 
   return (
-    <div className="fixed bottom-6 right-5 sm:right-6 z-50 flex flex-col items-end gap-2.5">
-      {/* Cửa sổ Chat Popup AI */}
+    <>
+      {/* Cửa sổ Chat Popup AI - Có thể kéo thả khắp màn hình */}
       {isOpen && (
-        <div className="w-[92vw] sm:w-[400px] bg-white rounded-3xl shadow-2xl border border-neutral-200 overflow-hidden flex flex-col h-[520px] mb-2 animate-in slide-in-from-bottom-5 duration-300">
-          {/* Header Chatbot */}
-          <div className="bg-neutral-950 text-white p-4 flex items-center justify-between border-b border-neutral-800">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-neutral-950 flex items-center justify-center font-black shadow-md">
+        <div 
+          style={position ? { left: `${position.x}px`, top: `${position.y}px`, bottom: 'auto', right: 'auto' } : {}}
+          className={`fixed z-50 w-[92vw] sm:w-[400px] bg-white rounded-3xl shadow-2xl border border-neutral-200 overflow-hidden flex flex-col h-[520px] select-none transition-shadow ${
+            !position ? 'bottom-24 right-5 sm:right-6' : ''
+          } ${isDragging ? 'shadow-2xl ring-2 ring-amber-500/50 cursor-grabbing' : ''}`}
+        >
+          {/* Header Chatbot (Khu vực cầm kéo thả) */}
+          <div 
+            onMouseDown={handleMouseDown}
+            className="bg-neutral-950 text-white p-3.5 sm:p-4 flex items-center justify-between border-b border-neutral-800 cursor-grab active:cursor-grabbing select-none"
+            title="Nhấn giữ để kéo khung chat di chuyển khắp màn hình"
+          >
+            <div className="flex items-center gap-2.5 pointer-events-none">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-neutral-950 flex items-center justify-center font-black shadow-md shrink-0">
                 <Bot className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-sm font-bold flex items-center gap-1.5">
-                  Stylist AI MENSTYLE 
-                  <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded border border-amber-400/30">
-                    Gemini AI
-                  </span>
+                  Stylist AI MENSTYLE
                 </h3>
                 <p className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
@@ -136,9 +192,29 @@ export const ChatbotWidget = ({ products = [], onSelectProduct, currentUser, onR
             </div>
 
             <div className="flex items-center gap-1">
+              {/* Nút gợi ý kéo thả */}
+              <div className="hidden sm:flex items-center text-neutral-500 mr-1 text-[11px]" title="Kéo để di chuyển">
+                <Move className="w-3.5 h-3.5" />
+              </div>
+
+              {/* Nút đặt lại vị trí ban đầu */}
+              {position && (
+                <button
+                  type="button"
+                  onClick={() => setPosition(null)}
+                  className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition cursor-pointer"
+                  title="Đặt lại vị trí mặc định"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              )}
+
+              {/* Nút đóng */}
               <button 
+                type="button"
                 onClick={() => setIsOpen(false)}
                 className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition cursor-pointer"
+                title="Đóng chat"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -246,7 +322,7 @@ export const ChatbotWidget = ({ products = [], onSelectProduct, currentUser, onR
       )}
 
       {/* ================= CỤM NÚT TRÒN NỔI Ở GÓC THEO ĐÚNG ẢNH MẪU ================= */}
-      <div className="flex flex-col items-center gap-2.5 select-none">
+      <div className="fixed bottom-6 right-5 sm:right-6 z-40 flex flex-col items-center gap-2.5 select-none">
         {isWidgetExpanded && (
           <div className="flex flex-col items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
             {/* 1. Nút Chat AI Stylist (Đặc quyền nổi bật với huy hiệu AI) */}
@@ -327,6 +403,6 @@ export const ChatbotWidget = ({ products = [], onSelectProduct, currentUser, onR
           <ArrowUp className="w-5 h-5" />
         </button>
       </div>
-    </div>
+    </>
   );
 };

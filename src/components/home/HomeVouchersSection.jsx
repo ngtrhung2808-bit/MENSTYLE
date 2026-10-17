@@ -1,40 +1,8 @@
 import React, { useState } from 'react';
 import { Tag, Sparkles, Check, Copy } from 'lucide-react';
+import { AVAILABLE_VOUCHERS } from '../../data/voucherConfig';
 
-const VOUCHERS = [
-  {
-    id: 1,
-    code: 'MEN30',
-    discount: '30.000₫',
-    condition: 'Đơn hàng từ 399.000₫',
-    expiry: 'HSD: 31/10/2026',
-    remaining: 'Còn 42 lượt'
-  },
-  {
-    id: 2,
-    code: 'MEN60',
-    discount: '60.000₫',
-    condition: 'Đơn hàng từ 700.000₫',
-    expiry: 'HSD: 31/10/2026',
-    remaining: 'Còn 286 lượt'
-  },
-  {
-    id: 3,
-    code: 'MEN100',
-    discount: '100.000₫',
-    condition: 'Đơn hàng từ 1.000.000₫',
-    expiry: 'HSD: 31/10/2026',
-    remaining: 'Còn 154 lượt'
-  },
-  {
-    id: 4,
-    code: 'VIPMEN',
-    discount: '150.000₫',
-    condition: 'Đơn hàng từ 1.500.000₫',
-    expiry: 'HSD: 31/10/2026',
-    remaining: 'Còn 68 lượt'
-  }
-];
+const VOUCHERS = AVAILABLE_VOUCHERS.filter(v => v.code !== 'MENSTYLE20');
 
 export const HomeVouchersSection = ({ onToast }) => {
   const [copiedCode, setCopiedCode] = useState(null);
@@ -66,7 +34,7 @@ export const HomeVouchersSection = ({ onToast }) => {
           const isCopied = copiedCode === v.code;
           return (
             <div
-              key={v.id}
+              key={v.code}
               className="relative p-4 rounded-2xl bg-white border border-neutral-200 hover:border-neutral-950 transition-all duration-300 shadow-xs hover:shadow-md flex flex-col justify-between"
             >
               <div className="space-y-1.5">
@@ -84,7 +52,7 @@ export const HomeVouchersSection = ({ onToast }) => {
                     {v.code}
                   </span>
                   <span className="text-base font-black text-neutral-950">
-                    Giảm {v.discount}
+                    Giảm {v.displayDiscount || v.discount}
                   </span>
                 </div>
 

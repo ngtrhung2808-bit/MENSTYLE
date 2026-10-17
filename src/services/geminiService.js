@@ -45,7 +45,7 @@ ${JSON.stringify(catalogContext)}
     try {
       const ai = getClient();
       const response = await ai.models.generateContent({
-        model: 'gemini-3.5-flash-lite',
+        model: 'gemini-3.8-flash',
         contents: [
           { role: 'user', parts: [{ text: `${systemInstruction}\n\nNgười dùng hỏi: ${userMessage}` }] }
         ]
@@ -138,52 +138,119 @@ QUY TẮC DẠO PHỐ & HẸN HÒ:
 `;
   }
 
+  // Helper: Tìm ảnh phù hợp với màu sắc người dùng yêu cầu
+  const findBestImageForColor = (product, targetColor = '') => {
+    if (!product || !product.images || product.images.length === 0) return product?.image || '';
+    if (!targetColor) return product.images[0];
+
+    const c = targetColor.toLowerCase();
+    let keywords = [];
+    if (c.includes('trắng') || c.includes('white') || c.includes('kem') || c.includes('sáng')) {
+      keywords = ['tr_ng', 'white', 'trang', 'kem', 'be'];
+    } else if (c.includes('đen') || c.includes('black')) {
+      keywords = ['den', 'black'];
+    } else if (c.includes('navy') || c.includes('xanh')) {
+      keywords = ['navy', 'xanh', 'blue'];
+    } else if (c.includes('xám') || c.includes('ghi') || c.includes('grey') || c.includes('gray')) {
+      keywords = ['xam', 'ghi', 'grey', 'gray'];
+    }
+
+    if (keywords.length > 0) {
+      const match = product.images.find(img => {
+        const lower = img.toLowerCase();
+        return keywords.some(k => lower.includes(k));
+      });
+      if (match) return match;
+    }
+    return product.images[0];
+  };
+
+  const prefLower = (userPreference || '').toLowerCase();
+  const isWhiteRequested = prefLower.includes('trắng') || prefLower.includes('white') || prefLower.includes('kem') || prefLower.includes('sáng');
+  const isBlackRequested = prefLower.includes('đen') || prefLower.includes('black') || prefLower.includes('tối');
+
+  // Ưu tiên sắp xếp sản phẩm có ảnh/tên đúng màu yêu cầu lên đầu tập candidate
+  const sortForPreference = (list) => {
+    if (!isWhiteRequested && !isBlackRequested) return list;
+    return [...list].sort((a, b) => {
+      const aMatches = isWhiteRequested
+        ? (a.name.toLowerCase().includes('trắng') || a.images?.some(img => img.toLowerCase().includes('tr_ng') || img.toLowerCase().includes('kem') || img.toLowerCase().includes('white')))
+        : (a.name.toLowerCase().includes('đen') || a.images?.some(img => img.toLowerCase().includes('den') || img.toLowerCase().includes('black')));
+      const bMatches = isWhiteRequested
+        ? (b.name.toLowerCase().includes('trắng') || b.images?.some(img => img.toLowerCase().includes('tr_ng') || img.toLowerCase().includes('kem') || img.toLowerCase().includes('white')))
+        : (b.name.toLowerCase().includes('đen') || b.images?.some(img => img.toLowerCase().includes('den') || img.toLowerCase().includes('black')));
+      if (aMatches && !bMatches) return -1;
+      if (!aMatches && bMatches) return 1;
+      return 0;
+    });
+  };
+
+  candidateTops = sortForPreference(candidateTops);
+  candidateBottoms = sortForPreference(candidateBottoms);
+
   if (apiKey) {
     try {
       const ai = getClient();
       const selectedPool = [
-        ...candidateTops.slice(0, 20),
-        ...candidateBottoms.slice(0, 15),
-        ...belts.slice(0, 8)
+        ...candidateTops.slice(0, 16),
+        ...candidateBottoms.slice(0, 14),
+        ...belts.slice(0, 6)
       ].map(p => ({
         id: p.id,
         name: p.name,
         category: p.category,
-        price: p.price
+        price: p.price,
+        availableColors: p.colors ? p.colors.map(c => c.name) : []
       }));
 
       const prompt = `
 Bạn là Giám đốc Sáng tạo & Master Stylist thời trang nam cao cấp của thương hiệu MENSTYLE.
 Khách hàng cần bạn tư vấn set đồ:
 - Hoàn cảnh: "${occasion}".
-- Yêu cầu / Prompt riêng của khách: "${userPreference || 'Phối đồ chuẩn gu, sang trọng và chuẩn mực nhất'}".
+- YÊU CẦU ĐẶC BIỆT / MÀU SẮC CỦA KHÁCH: "${userPreference || 'Phối đồ chuẩn gu, sang trọng và chuẩn mực nhất'}".
 
 ${occasionRulePrompt}
 
 DANH SÁCH SẢN PHẨM PHÙ HỢP CÓ SẴN:
-${JSON.stringify(selectedPool)}
+${JSON.stringify(selectedPool, null, 2)}
 
-YÊU CẦU ĐẦU RA:
-1. Hãy chọn chính xác 1 bộ gồm: 1 Áo phù hợp hoàn cảnh, 1 Quần phù hợp hoàn cảnh, 1 Thắt Lưng.
-2. Đặt một tên phong cách xuất sắc (ví dụ: "Black Tie Royal", "Gentleman Gala", "Executive Confidence", "Preppy Casual").
-3. Lời giải thích tinh tế: nêu rõ tại sao trang phục này thể hiện đẳng cấp đúng với hoàn cảnh "${occasion}", kèm lời khuyên chọn giày hoặc phụ kiện đi kèm.
+QUY TẮC BẮT BUỘC:
+1. TUÂN THỦ MÀU SẮC: Nếu khách yêu cầu màu sắc (ví dụ: "màu trắng", "tone đen", "màu kem"), BẮT BUỘC chọn các sản phẩm hỗ trợ gam màu đó, và chỉ định rõ biến thể "selectedColor" khớp với mong muốn của khách.
+2. Bộ đồ phải gồm: 1 Áo phù hợp, 1 Quần phù hợp, 1 Thắt Lưng/Phụ Kiện.
+3. Lời giải thích tinh tế nêu rõ set đồ đáp ứng đúng tone màu và hoàn cảnh "${occasion}".
 
 Trả về DUY NHẤT một chuỗi JSON thuần:
 {
   "outfitTitle": "Tên phong cách sang trọng",
-  "reasoning": "Lời giải thích vì sao phối set đồ này phù hợp hoàn hảo với hoàn cảnh",
-  "selectedProductIds": [id_ao, id_quan, id_thatlung]
+  "reasoning": "Lời giải thích vì sao phối set đồ này phù hợp với yêu cầu màu sắc và hoàn cảnh",
+  "selectedItems": [
+    { "id": 1075102717, "selectedColor": "Trắng Thanh Lịch" }
+  ]
 }
 `;
       const response = await ai.models.generateContent({
-        model: 'gemini-3.5-flash-lite',
+        model: 'gemini-3.8-flash',
         contents: prompt
       });
       const text = response.text || '';
       const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
       const parsed = JSON.parse(cleanJson);
-      if (parsed && Array.isArray(parsed.selectedProductIds)) {
-        const items = catalogProducts.filter(p => parsed.selectedProductIds.includes(p.id));
+      
+      const itemConfigs = parsed.selectedItems || (parsed.selectedProductIds ? parsed.selectedProductIds.map(id => ({ id })) : []);
+      if (Array.isArray(itemConfigs) && itemConfigs.length > 0) {
+        const items = itemConfigs.map(cfg => {
+          const prod = catalogProducts.find(p => p.id === cfg.id);
+          if (!prod) return null;
+          const chosenColor = cfg.selectedColor || (isWhiteRequested ? 'Trắng Thanh Lịch' : (prod.colors?.[0]?.name || ''));
+          const displayImage = findBestImageForColor(prod, chosenColor || userPreference);
+          return {
+            ...prod,
+            selectedColor: chosenColor,
+            image: displayImage,
+            images: [displayImage, ...(prod.images || [])]
+          };
+        }).filter(Boolean);
+
         if (items.length >= 2) {
           return {
             title: parsed.outfitTitle || 'Set Đồ Chuẩn Phong Độ Quý Ông',
@@ -198,51 +265,88 @@ Trả về DUY NHẤT một chuỗi JSON thuần:
     }
   }
 
-  // Fallback thông minh theo chuẩn mực thời trang nếu API bận
+  // Fallback thông minh theo chuẩn mực thời trang và màu sắc người dùng yêu cầu
+  const mapItemWithColor = (prod, colorName) => {
+    if (!prod) return null;
+    const img = findBestImageForColor(prod, colorName || userPreference);
+    return {
+      ...prod,
+      selectedColor: colorName || (prod.colors?.[0]?.name || ''),
+      image: img,
+      images: [img, ...(prod.images || [])]
+    };
+  };
+
+  const defaultColor = isWhiteRequested ? 'Trắng Thanh Lịch' : (isBlackRequested ? 'Đen Sang Trọng' : '');
+
   if (occ.includes('tiệc') || occ.includes('cưới')) {
-    const formalTop = blazers[0] || dressShirts.find(s => s.name.toLowerCase().includes('trắng')) || dressShirts[0];
-    const formalPant = dressTrousers[0] || casualPants[0];
+    const formalTop = candidateTops[0] || blazers[0] || dressShirts[0];
+    const formalPant = candidateBottoms[0] || dressTrousers[0] || casualPants[0];
     const formalBelt = belts[0];
     return {
-      title: 'Quý Ông Lịch Lãm & Đẳng Cấp Dạ Tiệc',
-      reason: 'Sự kết hợp giữa Blazer sang trọng (hoặc Sơ mi cao cấp) phối cùng Quần Âu may đo tạo nên phong thái đĩnh đạc, chuẩn mực cho các sự kiện trang trọng.',
-      items: [formalTop, formalPant, formalBelt].filter(Boolean),
+      title: isWhiteRequested ? 'Bạch Mã Hoàng Tử - Lịch Lãm Dạ Tiệc' : 'Quý Ông Lịch Lãm & Đẳng Cấp Dạ Tiệc',
+      reason: isWhiteRequested 
+        ? 'Set đồ tông sáng/trắng thanh khiết phối cùng quần âu tạo nên diện mạo quý ông nổi bật, sang trọng và chuẩn mực cho sự kiện.'
+        : 'Sự kết hợp giữa Blazer sang trọng phối cùng Quần Âu may đo tạo nên phong thái đĩnh đạc, chuẩn mực cho các sự kiện trang trọng.',
+      items: [
+        mapItemWithColor(formalTop, defaultColor),
+        mapItemWithColor(formalPant, defaultColor),
+        mapItemWithColor(formalBelt, 'Đen Sang Trọng')
+      ].filter(Boolean),
       isGemini: false
     };
   }
 
   if (occ.includes('golf') || occ.includes('thể thao')) {
-    const polo = polos[0];
-    const golfPant = shorts[0] || casualPants[0];
+    const polo = candidateTops[0] || polos[0];
+    const golfPant = candidateBottoms[0] || shorts[0] || casualPants[0];
     const belt = belts[0];
     return {
-      title: 'Phong Thái Thể Thao & Đẳng Cấp Golf',
-      reason: 'Chất liệu co giãn 4 chiều thoáng mát tối đa cùng gam màu tinh tế mang lại sự tự tin, phóng khoáng trên sân tập.',
-      items: [polo, golfPant, belt].filter(Boolean),
+      title: isWhiteRequested ? 'All-White Sporty - Đẳng Cấp Sân Golf' : 'Phong Thái Thể Thao & Đẳng Cấp Golf',
+      reason: isWhiteRequested
+        ? 'Tone trắng thể thao phóng khoáng, chất vải co giãn và chống tia UV giúp quý ông tỏa sáng đầy phong độ trên sân golf.'
+        : 'Chất liệu co giãn 4 chiều thoáng mát tối đa cùng gam màu tinh tế mang lại sự tự tin, phóng khoáng trên sân tập.',
+      items: [
+        mapItemWithColor(polo, defaultColor),
+        mapItemWithColor(golfPant, defaultColor),
+        mapItemWithColor(belt, 'Đen Sang Trọng')
+      ].filter(Boolean),
       isGemini: false
     };
   }
 
   if (occ.includes('dạo phố') || occ.includes('hè') || occ.includes('hẹn hò')) {
-    const casualTop = polos[0] || dressShirts[0];
-    const casualBottom = shorts[0] || casualPants[0];
+    const casualTop = candidateTops[0] || polos[0] || dressShirts[0];
+    const casualBottom = candidateBottoms[0] || shorts[0] || casualPants[0];
     const belt = belts[0];
     return {
-      title: 'Smart Casual Dạo Phố & Hẹn Hò Cuốn Hút',
-      reason: 'Phong cách năng động, trẻ trung nhưng vẫn giữ được nét chỉn chu lịch thiệp của quý ông hiện đại.',
-      items: [casualTop, casualBottom, belt].filter(Boolean),
+      title: isWhiteRequested ? 'White Minimalist - Phong Cách Lãng Tử Hẹn Hò' : 'Smart Casual Dạo Phố & Hẹn Hò Cuốn Hút',
+      reason: isWhiteRequested
+        ? 'Gam màu trắng chủ đạo mang lại cảm giác tươi trẻ, sáng bừng khí chất và cực kỳ thu hút cho những buổi hẹn hò hay dạo phố.'
+        : 'Phong cách năng động, trẻ trung nhưng vẫn giữ được nét chỉn chu lịch thiệp của quý ông hiện đại.',
+      items: [
+        mapItemWithColor(casualTop, defaultColor),
+        mapItemWithColor(casualBottom, defaultColor),
+        mapItemWithColor(belt, 'Đen Sang Trọng')
+      ].filter(Boolean),
       isGemini: false
     };
   }
 
   // Mặc định Công sở
-  const shirt = dressShirts[0] || polos[0];
-  const trousers = dressTrousers[0] || casualPants[0];
+  const shirt = candidateTops[0] || dressShirts[0] || polos[0];
+  const trousers = candidateBottoms[0] || dressTrousers[0] || casualPants[0];
   const belt = belts[0];
   return {
-    title: 'Phong Thái Doanh Nhân & Công Sở Hiện Đại',
-    reason: 'Sơ mi thanh lịch phối cùng quần âu cao cấp là biểu tượng chuẩn mực của người đàn ông thành công.',
-    items: [shirt, trousers, belt].filter(Boolean),
+    title: isWhiteRequested ? 'Bạch Công Sở - Thanh Lịch & Tinh Tế' : 'Phong Thái Doanh Nhân & Công Sở Hiện Đại',
+    reason: isWhiteRequested
+      ? 'Sơ mi trắng thanh lịch kết hợp quần âu sáng màu tạo ấn tượng chuyên nghiệp, chỉn chu và tràn đầy năng lượng tích cực.'
+      : 'Sơ mi thanh lịch phối cùng quần âu cao cấp là biểu tượng chuẩn mực của người đàn ông thành công.',
+    items: [
+      mapItemWithColor(shirt, defaultColor),
+      mapItemWithColor(trousers, defaultColor),
+      mapItemWithColor(belt, 'Đen Sang Trọng')
+    ].filter(Boolean),
     isGemini: false
   };
 }
@@ -268,7 +372,7 @@ Trả về duy nhất JSON:
 }
 `;
       const response = await ai.models.generateContent({
-        model: 'gemini-3.5-flash-lite',
+        model: 'gemini-3.8-flash',
         contents: [
           {
             role: 'user',
@@ -332,7 +436,7 @@ Hãy tóm tắt thành 3 gạch đầu dòng ngắn gọn:
 3. Lời khuyên chọn size cho khách hàng mới
 `;
       const response = await ai.models.generateContent({
-        model: 'gemini-3.5-flash-lite',
+        model: 'gemini-3.8-flash',
         contents: prompt
       });
       return response.text;
@@ -380,7 +484,7 @@ Trả về DUY NHẤT định dạng JSON:
 }
 `;
       const response = await ai.models.generateContent({
-        model: 'gemini-3.5-flash-lite',
+        model: 'gemini-3.8-flash',
         contents: prompt
       });
 

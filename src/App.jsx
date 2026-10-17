@@ -20,7 +20,9 @@ import { VisualSearchModal } from './components/ai/VisualSearchModal';
 import { BlogPage } from './components/blog/BlogPage';
 import { HomeVouchersSection } from './components/home/HomeVouchersSection';
 import { HomeMixMatchSection } from './components/home/HomeMixMatchSection';
+import { ComboDetailModal } from './components/home/ComboDetailModal';
 import { HomeFabricTechSection } from './components/home/HomeFabricTechSection';
+import { FabricDetailModal } from './components/home/FabricDetailModal';
 import { Toast } from './components/common/Toast';
 import { Button } from './components/common/Button';
 import { ArrowRight, Sparkles } from 'lucide-react';
@@ -66,6 +68,10 @@ export default function App() {
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isOutfitStylistOpen, setIsOutfitStylistOpen] = useState(false);
   const [isVisualSearchOpen, setIsVisualSearchOpen] = useState(false);
+  const [selectedCombo, setSelectedCombo] = useState(null);
+  const [isComboModalOpen, setIsComboModalOpen] = useState(false);
+  const [selectedFabric, setSelectedFabric] = useState(null);
+  const [isFabricModalOpen, setIsFabricModalOpen] = useState(false);
   const [wishlistItems, setWishlistItems] = useState(() => {
     const saved = localStorage.getItem('menstyle_wishlist');
     return saved ? JSON.parse(saved) : []; // Mặc định rỗng khi khách mới vào web
@@ -322,6 +328,8 @@ const isTryingAdmin =
             currentUser={currentUser}
             onRequireAuth={() => setIsAuthOpen(true)}
             onBackToShopping={() => setCurrentTab('products')}
+            onRemoveItem={handleRemoveItem}
+            onUpdateQuantity={handleUpdateQuantity}
             onOrderSuccess={(orderData) => {
               addToast('Đặt Hàng Thành Công', `Mã đơn hàng: ${orderData.orderCode}. Đơn hàng đã được đồng bộ vào hệ thống quản trị!`);
               
@@ -413,10 +421,9 @@ const isTryingAdmin =
 
             {/* 3.1. Combo Mix & Match (Gợi ý trang phục theo bộ tiết kiệm chuẩn Torano) */}
             <HomeMixMatchSection 
-              onSelectCategory={(catName) => {
-                setFilterCategory(catName);
-                setCurrentTab('products');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+              onSelectCombo={(combo) => {
+                setSelectedCombo(combo);
+                setIsComboModalOpen(true);
               }}
             />
 
@@ -529,6 +536,10 @@ const isTryingAdmin =
 
             {/* 4.1. Khối Công Nghệ Chất Vải (Fabric Tech) chuẩn Torano */}
             <HomeFabricTechSection 
+              onSelectFabric={(fabric) => {
+                setSelectedFabric(fabric);
+                setIsFabricModalOpen(true);
+              }}
               onSelectCategory={(catName) => {
                 setFilterCategory(catName);
                 setCurrentTab('products');
@@ -578,7 +589,7 @@ const isTryingAdmin =
         onClose={() => setIsDetailOpen(false)}
         onAddToCart={handleAddToCart}
         currentUser={currentUser}
-        onRequireAuth={() => handleOpenAiFeature(() => {}, 'AI Tóm Tắt Đánh Giá')}
+        onRequireLogin={() => setIsAuthOpen(true)}
       />
 
       {/* 8. Drawer Giỏ Hàng Mini (Mini Cart) */}
@@ -633,6 +644,25 @@ const isTryingAdmin =
         onClose={() => setIsVisualSearchOpen(false)}
         products={products}
         onSelectProduct={handleOpenDetail}
+      />
+
+      {/* 9.3. Modal Combo Mix & Match Mua Cả Bộ Tiết Kiệm */}
+      <ComboDetailModal 
+        isOpen={isComboModalOpen}
+        onClose={() => setIsComboModalOpen(false)}
+        combo={selectedCombo}
+        products={products}
+        onAddMultipleToCart={handleAddMultipleToCart}
+      />
+
+      {/* 9.4. Modal Khám Phá Công Nghệ Chất Vải MENSTYLE™ */}
+      <FabricDetailModal
+        isOpen={isFabricModalOpen}
+        onClose={() => setIsFabricModalOpen(false)}
+        fabric={selectedFabric}
+        products={products}
+        onSelectProduct={handleOpenDetail}
+        onExploreCategory={(cat) => handleNavigateWithCategory(cat)}
       />
 
       {/* 10. Toast Thông Báo Góc Màn Hình (Tuần 4) */}
