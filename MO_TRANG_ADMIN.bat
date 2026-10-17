@@ -12,13 +12,17 @@ echo Mat khau mac dinh : admin123
 echo.
 echo Dang tu dong mo trinh duyet vao trang Quan tri...
 
+cd /d "%~dp0"
+start /b cmd /c "npm run dev"
+timeout /t 1 >nul
+
 :: Mo trinh duyet mac dinh vao thang trang admin
 start http://localhost:5173/?admin
 
 echo.
 echo ========================================================
-echo   DA MO TRINH DUYET THANH CONG!
-echo   (Neu web chua chay, nho bat them terminal: npm run dev)
+echo   DA MO TRANG QUAN TRI THANH CONG!
+echo   Dia chi: http://localhost:5173/?admin
 echo ========================================================
 echo.
 timeout /t 3 >nul

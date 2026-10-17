@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { Heart, Eye, ShoppingCart, Star } from 'lucide-react';
 import { Badge } from '../common/Inputs';
 
-export const ProductCard = ({ product, onQuickView, onAddToCart }) => {
+const PRODUCT_IMAGE_FALLBACK = '/images/product-fallback.avif';
+
+export const ProductCard = ({ product, onQuickView, onAddToCart, isWishlisted = false, onToggleWishlist }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [failedImages, setFailedImages] = useState(() => new Set());
-  const [isLiked, setIsLiked] = useState(false);
+  const [localLiked, setLocalLiked] = useState(false);
+
+  const isLiked = onToggleWishlist !== undefined ? isWishlisted : localLiked;
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
@@ -13,7 +17,7 @@ export const ProductCard = ({ product, onQuickView, onAddToCart }) => {
 
   const images = product.images && product.images.length > 0 ? product.images : [product.image];
   const availableImages = images.filter((image) => image && !failedImages.has(image));
-  const currentImage = availableImages[currentImageIndex] || availableImages[0] || '/images/product-fallback.avif';
+  const currentImage = availableImages[currentImageIndex] || availableImages[0] || PRODUCT_IMAGE_FALLBACK;
 
   return (
     <div className="group relative flex flex-col bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-neutral-100 hover:border-neutral-300 transition-all duration-300 hover:shadow-xl">
@@ -28,7 +32,7 @@ export const ProductCard = ({ product, onQuickView, onAddToCart }) => {
           src={currentImage}
           alt={product.name}
           onError={() => {
-            if (currentImage !== '/images/product-fallback.avif') {
+            if (currentImage !== PRODUCT_IMAGE_FALLBACK) {
               setFailedImages((failed) => new Set(failed).add(currentImage));
             }
           }}
@@ -56,7 +60,11 @@ export const ProductCard = ({ product, onQuickView, onAddToCart }) => {
             aria-label="Thêm vào yêu thích" 
             onClick={(e) => {
               e.stopPropagation();
-              setIsLiked(!isLiked);
+              if (onToggleWishlist) {
+                onToggleWishlist(product);
+              } else {
+                setLocalLiked(!localLiked);
+              }
             }}
             className={`w-8 h-8 rounded-full backdrop-blur-sm shadow flex items-center justify-center transition ${
               isLiked 

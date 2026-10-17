@@ -10,12 +10,19 @@ import {
   Truck, 
   ChevronRight,
   ShieldCheck,
-  Calendar
+  Calendar,
+  RotateCcw,
+  X
 } from 'lucide-react';
 import { Button } from '../common/Button';
 
 export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'profile' | 'password'
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [selectedOrderForReturn, setSelectedOrderForReturn] = useState(null);
+  const [returnReason, setReturnReason] = useState('Kích cỡ mặc không vừa, muốn đổi size khác');
+  const [returnDesiredSize, setReturnDesiredSize] = useState('L');
+  const [returnSuccessMsg, setReturnSuccessMsg] = useState('');
 
   // Mock User Info
   const [profile, setProfile] = useState({
@@ -30,51 +37,49 @@ export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
 
   const [profileSuccess, setProfileSuccess] = useState('');
 
-  // Mock Lịch sử đơn hàng
-  const orders = [
-    {
-      id: 'MS-892140',
-      date: '20/09/2026',
-      total: 1250000,
-      status: 'delivering', // 'delivering' | 'completed' | 'cancelled'
-      statusLabel: 'Đang giao hàng',
-      items: [
-        {
-          name: 'Áo Blazer Nam Italian Wool Dáng Slim-fit',
-          size: 'L',
-          color: 'Đen Sang Trọng',
-          price: 1250000,
-          quantity: 1,
-          image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop',
+  // Lịch sử đơn hàng đồng bộ thời gian thực từ hệ thống
+  const [orders, setOrders] = useState(() => {
+    const saved = localStorage.getItem('menstyle_orders');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Lọc các đơn của tài khoản hiện tại, hoặc hiển thị các đơn mới đặt
+          const userOrders = parsed.filter(o => !o.email || !user?.email || o.email.toLowerCase() === user.email.toLowerCase());
+          if (userOrders.length > 0) {
+            return userOrders.map(o => ({
+              id: o.id,
+              date: o.date,
+              total: o.total,
+              status: o.status || 'delivering',
+              statusLabel: o.statusText || 'Đang xử lý',
+              items: (o.cartItems && o.cartItems.length > 0) ? o.cartItems.map(i => ({
+                name: i.name,
+                size: i.selectedSize || 'L',
+                color: i.selectedColor || 'Mặc định',
+                price: i.price,
+                quantity: i.quantity,
+                image: i.images?.[0] || i.image || 'https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg'
+              })) : [
+                {
+                  name: o.items || 'Sản phẩm thời trang MENSTYLE',
+                  size: 'L',
+                  color: 'Tiêu chuẩn',
+                  price: o.total,
+                  quantity: 1,
+                  image: 'https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg'
+                }
+              ]
+            }));
+          }
         }
-      ]
-    },
-    {
-      id: 'MS-771239',
-      date: '05/09/2026',
-      total: 830000,
-      status: 'completed',
-      statusLabel: 'Đã giao thành công',
-      items: [
-        {
-          name: 'Áo Sơ Mi Trắng Kháng Khuẩn Chống Nhăn Luxury',
-          size: 'M',
-          color: 'Trắng Tinh Khôi',
-          price: 450000,
-          quantity: 1,
-          image: 'https://images.unsplash.com/photo-1620012253295-c15c429fbb3e?q=80&w=600&auto=format&fit=crop',
-        },
-        {
-          name: 'Áo Polo Nam Pima Cotton Bo Dệt Cao Cấp',
-          size: 'M',
-          color: 'Xanh Rêu',
-          price: 380000,
-          quantity: 1,
-          image: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=600&auto=format&fit=crop',
-        }
-      ]
+      } catch (e) {
+        console.error(e);
+      }
     }
-  ];
+    return [];
+  });
+
 
   const formatPrice = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
 
@@ -226,20 +231,33 @@ export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
                     ))}
                   </div>
 
-                  {/* Tổng tiền & Chi tiết */}
-                  <div className="pt-3 border-t border-neutral-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div className="text-xs text-neutral-500">
-                      Tổng thanh toán: <strong className="text-base font-black text-neutral-950 ml-1">{formatPrice(order.total)}</strong>
+                    {/* Tổng tiền & Chi tiết */}
+                    <div className="pt-3 border-t border-neutral-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="text-xs text-neutral-500">
+                        Tổng thanh toán: <strong className="text-base font-black text-neutral-950 ml-1">{formatPrice(order.total)}</strong>
+                      </div>
+                      <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                        {order.status === 'completed' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedOrderForReturn(order);
+                              setIsReturnModalOpen(true);
+                              setReturnSuccessMsg('');
+                            }}
+                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 transition cursor-pointer flex items-center gap-1.5"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" /> Đổi size / Trả hàng (7 ngày)
+                          </button>
+                        )}
+                        <Button variant="outline" size="sm" className="rounded-lg text-xs flex-1 sm:flex-none">
+                          Xem chi tiết
+                        </Button>
+                        <Button variant="primary" size="sm" className="rounded-lg text-xs bg-neutral-950 text-white flex-1 sm:flex-none">
+                          Mua lại đơn này
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex gap-2 w-full sm:w-auto">
-                      <Button variant="outline" size="sm" className="rounded-lg text-xs flex-1 sm:flex-none">
-                        Xem chi tiết
-                      </Button>
-                      <Button variant="primary" size="sm" className="rounded-lg text-xs bg-neutral-950 text-white flex-1 sm:flex-none">
-                        Mua lại đơn này
-                      </Button>
-                    </div>
-                  </div>
                 </div>
               ))}
             </div>
@@ -349,6 +367,130 @@ export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
           )}
         </div>
       </div>
+
+      {/* Modal Yêu Cầu Đổi Trả Hàng (Order Return trong 7 ngày) */}
+      {isReturnModalOpen && selectedOrderForReturn && (
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+          <div 
+            className="fixed inset-0 bg-neutral-950/75 backdrop-blur-sm"
+            onClick={() => setIsReturnModalOpen(false)}
+          />
+
+          <div className="relative bg-white rounded-2xl max-w-lg w-full p-5 sm:p-7 shadow-2xl z-10 border border-neutral-100 flex flex-col animate-in fade-in zoom-in-95 duration-200">
+            <button 
+              onClick={() => setIsReturnModalOpen(false)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 flex items-center justify-center transition"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-amber-500 text-neutral-950 flex items-center justify-center font-bold">
+                <RotateCcw className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-black text-neutral-950">Yêu Cầu Đổi Trả Đơn Hàng</h3>
+                <p className="text-xs text-neutral-500">Mã đơn: <strong>#{selectedOrderForReturn.id}</strong> (Hỗ trợ 7 ngày miễn phí)</p>
+              </div>
+            </div>
+
+            {returnSuccessMsg ? (
+              <div className="p-4 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200 space-y-2 text-center my-3">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
+                <p className="text-sm font-bold">{returnSuccessMsg}</p>
+                <p className="text-neutral-500 font-normal">Shipper MENSTYLE sẽ liên hệ trong 24h để mang size mới đến tận nơi đổi cho bạn.</p>
+                <Button 
+                  onClick={() => setIsReturnModalOpen(false)}
+                  variant="outline" 
+                  size="sm" 
+                  className="rounded-lg mt-2 text-xs"
+                >
+                  Đóng cửa sổ
+                </Button>
+              </div>
+            ) : (
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setReturnSuccessMsg('Yêu cầu đổi hàng đã được gửi thành công đến bộ phận CSKH!');
+                }} 
+                className="space-y-3.5 mt-2"
+              >
+                <div>
+                  <label className="block text-xs font-bold text-neutral-700 uppercase mb-1">
+                    Lý do yêu cầu đổi trả:
+                  </label>
+                  <select
+                    value={returnReason}
+                    onChange={(e) => setReturnReason(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-neutral-200 outline-none focus:border-neutral-950 bg-neutral-50 font-medium"
+                  >
+                    <option value="Kích cỡ mặc không vừa, muốn đổi size khác">Kích cỡ mặc không vừa, muốn đổi size khác</option>
+                    <option value="Màu sắc không hợp gu, muốn đổi màu khác">Màu sắc không hợp gu, muốn đổi màu khác</option>
+                    <option value="Sản phẩm lỗi đường may / lỗi chỉ">Sản phẩm lỗi đường may / lỗi chỉ</option>
+                    <option value="Khác (Hoàn tiền trong chính sách 7 ngày)">Khác (Hoàn tiền trong chính sách 7 ngày)</option>
+                  </select>
+                </div>
+
+                {returnReason.includes('đổi size') && (
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-700 uppercase mb-1">
+                      Size mong muốn đổi sang:
+                    </label>
+                    <div className="flex gap-2">
+                      {['S', 'M', 'L', 'XL', '2XL'].map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => setReturnDesiredSize(s)}
+                          className={`flex-1 py-1.5 text-xs font-bold rounded-lg border transition ${
+                            returnDesiredSize === s 
+                              ? 'bg-neutral-950 text-white border-neutral-950' 
+                              : 'bg-white border-neutral-200 text-neutral-700 hover:border-neutral-950'
+                          }`}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-bold text-neutral-700 uppercase mb-1">
+                    Ghi chú thêm cho CSKH & Shipper:
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="VD: Giao buổi chiều sau 17h giúp mình nhé..."
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-neutral-200 outline-none focus:border-neutral-950"
+                  />
+                </div>
+
+                <div className="pt-2 flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsReturnModalOpen(false)}
+                    className="flex-1 rounded-xl text-xs"
+                  >
+                    Hủy bỏ
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="sm"
+                    className="flex-1 rounded-xl text-xs bg-neutral-950 hover:bg-amber-600 text-white font-bold"
+                  >
+                    Xác nhận gửi yêu cầu
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

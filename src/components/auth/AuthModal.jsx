@@ -18,29 +18,80 @@ export const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
     e.preventDefault();
     setError('');
 
+    const savedAccountsStr = localStorage.getItem('menstyle_registered_users');
+    const registeredUsers = savedAccountsStr ? JSON.parse(savedAccountsStr) : [];
+
     if (mode === 'register') {
       if (!formData.name.trim()) {
-        setError('Vui lòng nhập họ tên');
+        setError('Vui lòng nhập họ và tên quý khách');
+        return;
+      }
+      if (formData.password.length < 6) {
+        setError('Mật khẩu tối thiểu phải từ 6 ký tự');
         return;
       }
       if (formData.password !== formData.confirmPassword) {
-        setError('Mật khẩu nhập lại không khớp');
+        setError('Mật khẩu nhập lại không khớp. Vui lòng kiểm tra lại');
         return;
       }
+
+      // Kiểm tra trùng email
+      const existing = registeredUsers.find(u => u.email.toLowerCase() === formData.email.trim().toLowerCase());
+      if (existing) {
+        setError('Email này đã được đăng ký tài khoản. Vui lòng chuyển sang Đăng nhập!');
+        return;
+      }
+
+      // Tạo tài khoản mới và lưu vào danh sách
+      const newUser = {
+        id: 'USER-' + Date.now(),
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        phone: '',
+        address: '',
+        memberLevel: 'Thành Viên Bạc',
+        points: 100,
+        createdAt: new Date().toLocaleDateString('vi-VN')
+      };
+
+      registeredUsers.push(newUser);
+      localStorage.setItem('menstyle_registered_users', JSON.stringify(registeredUsers));
+
+      // Đăng nhập ngay sau khi đăng ký
+      onLoginSuccess(newUser);
+      onClose();
+      return;
     }
 
+    // Luồng Đăng nhập:
     if (!formData.email.trim() || !formData.password.trim()) {
       setError('Vui lòng nhập đầy đủ email và mật khẩu');
       return;
     }
 
-    // Đăng nhập thành công thành viên mẫu
-    onLoginSuccess({
-      name: formData.name.trim() || 'Quý Ông MENSTYLE',
-      email: formData.email.trim(),
-      memberLevel: 'Thành Viên Bạc',
-      points: 100
-    });
+    const foundUser = registeredUsers.find(
+      u => u.email.toLowerCase() === formData.email.trim().toLowerCase()
+    );
+
+    if (foundUser) {
+      if (foundUser.password !== formData.password) {
+        setError('Mật khẩu không chính xác. Vui lòng thử lại!');
+        return;
+      }
+      onLoginSuccess(foundUser);
+    } else {
+      // Cho phép đăng nhập linh hoạt hoặc đăng nhập thành công ngay với email mới
+      const defaultUser = {
+        id: 'USER-' + Date.now(),
+        name: formData.email.split('@')[0].toUpperCase(),
+        email: formData.email.trim(),
+        memberLevel: 'Thành Viên Bạc',
+        points: 100
+      };
+      onLoginSuccess(defaultUser);
+    }
+
     onClose();
   };
 

@@ -1,27 +1,194 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Star, 
   Truck, 
   RotateCcw, 
   ShieldCheck, 
+  Heart, 
   ShoppingBag, 
   Minus, 
   Plus, 
   Ruler, 
-  X 
+  X,
+  Sparkles,
+  Loader2,
+  Send,
+  ThumbsUp,
+  Camera,
+  ImagePlus,
+  AlertCircle,
+  CheckCircle
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Inputs';
+import { SmartSizeGuideModal } from './SmartSizeGuideModal';
 
-export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
-  const images = product?.images?.length ? product.images : [product?.image].filter(Boolean);
+export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, currentUser, onRequireLogin }) => {
+  const rawImages = (product?.images && product.images.length > 0) ? product.images : [product?.image || '/images/product-fallback.avif'];
+  const images = rawImages.filter(Boolean);
   const [selectedImg, setSelectedImg] = useState(0);
   const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || 'L');
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0]?.name || '');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description'); // 'description' | 'sizeGuide' | 'reviews'
+  const [isSmartSizeOpen, setIsSmartSizeOpen] = useState(false);
+
+  // Khởi tạo danh sách đánh giá theo từng sản phẩm cụ thể từ localStorage
+  const [reviewsList, setReviewsList] = useState([]);
+  const [newReviewerName, setNewReviewerName] = useState(currentUser?.name || '');
+  const [newRating, setNewRating] = useState(5);
+  const [newComment, setNewComment] = useState('');
+  const [reviewImages, setReviewImages] = useState([]);
+  const [reviewError, setReviewError] = useState('');
+  const [reviewSuccess, setReviewSuccess] = useState('');
+
+  // Kiểm tra xem khách hàng hiện tại đã mua sản phẩm này chưa
+  const [hasPurchased, setHasPurchased] = useState(false);
+
+  // Tải đánh giá theo sản phẩm
+  useEffect(() => {
+    if (!product) return;
+    const storageKey = `menstyle_reviews_${product.id}`;
+    const saved = localStorage.getItem(storageKey);
+    let initialReviews = [];
+    if (saved) {
+      try {
+        initialReviews = JSON.parse(saved);
+      } catch (e) {
+        initialReviews = [];
+      }
+    }
+    if (!initialReviews || initialReviews.length === 0) {
+      const cat = product.category || '';
+      initialReviews = [
+        {
+          id: 1,
+          name: 'Hoàng Nam (Hà Nội)',
+          rating: 5,
+          date: '2 ngày trước',
+          comment: `Chất vải của ${product.name} rất thoáng mát, đứng form và sờ êm tay. Đóng gói hộp chỉn chu, giao hàng nhanh 2 ngày là nhận được.`,
+          images: [
+            'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop'
+          ]
+        },
+        {
+          id: 2,
+          name: 'Tuấn Anh (TP.HCM)',
+          rating: 5,
+          date: '5 ngày trước',
+          comment: `Mặc vừa vặn như may đo, form dáng tôn dáng người Việt. Rất hài lòng với dòng ${cat} của MENSTYLE!`,
+          images: []
+        },
+        {
+          id: 3,
+          name: 'Minh Đức (Đà Nẵng)',
+          rating: 5,
+          date: '1 tuần trước',
+          comment: `Đường may rất tỉ mỉ, giặt máy không bị bai nhão hay bay màu. Sẽ ủng hộ shop thêm các sản phẩm khác.`,
+          images: []
+        }
+      ];
+      localStorage.setItem(storageKey, JSON.stringify(initialReviews));
+    }
+    setReviewsList(initialReviews);
+    setSelectedImg(0);
+    setSelectedSize(product.sizes?.[0] || 'L');
+    setSelectedColor(product.colors?.[0]?.name || '');
+    setQuantity(1);
+    setActiveTab('description');
+    setReviewImages([]);
+    setReviewError('');
+    setReviewSuccess('');
+
+    // Kiểm tra lịch sử đơn hàng trong localStorage
+    try {
+      const orders = JSON.parse(localStorage.getItem('menstyle_orders') || '[]');
+      const userEmail = currentUser?.email?.toLowerCase();
+      const userPhone = currentUser?.phone;
+
+      // Tìm trong danh sách đơn hàng đã mua xem có chứa sản phẩm này không
+      const purchased = orders.some(order => {
+        const matchUser = !currentUser || (order.email && order.email.toLowerCase() === userEmail) || (order.phone && order.phone === userPhone);
+        if (!matchUser) return false;
+        
+        // Kiểm tra trong giỏ hàng chi tiết của đơn
+        if (Array.isArray(order.cartItems)) {
+          return order.cartItems.some(item => item.id === product.id);
+        }
+        // Kiểm tra trong chuỗi tên sản phẩm
+        if (typeof order.items === 'string') {
+          return order.items.includes(product.name);
+        }
+        return false;
+      });
+      setHasPurchased(purchased);
+    } catch (e) {
+      setHasPurchased(false);
+    }
+  }, [product?.id, currentUser]);
 
   if (!isOpen || !product) return null;
+
+  // Xử lý upload ảnh feedback của khách
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    files.slice(0, 3).forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setReviewImages(prev => {
+          if (prev.length >= 3) return prev;
+          return [...prev, reader.result];
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemoveReviewImg = (index) => {
+    setReviewImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Xử lý gửi đánh giá mới (Bắt buộc đã mua hàng)
+  const handleSubmitReview = (e) => {
+    e.preventDefault();
+    setReviewError('');
+    setReviewSuccess('');
+
+    if (!currentUser) {
+      setReviewError('Vui lòng đăng nhập tài khoản để gửi đánh giá mua hàng.');
+      if (onRequireLogin) onRequireLogin();
+      return;
+    }
+
+    if (!hasPurchased) {
+      setReviewError(`Hệ thống kiểm tra thấy tài khoản ${currentUser.name} chưa từng mua sản phẩm này. Chỉ quý khách đã mua hàng thực tế mới có thể gửi đánh giá.`);
+      return;
+    }
+
+    if (!newComment.trim()) {
+      setReviewError('Vui lòng nhập nội dung đánh giá của bạn.');
+      return;
+    }
+
+    const newEntry = {
+      id: Date.now(),
+      name: `${currentUser.name || newReviewerName.trim() || 'Quý Ông Khách Hàng'}`,
+      rating: newRating,
+      date: 'Vừa xong',
+      comment: newComment.trim(),
+      images: reviewImages
+    };
+
+    const updated = [newEntry, ...reviewsList];
+    setReviewsList(updated);
+    localStorage.setItem(`menstyle_reviews_${product.id}`, JSON.stringify(updated));
+
+    setNewComment('');
+    setReviewImages([]);
+    setReviewSuccess('Cảm ơn bạn! Đánh giá kèm hình ảnh thực tế của bạn đã được đăng thành công.');
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
@@ -68,7 +235,7 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
             {/* Ảnh lớn chính */}
             <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-neutral-100 shadow-inner">
               <img 
-                src={images[selectedImg] || '/images/product-fallback.avif'}
+                src={images[selectedImg] || images[0] || '/images/product-fallback.avif'}
                 alt={product.name} 
                 onError={(event) => {
                   event.currentTarget.onerror = null;
@@ -117,8 +284,12 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
                 <span className="uppercase tracking-widest font-semibold text-amber-600">{product.category}</span>
                 <div className="flex items-center gap-1 text-amber-500">
                   <Star className="w-4 h-4 fill-amber-400" />
-                  <span className="font-bold text-neutral-800">{product.rating || 5.0}</span>
-                  <span className="text-neutral-400">({product.reviewCount || 36} đánh giá)</span>
+                  <span className="font-bold text-neutral-800">
+                    {reviewsList.length > 0 
+                      ? (reviewsList.reduce((acc, r) => acc + (r.rating || 5), 0) / reviewsList.length).toFixed(1)
+                      : (product.rating || '5.0')}
+                  </span>
+                  <span className="text-neutral-400">({reviewsList.length} đánh giá)</span>
                 </div>
               </div>
 
@@ -175,10 +346,11 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
                   <div className="flex justify-between items-center text-xs font-semibold text-neutral-800 mb-2">
                     <span>Chọn Kích cỡ: <strong className="text-amber-600">{selectedSize}</strong></span>
                     <button 
-                      onClick={() => setActiveTab('sizeGuide')}
-                      className="text-neutral-500 hover:text-neutral-950 flex items-center gap-1 text-[11px] underline"
+                      type="button"
+                      onClick={() => setIsSmartSizeOpen(true)}
+                      className="text-amber-700 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-md flex items-center gap-1.5 text-xs font-bold transition border border-amber-200 cursor-pointer"
                     >
-                      <Ruler className="w-3.5 h-3.5" /> Hướng dẫn chọn size
+                      <Ruler className="w-3.5 h-3.5" /> Gợi ý đo size chuẩn
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -275,9 +447,10 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
             </button>
             <button
               onClick={() => setActiveTab('reviews')}
-              className={`pb-2 transition ${activeTab === 'reviews' ? 'border-b-2 border-neutral-950 text-neutral-950 font-bold' : 'text-neutral-500 hover:text-neutral-900'}`}
+              className={`pb-2 transition flex items-center gap-1.5 ${activeTab === 'reviews' ? 'border-b-2 border-neutral-950 text-neutral-950 font-bold' : 'text-neutral-500 hover:text-neutral-900'}`}
             >
-              Đánh Giá ({product.reviewCount || 42})
+              <span>Đánh Giá ({reviewsList.length})</span>
+              <span className="w-2 h-2 rounded-full bg-amber-500"></span>
             </button>
           </div>
 
@@ -313,20 +486,186 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) =>
             )}
 
             {activeTab === 'reviews' && (
-              <div className="space-y-3">
-                <div className="p-3 bg-white rounded-lg border border-neutral-200">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-neutral-900">Hoàng Nam (Hà Nội)</span>
-                    <span className="text-[11px] text-neutral-400">2 ngày trước</span>
+              <div className="space-y-4">
+                {/* Thông báo điều kiện đánh giá hoặc Form Viết Đánh Giá Mới */}
+                {!currentUser ? (
+                  <div className="p-4 bg-neutral-100 rounded-2xl border border-neutral-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+                      <div>
+                        <span className="text-xs font-bold text-neutral-900 block">
+                          Chỉ khách hàng đã mua sản phẩm mới có thể gửi đánh giá
+                        </span>
+                        <p className="text-[11px] text-neutral-500">
+                          Vui lòng đăng nhập bằng tài khoản đã đặt mua để đánh giá và đính kèm ảnh sản phẩm thực tế.
+                        </p>
+                      </div>
+                    </div>
+                    <Button 
+                      type="button" 
+                      onClick={onRequireLogin}
+                      size="sm"
+                      className="bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold rounded-xl px-4 py-2 shrink-0 cursor-pointer"
+                    >
+                      Đăng Nhập Ngay
+                    </Button>
                   </div>
-                  <div className="flex text-amber-500 mb-1.5"><Star className="w-3.5 h-3.5 fill-amber-400" /><Star className="w-3.5 h-3.5 fill-amber-400" /><Star className="w-3.5 h-3.5 fill-amber-400" /><Star className="w-3.5 h-3.5 fill-amber-400" /><Star className="w-3.5 h-3.5 fill-amber-400" /></div>
-                  <p className="text-neutral-700">Chất vải cực đẹp, mặc lên vừa in form như may đo riêng. Đóng gói hộp rất sang trọng!</p>
+                ) : !hasPurchased ? (
+                  <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-xs font-bold text-amber-900 block">
+                        Tài khoản "{currentUser.name}" chưa mua sản phẩm này
+                      </span>
+                      <p className="text-[11px] text-amber-700 mt-0.5">
+                        Để đảm bảo tính xác thực 100% cho cộng đồng khách hàng MENSTYLE, chỉ những khách hàng đã mua sản phẩm và có đơn hàng trong hệ thống mới được để lại nhận xét và ảnh feedback.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmitReview} className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200 space-y-3.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-emerald-600" />
+                        <span className="text-xs font-bold text-neutral-900">
+                          Đánh giá từ khách đã mua: <strong className="text-amber-700">{currentUser.name}</strong>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-neutral-500 mr-1">Chấm điểm:</span>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            type="button"
+                            key={star}
+                            onClick={() => setNewRating(star)}
+                            className="p-0.5 hover:scale-110 transition cursor-pointer"
+                          >
+                            <Star className={`w-4 h-4 ${star <= newRating ? 'text-amber-500 fill-amber-400' : 'text-neutral-300'}`} />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <textarea 
+                      placeholder="Chia sẻ trải nghiệm thực tế của bạn về chất vải, độ co giãn, form dáng khi mặc, độ bền sau khi giặt..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      rows={3}
+                      required
+                      className="w-full text-xs p-3 bg-white rounded-xl border border-neutral-200 outline-none focus:border-neutral-900 resize-none"
+                    />
+
+                    {/* Đính kèm ảnh thực tế của khách */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] font-bold text-neutral-700 flex items-center gap-1.5 cursor-pointer">
+                          <ImagePlus className="w-4 h-4 text-amber-600" />
+                          <span>Thêm ảnh thực tế sản phẩm (Tối đa 3 ảnh):</span>
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            multiple 
+                            onChange={handleImageUpload}
+                            className="hidden" 
+                          />
+                        </label>
+                        <span className="text-[10px] text-neutral-400">
+                          {reviewImages.length}/3 ảnh
+                        </span>
+                      </div>
+
+                      {/* Hiển thị thumbnail ảnh đã chọn */}
+                      {reviewImages.length > 0 && (
+                        <div className="flex gap-2">
+                          {reviewImages.map((imgSrc, i) => (
+                            <div key={i} className="relative w-16 h-16 rounded-xl overflow-hidden border border-neutral-200 group">
+                              <img src={imgSrc} alt="feedback" className="w-full h-full object-cover" />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveReviewImg(i)}
+                                className="absolute top-1 right-1 w-4 h-4 bg-neutral-950/80 text-white rounded-full flex items-center justify-center text-[10px] hover:bg-rose-600 transition"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {reviewError && (
+                      <p className="text-xs text-rose-600 font-medium">{reviewError}</p>
+                    )}
+                    {reviewSuccess && (
+                      <p className="text-xs text-emerald-600 font-medium">{reviewSuccess}</p>
+                    )}
+
+                    <div className="flex justify-end pt-1">
+                      <Button 
+                        type="submit" 
+                        className="bg-neutral-950 text-white hover:bg-neutral-800 text-xs px-6 py-2.5 rounded-xl font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      >
+                        <Send className="w-3.5 h-3.5" /> Đăng Đánh Giá
+                      </Button>
+                    </div>
+                  </form>
+                )}
+
+                {/* Danh sách các đánh giá khách hàng thực tế */}
+                <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+                  {reviewsList.map((rev) => (
+                    <div key={rev.id} className="p-3.5 bg-white rounded-2xl border border-neutral-200 shadow-xs">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-neutral-100 text-neutral-800 font-bold text-xs flex items-center justify-center">
+                            {rev.name ? rev.name.charAt(0).toUpperCase() : 'K'}
+                          </div>
+                          <div>
+                            <span className="font-bold text-xs text-neutral-900 block leading-tight">{rev.name}</span>
+                            <span className="text-[10px] text-emerald-600 font-medium">✓ Đã mua hàng tại MENSTYLE</span>
+                          </div>
+                        </div>
+                        <span className="text-[11px] text-neutral-400">{rev.date}</span>
+                      </div>
+                      <div className="flex text-amber-500 mb-2">
+                        {[...Array(rev.rating)].map((_, i) => (
+                          <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                        ))}
+                      </div>
+                      <p className="text-xs text-neutral-700 leading-relaxed mb-2.5">{rev.comment}</p>
+
+                      {/* Ảnh feedback đính kèm */}
+                      {rev.images && rev.images.length > 0 && (
+                        <div className="flex gap-2 pt-1">
+                          {rev.images.map((imgSrc, imgIndex) => (
+                            <img 
+                              key={imgIndex}
+                              src={imgSrc} 
+                              alt="Customer feedback" 
+                              className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-neutral-200 hover:scale-105 transition cursor-pointer"
+                              onClick={() => window.open(imgSrc, '_blank')}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Modal Đo Size Thông Minh */}
+      <SmartSizeGuideModal 
+        isOpen={isSmartSizeOpen}
+        onClose={() => setIsSmartSizeOpen(false)}
+        productCategory={product.category}
+        onSelectSize={(size) => {
+          setSelectedSize(size);
+        }}
+      />
     </div>
   );
 };
