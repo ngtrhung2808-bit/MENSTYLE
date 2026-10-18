@@ -2,11 +2,14 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { SidebarFilter } from './SidebarFilter';
 import { ProductCard } from './ProductCard';
 import { ArrowUpDown, SlidersHorizontal, Grid, ListFilter, Sparkles, Loader2, X } from 'lucide-react';
-import { MOCK_PRODUCTS } from '../../data/mockProducts';
 import { parseSemanticSearchWithAI } from '../../services/geminiService';
+import { ProductGridSkeleton } from '../common/FeedbackStates';
 
 export const ProductListingPage = ({ 
-  products = MOCK_PRODUCTS,
+  products = [],
+  loading = false,
+  error = '',
+  onRetry,
   onQuickView, 
   onAddToCart, 
   initialCategory = 'Tất cả', 
@@ -19,11 +22,20 @@ export const ProductListingPage = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedSize, setSelectedSize] = useState('');
-  const [priceRange, setPriceRange] = useState(2000000);
+  const [priceRange, setPriceRange] = useState(null);
   const [sortBy, setSortBy] = useState('featured'); // 'featured' | 'price-asc' | 'price-desc' | 'rating'
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 12;
+  const maxProductPrice = Math.max(2000000, ...products.map((product) => product.price || 0));
+  const activePriceRange = priceRange ?? maxProductPrice;
+  const categories = useMemo(() => [
+    'Tất cả',
+    ...new Set(products.map((product) => product.category).filter(Boolean)),
+  ], [products]);
+  const sizes = useMemo(() => [
+    ...new Set(products.flatMap((product) => product.sizes || []).map(String)),
+  ], [products]);
 
   // Trạng thái AI Semantic Search
   const [aiSemanticResult, setAiSemanticResult] = useState(null);
@@ -114,7 +126,7 @@ export const ProductListingPage = ({
         return false;
       }
       // 3. Filter Price
-      if (item.price > priceRange) {
+      if (item.price > activePriceRange) {
         return false;
       }
       // 4. Filter Size
@@ -128,12 +140,12 @@ export const ProductListingPage = ({
       if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
       return 0; // featured
     });
-  }, [products, selectedCategory, selectedSize, priceRange, sortBy, searchQuery, aiSemanticResult]);
+  }, [products, selectedCategory, selectedSize, activePriceRange, sortBy, searchQuery, aiSemanticResult]);
 
   const handleResetFilters = () => {
     setSelectedCategory('Tất cả');
     setSelectedSize('');
-    setPriceRange(2000000);
+    setPriceRange(null);
     setSortBy('featured');
     setCurrentPage(1);
   };
@@ -273,6 +285,9 @@ export const ProductListingPage = ({
             handleResetFilters();
             if (onCategoryChange) onCategoryChange('Tất cả');
           }}
+          categories={categories}
+          sizes={sizes}
+          maxPrice={maxProductPrice}
           isOpenMobile={mobileFilterOpen}
           onCloseMobile={() => setMobileFilterOpen(false)}
         />
@@ -301,7 +316,22 @@ export const ProductListingPage = ({
           </div>
 
           {/* Grid Sản Phẩm */}
-          {paginatedProducts.length === 0 ? (
+          {loading ? (
+            <ProductGridSkeleton count={6} />
+          ) : error ? (
+            <div className="bg-white rounded-2xl border border-rose-200 p-8 sm:p-12 text-center">
+              <p className="text-base font-semibold text-neutral-800">Không tải được danh sách sản phẩm</p>
+              <p className="text-xs text-neutral-500 mt-2">{error}</p>
+              {onRetry && (
+                <button
+                  onClick={onRetry}
+                  className="mt-4 px-5 py-2 bg-neutral-950 text-amber-400 text-xs font-bold rounded-full hover:bg-neutral-800 transition"
+                >
+                  Thử tải lại
+                </button>
+              )}
+            </div>
+          ) : paginatedProducts.length === 0 ? (
             <div className="bg-white rounded-2xl border border-neutral-200 p-12 text-center">
               <p className="text-base font-semibold text-neutral-800">Không tìm thấy sản phẩm phù hợp!</p>
               <p className="text-xs text-neutral-400 mt-1 max-w-sm mx-auto">

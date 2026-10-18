@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { Heart, Eye, ShoppingCart, Star } from 'lucide-react';
 import { Badge } from '../common/Inputs';
 
+const PRODUCT_IMAGE_FALLBACK = '/images/product-fallback.avif';
+
 export const ProductCard = ({ product, onQuickView, onAddToCart, isWishlisted = false, onToggleWishlist }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [failedImages, setFailedImages] = useState(() => new Set());
   const [localLiked, setLocalLiked] = useState(false);
 
   const isLiked = onToggleWishlist !== undefined ? isWishlisted : localLiked;
@@ -13,6 +16,8 @@ export const ProductCard = ({ product, onQuickView, onAddToCart, isWishlisted = 
   };
 
   const images = product.images && product.images.length > 0 ? product.images : [product.image];
+  const availableImages = images.filter((image) => image && !failedImages.has(image));
+  const currentImage = availableImages[currentImageIndex] || availableImages[0] || PRODUCT_IMAGE_FALLBACK;
 
   return (
     <div className="group relative flex flex-col bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-neutral-100 hover:border-neutral-300 transition-all duration-300 hover:shadow-xl">
@@ -24,12 +29,12 @@ export const ProductCard = ({ product, onQuickView, onAddToCart, isWishlisted = 
         onClick={() => onQuickView && onQuickView(product)}
       >
         <img
-          src={images[currentImageIndex] || images[0]}
+          src={currentImage}
           alt={product.name}
-          onError={(e) => {
-            // Tự động thay thế bằng ảnh thời trang chuẩn nếu link ngoài gặp sự cố
-            e.target.onerror = null;
-            e.target.src = 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?q=80&w=800&auto=format&fit=crop';
+          onError={() => {
+            if (currentImage !== PRODUCT_IMAGE_FALLBACK) {
+              setFailedImages((failed) => new Set(failed).add(currentImage));
+            }
           }}
           className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
         />
@@ -130,6 +135,12 @@ export const ProductCard = ({ product, onQuickView, onAddToCart, isWishlisted = 
               />
             ))}
           </div>
+        )}
+
+        {product.sizes && product.sizes.length > 0 && (
+          <p className="mt-1.5 text-[10px] text-neutral-500 truncate" title={`Size: ${product.sizes.join(', ')}`}>
+            Size: {product.sizes.join(' · ')}
+          </p>
         )}
 
         {/* Giá */}

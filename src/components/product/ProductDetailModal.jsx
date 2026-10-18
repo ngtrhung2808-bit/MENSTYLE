@@ -24,13 +24,11 @@ import { Badge } from '../common/Inputs';
 import { SmartSizeGuideModal } from './SmartSizeGuideModal';
 
 export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, currentUser, onRequireLogin }) => {
-  if (!isOpen || !product) return null;
-
-  const rawImages = (product.images && product.images.length > 0) ? product.images : [product.image || 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?q=80&w=800&auto=format&fit=crop'];
+  const rawImages = (product?.images && product.images.length > 0) ? product.images : [product?.image || '/images/product-fallback.avif'];
   const images = rawImages.filter(Boolean);
   const [selectedImg, setSelectedImg] = useState(0);
-  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || 'L');
-  const [selectedColor, setSelectedColor] = useState(product.colors?.[0]?.name || '');
+  const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || 'L');
+  const [selectedColor, setSelectedColor] = useState(product?.colors?.[0]?.name || '');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description'); // 'description' | 'sizeGuide' | 'reviews'
   const [isSmartSizeOpen, setIsSmartSizeOpen] = useState(false);
@@ -129,6 +127,8 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, curr
     }
   }, [product?.id, currentUser]);
 
+  if (!isOpen || !product) return null;
+
   // Xử lý upload ảnh feedback của khách
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files || []);
@@ -196,8 +196,14 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, curr
 
   const handleAdd = () => {
     if (onAddToCart) {
+      const selectedVariant = product.variants?.find((variant) => (
+        String(variant.size) === String(selectedSize)
+        && (variant.color?.name || variant.colorName || '') === selectedColor
+        && variant.isActive !== false
+      ));
       onAddToCart({
         ...product,
+        price: Number(selectedVariant?.price ?? product.price),
         selectedSize,
         selectedColor,
         quantity,
@@ -229,8 +235,12 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, curr
             {/* Ảnh lớn chính */}
             <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-neutral-100 shadow-inner">
               <img 
-                src={images[selectedImg] || images[0] || 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?q=80&w=800&auto=format&fit=crop'} 
+                src={images[selectedImg] || images[0] || '/images/product-fallback.avif'}
                 alt={product.name} 
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = '/images/product-fallback.avif';
+                }}
                 className="w-full h-full object-cover object-center transition-all duration-300"
               />
               {product.discount && (
@@ -251,7 +261,15 @@ export const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, curr
                       selectedImg === idx ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-transparent opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <img src={img} alt="thumb" className="w-full h-full object-cover" />
+                    <img
+                      src={img}
+                      alt={`${product.name} ảnh ${idx + 1}`}
+                      onError={(event) => {
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = '/images/product-fallback.avif';
+                      }}
+                      className="w-full h-full object-cover"
+                    />
                   </button>
                 ))}
               </div>

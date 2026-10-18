@@ -4,13 +4,13 @@ import { searchProductsByImage } from '../../services/geminiService';
 import { Button } from '../common/Button';
 
 export const VisualSearchModal = ({ isOpen, onClose, products = [], onSelectProduct }) => {
-  if (!isOpen) return null;
-
   const [previewImage, setPreviewImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [detectedText, setDetectedText] = useState('');
   const [matchedResults, setMatchedResults] = useState([]);
   const fileInputRef = useRef(null);
+
+  if (!isOpen) return null;
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
