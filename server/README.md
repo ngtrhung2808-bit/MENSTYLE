@@ -9,7 +9,7 @@
 3. Start the API with `npm run dev`. The default API URL is `http://localhost:5001/api`; the health endpoint is `/api/health`.
 4. Set the Frontend `VITE_API_URL=http://localhost:5001/api` in its local environment if the default URL does not apply.
 
-`npm run seed` is additive and idempotent: it inserts missing demo records and preserves existing accounts, inventory, coupon usage, and orders. Demo passwords are only used when the demo users do not already exist.
+`npm run seed` is additive and idempotent: it inserts missing demo records and preserves existing accounts, inventory, coupon usage, and orders. It still creates demo users, products, coupons, and sample content, so run it only against a local or isolated test database, never a shared or production database. Demo passwords are only used when the demo users do not already exist.
 
 ## Tests
 
