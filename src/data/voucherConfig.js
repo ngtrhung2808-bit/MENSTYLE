@@ -6,7 +6,7 @@ export const AVAILABLE_VOUCHERS = [
     displayDiscount: '30.000₫',
     condition: 'Đơn hàng từ 399.000₫',
     expiry: 'HSD: 31/10/2026',
-    remaining: 'Còn 42 lượt'
+    remaining: 'Kiểm tra khi áp dụng'
   },
   {
     code: 'MEN60',
@@ -15,7 +15,7 @@ export const AVAILABLE_VOUCHERS = [
     displayDiscount: '60.000₫',
     condition: 'Đơn hàng từ 700.000₫',
     expiry: 'HSD: 31/10/2026',
-    remaining: 'Còn 286 lượt'
+    remaining: 'Kiểm tra khi áp dụng'
   },
   {
     code: 'MEN100',
@@ -24,7 +24,7 @@ export const AVAILABLE_VOUCHERS = [
     displayDiscount: '100.000₫',
     condition: 'Đơn hàng từ 1.000.000₫',
     expiry: 'HSD: 31/10/2026',
-    remaining: 'Còn 154 lượt'
+    remaining: 'Kiểm tra khi áp dụng'
   },
   {
     code: 'VIPMEN',
@@ -33,7 +33,7 @@ export const AVAILABLE_VOUCHERS = [
     displayDiscount: '150.000₫',
     condition: 'Đơn hàng từ 1.500.000₫',
     expiry: 'HSD: 31/10/2026',
-    remaining: 'Còn 68 lượt'
+    remaining: 'Kiểm tra khi áp dụng'
   },
   {
     code: 'MENSTYLE20',
@@ -42,7 +42,7 @@ export const AVAILABLE_VOUCHERS = [
     displayDiscount: 'Giảm 20%',
     condition: 'Áp dụng cho mọi đơn hàng',
     expiry: 'HSD: 31/10/2026',
-    remaining: 'Vô hạn'
+    remaining: 'Kiểm tra khi áp dụng'
   }
 ];
 

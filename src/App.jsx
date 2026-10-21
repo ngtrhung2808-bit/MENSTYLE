@@ -14,8 +14,8 @@ import { CheckoutPage } from './components/checkout/CheckoutPage';
 import { UserProfilePage } from './components/profile/UserProfilePage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminLogin } from './components/admin/AdminLogin';
-import { AuthModal } from './components/auth/AuthModal';
 import { ChatbotWidget } from './components/chatbot/ChatbotWidget';
+
 import { SmartOutfitStylistModal } from './components/ai/SmartOutfitStylistModal';
 import { VisualSearchModal } from './components/ai/VisualSearchModal';
 import { BlogPage } from './components/blog/BlogPage';
@@ -26,6 +26,7 @@ import { HomeFabricTechSection } from './components/home/HomeFabricTechSection';
 import { FabricDetailModal } from './components/home/FabricDetailModal';
 import { Toast } from './components/common/Toast';
 import { Button } from './components/common/Button';
+import { AuthModal } from './components/auth/AuthModal';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { extractProducts } from './utils/productAdapter';
 
@@ -59,38 +60,37 @@ export default function App() {
   }, [requestProducts]);
 
   useEffect(() => {
-    let isCurrent = true;
-    requestProducts()
-      .then((apiProducts) => {
-        if (isCurrent) setProducts(apiProducts);
-      })
-      .catch((error) => {
-        console.error('Lỗi lấy sản phẩm:', error);
-        if (isCurrent) {
-          setProductsError(error.response?.data?.message || error.message || 'Không thể tải sản phẩm.');
-        }
-      })
-      .finally(() => {
-        if (isCurrent) setLoadingProducts(false);
-      });
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [requestProducts]);
+    fetchProducts();
+  }, [fetchProducts]);
 
   const [currentTab, setCurrentTab] = useState('home'); // Mặc định luôn là Trang Chủ ('home') dành cho Khách hàng
   const [filterCategory, setFilterCategory] = useState('Tất cả');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentUser, setCurrentUser] = useState(() => {
+    if (!localStorage.getItem('menstyle_token')) return null;
     const saved = localStorage.getItem('menstyle_user');
     return saved ? JSON.parse(saved) : null; // Mặc định là null (Khách vãng lai)
   });
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isPendingCheckout, setIsPendingCheckout] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
-    return localStorage.getItem('menstyle_admin_auth') === 'true';
+    try { return JSON.parse(localStorage.getItem('menstyle_user') || 'null')?.role === 'admin'; } catch { return false; }
   });
+
+  useEffect(() => {
+    if (!localStorage.getItem('menstyle_token')) return;
+    axiosInstance.get('/auth/me').then(({ data }) => {
+      const user = data.data;
+      setCurrentUser(user);
+      setIsAdminLoggedIn(user.role === 'admin');
+      localStorage.setItem('menstyle_user', JSON.stringify(user));
+    }).catch(() => {
+      localStorage.removeItem('menstyle_token');
+      localStorage.removeItem('menstyle_user');
+      setCurrentUser(null);
+      setIsAdminLoggedIn(false);
+    });
+  }, []);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -282,9 +282,10 @@ const isTryingAdmin =
     if (!isAdminLoggedIn) {
       return (
         <AdminLogin 
-          onLoginSuccess={() => {
+          onLoginSuccess={(user) => {
+            setCurrentUser(user);
+            localStorage.setItem('menstyle_user', JSON.stringify(user));
             setIsAdminLoggedIn(true);
-            localStorage.setItem('menstyle_admin_auth', 'true');
           }}
           onBackToClient={() => {
             navigate('/');
@@ -308,7 +309,9 @@ const isTryingAdmin =
         }}
         onLogout={() => {
           setIsAdminLoggedIn(false);
-          localStorage.removeItem('menstyle_admin_auth');
+          localStorage.removeItem('menstyle_token');
+          localStorage.removeItem('menstyle_user');
+          setCurrentUser(null);
         }}
       />
     );
@@ -362,27 +365,6 @@ const isTryingAdmin =
             onOrderSuccess={(orderData) => {
               addToast('Đặt Hàng Thành Công', `Mã đơn hàng: ${orderData.orderCode}. Đơn hàng đã được đồng bộ vào hệ thống quản trị!`);
               
-              // Lưu vào danh sách đơn hàng toàn hệ thống
-              const existingOrders = JSON.parse(localStorage.getItem('menstyle_orders') || '[]');
-              const newOrder = {
-                id: orderData.orderCode,
-                customer: orderData.fullName || currentUser?.name || 'Quý Ông Khách Hàng',
-                email: orderData.email || currentUser?.email || '',
-                phone: orderData.phone || '',
-                address: `${orderData.address}, ${orderData.district ? orderData.district + ', ' : ''}${orderData.province}`,
-                items: orderData.cartItems.map(i => `${i.name} (${i.selectedSize || 'L'}, x${i.quantity})`).join(', '),
-                cartItems: orderData.cartItems,
-                total: orderData.grandTotal,
-                paymentMethod: orderData.paymentMethod,
-                paymentStatus: orderData.paymentMethod === 'cod' ? 'Chưa thanh toán' : 'Đã thanh toán (Chờ khớp)',
-                status: 'pending',
-                statusText: 'Chờ xác nhận',
-                date: orderData.createdAt
-              };
-              
-              const updatedOrders = [newOrder, ...existingOrders];
-              localStorage.setItem('menstyle_orders', JSON.stringify(updatedOrders));
-
               setCartItems([]);
               localStorage.removeItem('menstyle_cart');
               setCurrentTab(currentUser ? 'profile' : 'home');
@@ -392,9 +374,12 @@ const isTryingAdmin =
           /* TRANG PROFILE & LỊCH SỬ ĐƠN HÀNG (TUẦN 3) */
           <UserProfilePage 
             user={currentUser}
+            onReorder={(items) => { setCartItems(items); localStorage.setItem('menstyle_cart', JSON.stringify(items)); setCurrentTab('checkout'); }}
             onBackToShopping={() => setCurrentTab('home')}
             onLogout={() => {
               setCurrentUser(null);
+              setIsAdminLoggedIn(false);
+              localStorage.removeItem('menstyle_token');
               localStorage.removeItem('menstyle_user');
               setCurrentTab('home');
               addToast('Đã Đăng Xuất', 'Bạn đã quay trở lại giao diện khách vãng lai.', 'info');
@@ -669,6 +654,7 @@ const isTryingAdmin =
         onSelectProduct={handleOpenDetail}
         currentUser={currentUser}
         onRequireAuth={() => handleOpenAiFeature(() => {}, 'Trợ Lý Chatbot AI Stylist')}
+        onAddMultipleToCart={handleAddMultipleToCart}
       />
 
       {/* 9.1. Modal AI Smart Outfit Stylist (Gợi ý trọn bộ set đồ theo hoàn cảnh) */}

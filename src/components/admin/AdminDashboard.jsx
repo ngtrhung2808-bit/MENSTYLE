@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { MOCK_PRODUCTS, CATEGORIES } from '../../data/mockProducts';
+import axiosInstance from '../../api/axiosInstance';
 
 export const AdminDashboard = ({ 
   onBackToClient, 
@@ -70,19 +71,24 @@ export const AdminDashboard = ({
   // Tìm kiếm đơn hàng
   const [orderSearch, setOrderSearch] = useState('');
 
-  // Danh sách đơn hàng đồng bộ thời gian thực từ Khách hàng (Làm sạch toàn bộ dữ liệu ảo)
-  const [ordersList, setOrdersList] = useState(() => {
-    const saved = localStorage.getItem('menstyle_orders');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) return parsed;
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    return [];
-  });
+  const [ordersList, setOrdersList] = useState([]);
+  const [ordersError, setOrdersError] = useState('');
+
+  const loadOrders = async () => {
+    try {
+      const { data } = await axiosInstance.get('/orders/admin');
+      setOrdersList((data.data || []).map((order) => ({
+        ...order, id: order._id || order.id, orderCode: order.orderCode,
+        customer: order.customerInfo?.fullName || '', email: order.customerInfo?.email || '', phone: order.customerInfo?.phone || '',
+        items: (order.items || []).map((item) => `${item.name} (${item.selectedSize}, x${item.quantity})`).join(', '),
+        total: order.grandTotal, status: order.orderStatus, statusText: ({ pending: 'Chờ xác nhận', confirmed: 'Đã xác nhận', processing: 'Đang xử lý', delivering: 'Đang giao', completed: 'Hoàn thành', cancelled: 'Đã hủy' })[order.orderStatus] || order.orderStatus,
+        date: new Date(order.createdAt).toLocaleDateString('vi-VN'),
+      })));
+      setOrdersError('');
+    } catch (error) { setOrdersError(error.response?.data?.message || 'Không thể tải đơn hàng từ Backend.'); }
+  };
+
+  useEffect(() => { loadOrders(); }, []);
 
   // Danh sách khách hàng đã đăng ký từ hệ thống
   const [customersList, setCustomersList] = useState(() => {
@@ -234,23 +240,14 @@ export const AdminDashboard = ({
   };
 
   // ================= CÁC TÍNH NĂNG THAO TÁC ĐƠN HÀNG =================
-  const handleUpdateOrderStatus = (orderId, newStatus) => {
-    let statusText = 'Chờ xác nhận';
-    if (newStatus === 'delivering') statusText = 'Đang giao';
-    if (newStatus === 'completed') statusText = 'Hoàn thành';
-    if (newStatus === 'cancelled') statusText = 'Đã hủy';
-
-    const updated = ordersList.map(o => o.id === orderId ? { ...o, status: newStatus, statusText } : o);
-    setOrdersList(updated);
-    localStorage.setItem('menstyle_orders', JSON.stringify(updated));
+  const handleUpdateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await axiosInstance.patch(`/orders/admin/${orderId}/status`, { status: newStatus });
+      await loadOrders();
+    } catch (error) { setOrdersError(error.response?.data?.message || 'Không thể cập nhật trạng thái đơn hàng.'); }
   };
 
-  const handleClearAllOrders = () => {
-    if (window.confirm('Quý khách có chắc chắn muốn làm sạch toàn bộ đơn hàng trong hệ thống không?')) {
-      setOrdersList([]);
-      localStorage.removeItem('menstyle_orders');
-    }
-  };
+
 
   // Lọc sản phẩm theo từ khóa và danh mục
   const filteredAdminProducts = adminProducts.filter(p => {
@@ -573,6 +570,7 @@ export const AdminDashboard = ({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-100">
+                      {ordersError && <tr><td colSpan="7" className="p-3 text-rose-600">{ordersError}</td></tr>}
                       {ordersList.length === 0 ? (
                         <tr>
                           <td colSpan="6" className="p-8 text-center text-neutral-400">
@@ -582,7 +580,7 @@ export const AdminDashboard = ({
                       ) : (
                         ordersList.slice(0, 5).map((ord) => (
                           <tr key={ord.id} className="hover:bg-neutral-50/70 transition">
-                            <td className="p-4 font-bold text-neutral-900">{ord.id}</td>
+                            <td className="p-4 font-bold text-neutral-900">{ord.orderCode || ord.id}</td>
                             <td className="p-4 font-semibold text-neutral-800">{ord.customer}</td>
                             <td className="p-4 text-neutral-600 max-w-xs truncate">{ord.items}</td>
                             <td className="p-4 font-bold text-neutral-950">{formatPrice(ord.total)}</td>
@@ -736,16 +734,7 @@ export const AdminDashboard = ({
                       className="pl-8 pr-3 py-1.5 border border-neutral-200 rounded-xl text-xs outline-none focus:border-neutral-950"
                     />
                   </div>
-                  {ordersList.length > 0 && (
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={handleClearAllOrders}
-                      className="text-xs rounded-xl font-bold text-rose-600 hover:bg-rose-50 border-rose-200 flex items-center gap-1 cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Xóa tất cả đơn
-                    </Button>
-                  )}
+                  <Button size="sm" variant="outline" onClick={loadOrders} className="text-xs rounded-xl font-bold">Làm mới</Button>
                 </div>
               </div>
 
@@ -774,7 +763,7 @@ export const AdminDashboard = ({
                     ) : (
                       filteredOrdersList.map((ord) => (
                         <tr key={ord.id} className="hover:bg-neutral-50/70 transition">
-                          <td className="p-4 font-bold text-neutral-900">{ord.id}</td>
+                          <td className="p-4 font-bold text-neutral-900">{ord.orderCode || ord.id}</td>
                           <td className="p-4 font-semibold text-neutral-800">
                             <div>{ord.customer}</div>
                             {ord.phone && <div className="text-[11px] text-neutral-400 font-normal">{ord.phone}</div>}

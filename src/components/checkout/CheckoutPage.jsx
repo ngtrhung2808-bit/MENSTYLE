@@ -23,9 +23,9 @@ import {
   Minus
 } from 'lucide-react';
 import { Button } from '../common/Button';
-import { validateVoucher, AVAILABLE_VOUCHERS } from '../../data/voucherConfig';
-import { EWalletGatewayModal } from './EWalletGatewayModal';
+import { AVAILABLE_VOUCHERS } from '../../data/voucherConfig';
 import { VIETNAM_PROVINCES } from '../../data/vietnamLocations';
+import axiosInstance from '../../api/axiosInstance';
 
 export const CheckoutPage = ({ 
   cartItems = [], 
@@ -152,18 +152,14 @@ export const CheckoutPage = ({
   const [copiedField, setCopiedField] = useState(null);
 
   // State Modal Cổng Thanh Toán Ví Điện Tử
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
-  const [pendingOrderPayload, setPendingOrderPayload] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formatPrice = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
 
   const subTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shippingFee = subTotal >= 500000 || subTotal === 0 ? 0 : 30000;
   
-  // Ưu đãi giảm 15.000đ khi thanh toán qua ví điện tử
-  const isEWallet = ['momo', 'zalopay', 'vnpay'].includes(formData.paymentMethod);
-  const paymentMethodDiscount = isEWallet ? 15000 : 0;
-  const grandTotal = Math.max(0, subTotal + shippingFee - appliedDiscount - paymentMethodDiscount);
+  const grandTotal = Math.max(0, subTotal + shippingFee - appliedDiscount);
 
   const handleCopy = (text, fieldName) => {
     navigator.clipboard.writeText(text);
@@ -194,7 +190,7 @@ export const CheckoutPage = ({
     return Object.keys(errs).length === 0;
   };
 
-  const handleApplyCoupon = (e) => {
+  const handleApplyCoupon = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     if (!formData.couponCode.trim()) {
       setCouponError('Vui lòng nhập mã voucher!');
@@ -202,19 +198,20 @@ export const CheckoutPage = ({
       return;
     }
 
-    const result = validateVoucher(formData.couponCode, subTotal);
-    if (result.valid) {
-      setAppliedDiscount(result.discount);
-      setCouponSuccess(result.message);
+    try {
+      const response = await axiosInstance.post('/coupons/validate', { code: formData.couponCode.trim().toUpperCase(), subTotal });
+      const result = response.data?.data;
+      setAppliedDiscount(Number(result?.discountAmount) || 0);
+      setCouponSuccess(`Áp dụng thành công mã ${formData.couponCode.trim().toUpperCase()}: Giảm ${formatPrice(result?.discountAmount || 0)}!`);
       setCouponError('');
-    } else {
-      setCouponError(result.message);
+    } catch (error) {
+      setCouponError(error.response?.data?.message || 'Không thể xác thực mã giảm giá. Vui lòng thử lại.');
       setCouponSuccess('');
       setAppliedDiscount(0);
     }
   };
 
-  const handleSubmitOrder = (e) => {
+  const handleSubmitOrder = async (e) => {
     e.preventDefault();
     if (!currentUser) {
       if (onRequireAuth) onRequireAuth();
@@ -226,24 +223,30 @@ export const CheckoutPage = ({
         return;
       }
 
-      const orderPayload = {
-        ...formData,
-        cartItems,
-        total: grandTotal,
-        grandTotal: grandTotal,
-        orderCode: 'MS-' + Math.floor(100000 + Math.random() * 900000),
-        createdAt: new Date().toLocaleDateString('vi-VN')
-      };
-
-      // Nếu chọn Ví điện tử (MoMo, ZaloPay, VNPAY) -> Mở cổng thanh toán liên kết
-      if (['momo', 'zalopay', 'vnpay'].includes(formData.paymentMethod)) {
-        setPendingOrderPayload(orderPayload);
-        setIsWalletModalOpen(true);
-        return;
-      }
-
-      if (onOrderSuccess) {
-        onOrderSuccess(orderPayload);
+      setIsSubmitting(true);
+      try {
+        const items = cartItems.map((item) => ({
+          productId: String(item._id || item.productId || item.id),
+          variantId: item.selectedVariantId || item.variantId || null,
+          name: item.name,
+          selectedSize: String(item.selectedSize || item.sizes?.[0] || 'L'),
+          selectedColor: String(item.selectedColor || item.colors?.[0]?.name || 'Mặc định'),
+          price: Number(item.price), quantity: Number(item.quantity),
+          image: item.images?.[0] || item.image || '',
+        }));
+        const response = await axiosInstance.post('/orders', {
+          fullName: formData.fullName, phone: formData.phone, email: formData.email,
+          address: formData.address, province: formData.province, district: formData.district,
+          note: formData.note, paymentMethod: formData.paymentMethod,
+          couponCode: formData.couponCode.trim().toUpperCase(), items,
+        });
+        const order = response.data?.data;
+        if (!order?.orderCode) throw new Error('Backend không trả về mã đơn hàng.');
+        onOrderSuccess?.({ orderCode: order.orderCode, grandTotal: order.grandTotal, createdAt: order.createdAt, order });
+      } catch (error) {
+        setCouponError(error.response?.data?.message || error.message || 'Không thể tạo đơn hàng. Vui lòng thử lại.');
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -611,7 +614,6 @@ export const CheckoutPage = ({
                     </div>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">-15.000đ</span>
               </label>
 
               {/* Ví ZaloPay */}
@@ -634,7 +636,6 @@ export const CheckoutPage = ({
                     </div>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">-15.000đ</span>
               </label>
 
               {/* VNPAY */}
@@ -657,11 +658,10 @@ export const CheckoutPage = ({
                     </div>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">-15.000đ</span>
               </label>
             </div>
 
-            {/* KHUNG HƯỚNG DẪN THANH TOÁN CHI TIẾT TƯƠNG TÁC */}
+            {/* Payment instructions are informational until a gateway confirms payment. */}
             {formData.paymentMethod === 'banking' && (
               <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-amber-50/50 border border-amber-200 space-y-4 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between">
@@ -720,19 +720,16 @@ export const CheckoutPage = ({
               </div>
             )}
 
-            {isEWallet && (
+            {['momo', 'zalopay', 'vnpay'].includes(formData.paymentMethod) && (
               <div className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-neutral-50 to-amber-50/30 border border-neutral-200 space-y-3 animate-in fade-in duration-200 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-neutral-900 flex items-center gap-1.5">
                     <Smartphone className="w-4 h-4 text-amber-600" />
                     Cổng liên kết thanh toán: {formData.paymentMethod === 'momo' ? 'Ví MoMo' : formData.paymentMethod === 'zalopay' ? 'Ví ZaloPay' : 'Cổng VNPAY-QR'}
                   </span>
-                  <span className="text-rose-600 font-bold bg-rose-100 px-2 py-0.5 rounded-full text-[11px]">
-                    Ưu đãi -15.000đ
-                  </span>
                 </div>
                 <p className="text-neutral-600 leading-relaxed">
-                  Khi bấm <strong>"Xác Nhận Đặt Hàng Ngay"</strong>, hệ thống sẽ mở trực tiếp giao diện cổng thanh toán và đường dẫn đăng nhập ứng dụng <strong>{formData.paymentMethod === 'momo' ? 'MoMo' : formData.paymentMethod === 'zalopay' ? 'ZaloPay' : 'VNPAY'}</strong> để bạn quét mã hoặc thanh toán trên App an toàn.
+                  Đơn hàng sẽ được ghi nhận với trạng thái thanh toán chờ xác nhận. Kết nối thanh toán tự động với {formData.paymentMethod === 'momo' ? 'MoMo' : formData.paymentMethod === 'zalopay' ? 'ZaloPay' : 'VNPAY'} chưa được cấu hình.
                 </p>
                 <div className="flex items-center justify-between pt-1 text-[11px] text-neutral-500">
                   <span className="flex items-center gap-1">
@@ -883,16 +880,16 @@ export const CheckoutPage = ({
                     type="button"
                     onClick={() => {
                       setFormData(prev => ({ ...prev, couponCode: v.code }));
-                      const res = validateVoucher(v.code, subTotal);
-                      if (res.valid) {
-                        setAppliedDiscount(res.discount);
-                        setCouponSuccess(res.message);
+                      axiosInstance.post('/coupons/validate', { code: v.code, subTotal }).then(({ data }) => {
+                        const discount = Number(data?.data?.discountAmount) || 0;
+                        setAppliedDiscount(discount);
+                        setCouponSuccess(`Áp dụng thành công mã ${v.code}: Giảm ${formatPrice(discount)}!`);
                         setCouponError('');
-                      } else {
-                        setCouponError(res.message);
+                      }).catch((error) => {
+                        setCouponError(error.response?.data?.message || 'Mã này chưa được cấu hình hoặc không áp dụng được.');
                         setCouponSuccess('');
                         setAppliedDiscount(0);
-                      }
+                      });
                     }}
                     className={`text-[10px] font-bold px-2 py-0.5 rounded-md border transition cursor-pointer ${
                       formData.couponCode.toUpperCase() === v.code
@@ -935,12 +932,6 @@ export const CheckoutPage = ({
                   <span>-{formatPrice(appliedDiscount)}</span>
                 </div>
               )}
-              {paymentMethodDiscount > 0 && (
-                <div className="flex justify-between text-rose-600 font-semibold">
-                  <span>Ưu đãi VNPay / MoMo:</span>
-                  <span>-{formatPrice(paymentMethodDiscount)}</span>
-                </div>
-              )}
               <div className="flex justify-between text-sm sm:text-base font-black text-neutral-950 pt-3 border-t border-neutral-100">
                 <span>Tổng tiền thanh toán:</span>
                 <span className="text-lg sm:text-xl text-amber-600">{formatPrice(grandTotal)}</span>
@@ -950,9 +941,10 @@ export const CheckoutPage = ({
             {/* Nút Đặt Hàng */}
             <Button
               onClick={handleSubmitOrder}
+              disabled={isSubmitting}
               className="w-full justify-center bg-neutral-950 hover:bg-amber-600 text-white font-bold py-3.5 rounded-xl mt-6 shadow-md text-sm transition"
             >
-              Xác Nhận Đặt Hàng Ngay
+              {isSubmitting ? 'Đang tạo đơn hàng...' : 'Xác Nhận Đặt Hàng Ngay'}
             </Button>
 
             <div className="mt-4 flex items-center justify-center gap-1.5 text-[11px] text-neutral-500">
@@ -963,25 +955,6 @@ export const CheckoutPage = ({
         </div>
       </div>
 
-      {/* Cổng thanh toán liên kết Ví Điện Tử (MoMo, ZaloPay, VNPAY) */}
-      <EWalletGatewayModal 
-        isOpen={isWalletModalOpen}
-        onClose={() => setIsWalletModalOpen(false)}
-        walletType={formData.paymentMethod}
-        orderInfo={pendingOrderPayload || {
-          orderCode: 'MS-' + Math.floor(100000 + Math.random() * 900000),
-          total: grandTotal
-        }}
-        onPaymentSuccess={() => {
-          setIsWalletModalOpen(false);
-          if (onOrderSuccess && pendingOrderPayload) {
-            onOrderSuccess({
-              ...pendingOrderPayload,
-              paymentStatus: 'Đã thanh toán (Ví điện tử)'
-            });
-          }
-        }}
-      />
     </div>
   );
 };
