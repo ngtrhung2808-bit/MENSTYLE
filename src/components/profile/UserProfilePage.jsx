@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   User, 
   Package, 
@@ -15,8 +15,9 @@ import {
   X
 } from 'lucide-react';
 import { Button } from '../common/Button';
+import axiosInstance from '../../api/axiosInstance';
 
-export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
+export const UserProfilePage = ({ onBackToShopping, user, onLogout, onReorder }) => {
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'profile' | 'password'
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
   const [selectedOrderForReturn, setSelectedOrderForReturn] = useState(null);
@@ -37,49 +38,25 @@ export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
 
   const [profileSuccess, setProfileSuccess] = useState('');
 
-  // Lịch sử đơn hàng đồng bộ thời gian thực từ hệ thống
-  const [orders, setOrders] = useState(() => {
-    const saved = localStorage.getItem('menstyle_orders');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Lọc các đơn của tài khoản hiện tại, hoặc hiển thị các đơn mới đặt
-          const userOrders = parsed.filter(o => !o.email || !user?.email || o.email.toLowerCase() === user.email.toLowerCase());
-          if (userOrders.length > 0) {
-            return userOrders.map(o => ({
-              id: o.id,
-              date: o.date,
-              total: o.total,
-              status: o.status || 'delivering',
-              statusLabel: o.statusText || 'Đang xử lý',
-              items: (o.cartItems && o.cartItems.length > 0) ? o.cartItems.map(i => ({
-                name: i.name,
-                size: i.selectedSize || 'L',
-                color: i.selectedColor || 'Mặc định',
-                price: i.price,
-                quantity: i.quantity,
-                image: i.images?.[0] || i.image || 'https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg'
-              })) : [
-                {
-                  name: o.items || 'Sản phẩm thời trang MENSTYLE',
-                  size: 'L',
-                  color: 'Tiêu chuẩn',
-                  price: o.total,
-                  quantity: 1,
-                  image: 'https://product.hstatic.net/200000690725/product/47f06833-d647-42a7-a354-f43b10f7e684_80df1a6a0d944bd08335670341d1aa59.jpg'
-                }
-              ]
-            }));
-          }
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    return [];
-  });
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [ordersError, setOrdersError] = useState('');
 
+  useEffect(() => {
+    let active = true;
+    setOrdersLoading(true);
+    axiosInstance.get('/orders/my-orders').then(({ data }) => {
+      if (!active) return;
+      setOrders((data.data || []).map((order) => ({
+        id: order.orderCode, status: order.orderStatus, statusLabel: ({ pending: 'Chờ xác nhận', confirmed: 'Đã xác nhận', processing: 'Đang xử lý', delivering: 'Đang giao', completed: 'Hoàn thành', cancelled: 'Đã hủy' })[order.orderStatus] || order.orderStatus,
+        date: new Date(order.createdAt).toLocaleDateString('vi-VN'), total: order.grandTotal,
+        items: (order.items || []).map((item) => ({ name: item.name, size: item.selectedSize || 'L', color: item.selectedColor || 'Mặc định', price: item.price, quantity: item.quantity, image: item.image || '' })),
+        cartItems: (order.items || []).map((item) => ({ id: String(item.productId), _id: String(item.productId), productId: String(item.productId), selectedVariantId: item.variantId || null, name: item.name, selectedSize: item.selectedSize || 'L', selectedColor: item.selectedColor || 'Mặc định', price: item.price, quantity: item.quantity, image: item.image || '' })),
+      })));
+    }).catch((error) => { if (active) setOrdersError(error.response?.data?.message || 'Không thể tải lịch sử đơn hàng.'); })
+      .finally(() => { if (active) setOrdersLoading(false); });
+    return () => { active = false; };
+  }, []);
 
   const formatPrice = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
 
@@ -186,6 +163,9 @@ export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
                 <span className="text-xs text-neutral-500">Tất cả thời gian</span>
               </div>
 
+              {ordersLoading && <p className="text-sm text-neutral-500">Đang tải lịch sử đơn hàng...</p>}
+              {ordersError && <p className="text-sm text-rose-600">{ordersError}</p>}
+              {!ordersLoading && !ordersError && orders.length === 0 && <p className="text-sm text-neutral-500">Bạn chưa có đơn hàng nào.</p>}
               {orders.map((order) => (
                 <div key={order.id} className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-2xs space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-neutral-100">
@@ -253,7 +233,7 @@ export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
                         <Button variant="outline" size="sm" className="rounded-lg text-xs flex-1 sm:flex-none">
                           Xem chi tiết
                         </Button>
-                        <Button variant="primary" size="sm" className="rounded-lg text-xs bg-neutral-950 text-white flex-1 sm:flex-none">
+                        <Button onClick={() => onReorder?.(order.cartItems)} variant="primary" size="sm" className="rounded-lg text-xs bg-neutral-950 text-white flex-1 sm:flex-none">
                           Mua lại đơn này
                         </Button>
                       </div>

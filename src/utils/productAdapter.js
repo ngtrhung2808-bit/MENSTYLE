@@ -77,8 +77,22 @@ export const normalizeProduct = (source) => {
 };
 
 export const extractProducts = (responseData) => {
-  const candidates = [responseData?.data, responseData?.products, responseData];
-  const products = candidates.find(Array.isArray);
+  // The backend returns an object with a `data` field that contains the product array.
+  // Additionally, older APIs may return the array directly or under `products`.
+  const possibleArrays = [];
+  if (Array.isArray(responseData)) {
+    possibleArrays.push(responseData);
+  }
+  if (Array.isArray(responseData?.data)) {
+    possibleArrays.push(responseData.data);
+  }
+  if (Array.isArray(responseData?.data?.data)) {
+    possibleArrays.push(responseData.data.data);
+  }
+  if (Array.isArray(responseData?.products)) {
+    possibleArrays.push(responseData.products);
+  }
+  const products = possibleArrays.find(Boolean);
   if (!products) {
     throw new Error('API không trả về danh sách sản phẩm hợp lệ.');
   }

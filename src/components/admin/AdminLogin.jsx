@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Lock, User, ShieldCheck, ArrowLeft, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { Button } from '../common/Button';
+import axiosInstance from '../../api/axiosInstance';
 
 export const AdminLogin = ({ onLoginSuccess, onBackToClient }) => {
   const [username, setUsername] = useState('');
@@ -9,21 +10,21 @@ export const AdminLogin = ({ onLoginSuccess, onBackToClient }) => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    setTimeout(() => {
-      // Tài khoản & Mật khẩu mặc định dành cho Admin Local
-      if (username.trim() === 'admin' && password === 'admin123') {
-        setIsLoading(false);
-        onLoginSuccess();
-      } else {
-        setIsLoading(false);
-        setError('Tài khoản hoặc mật khẩu quản trị không chính xác!');
-      }
-    }, 600);
+    try {
+      const { data } = await axiosInstance.post('/auth/login', { email: username.trim(), password });
+      if (data.data?.user?.role !== 'admin') throw new Error('Tài khoản này không có quyền quản trị.');
+      localStorage.setItem('menstyle_token', data.data.token);
+      onLoginSuccess(data.data.user);
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Không thể đăng nhập quản trị.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -62,13 +63,6 @@ export const AdminLogin = ({ onLoginSuccess, onBackToClient }) => {
           </div>
         )}
 
-        {/* Gợi ý tài khoản local */}
-        <div className="mb-6 p-3 rounded-xl bg-neutral-800/80 border border-neutral-700 text-[11px] text-neutral-300 space-y-0.5">
-          <p className="font-bold text-amber-400">🔑 Tài khoản đăng nhập nội bộ (Local):</p>
-          <p>• Tên đăng nhập: <code className="text-white font-mono bg-neutral-900 px-1.5 py-0.5 rounded">admin</code></p>
-          <p>• Mật khẩu: <code className="text-white font-mono bg-neutral-900 px-1.5 py-0.5 rounded">admin123</code></p>
-        </div>
-
         {/* Form Đăng Nhập */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -81,7 +75,7 @@ export const AdminLogin = ({ onLoginSuccess, onBackToClient }) => {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Nhập tên quản trị viên..."
+                placeholder="Nhập email quản trị viên..."
                 className="w-full bg-neutral-800 border border-neutral-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-neutral-500 outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition"
                 required
               />

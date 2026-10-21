@@ -11,13 +11,17 @@ import {
   Move,
   RotateCcw
 } from 'lucide-react';
-import { Button } from '../common/Button';
+import { Camera } from 'lucide-react';
+import { VisualSearchModal } from '../ai/VisualSearchModal';
+import { SmartOutfitStylistModal } from '../ai/SmartOutfitStylistModal';
+// // import { Button } from '../common/Button'; // Removed unused Button import // Removed unused Button import
 import { generateStylistChatReply } from '../../services/geminiService';
 
 export const ChatbotWidget = ({ products = [], onSelectProduct, currentUser, onRequireAuth }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isWidgetExpanded, setIsWidgetExpanded] = useState(true); // Mở/đóng cụm nút liên hệ
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isVisualSearchOpen, setIsVisualSearchOpen] = useState(false);
+  const [isOutfitModalOpen, setIsOutfitModalOpen] = useState(false);
   
   // Tọa độ vị trí kéo thả của cửa sổ chat (mặc định null: tự căn góc dưới phải)
   const [position, setPosition] = useState(null);
@@ -34,6 +38,8 @@ export const ChatbotWidget = ({ products = [], onSelectProduct, currentUser, onR
   ]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
   const messagesEndRef = useRef(null);
 
   // Kéo thả cửa sổ chat khắp màn hình
@@ -310,6 +316,22 @@ export const ChatbotWidget = ({ products = [], onSelectProduct, currentUser, onR
               placeholder="Hỏi Stylist AI về cách phối đồ, chọn size..." 
               className="flex-1 bg-neutral-100 text-xs sm:text-sm px-3.5 py-2.5 rounded-xl outline-none focus:ring-1 focus:ring-neutral-950 focus:bg-white transition"
             />
+            <button
+              type="button"
+              onClick={() => setIsVisualSearchOpen(true)}
+              className="p-2 rounded-full bg-neutral-100 hover:bg-amber-50 text-neutral-600"
+              title="Tìm kiếm bằng ảnh"
+            >
+              <Camera className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsOutfitModalOpen(true)}
+              className="p-2 rounded-full bg-neutral-100 hover:bg-amber-50 text-neutral-600"
+              title="AI Stylist tư vấn outfit"
+            >
+              <Sparkles className="w-5 h-5" />
+            </button>
             <button 
               type="submit" 
               disabled={loading || !inputValue.trim()}
@@ -320,6 +342,19 @@ export const ChatbotWidget = ({ products = [], onSelectProduct, currentUser, onR
           </form>
         </div>
       )}
+
+      {/* Modals for Visual Search and Smart Outfit Stylist */}
+      <VisualSearchModal
+        isOpen={isVisualSearchOpen}
+        onClose={() => setIsVisualSearchOpen(false)}
+        products={products}
+        onSelectProduct={onSelectProduct}
+      />
+      <SmartOutfitStylistModal
+        isOpen={isOutfitModalOpen}
+        onClose={() => setIsOutfitModalOpen(false)}
+        products={products}
+      />
 
       {/* ================= CỤM NÚT TRÒN NỔI Ở GÓC THEO ĐÚNG ẢNH MẪU ================= */}
       <div className="fixed bottom-6 right-5 sm:right-6 z-40 flex flex-col items-center gap-2.5 select-none">

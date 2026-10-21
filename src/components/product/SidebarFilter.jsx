@@ -92,7 +92,7 @@ export const SidebarFilter = ({
               min="200000" 
               max={maxPrice}
               step="50000"
-              value={priceRange}
+              value={priceRange ?? maxPrice}
               onChange={(e) => onPriceChange(Number(e.target.value))}
               className="w-full accent-neutral-950 cursor-pointer h-1.5 bg-neutral-200 rounded-lg appearance-none"
             />
