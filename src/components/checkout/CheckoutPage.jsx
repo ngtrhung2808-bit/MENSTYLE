@@ -205,8 +205,8 @@ export const CheckoutPage = ({
       setAppliedDiscount(result.discount);
       setCouponSuccess(result.message);
       setCouponError('');
-    } catch (error) {
-      setCouponError(error.response?.data?.message || 'Không thể xác thực mã giảm giá. Vui lòng thử lại.');
+    } else {
+      setCouponError(result.message || 'Mã voucher không hợp lệ.');
       setCouponSuccess('');
       setAppliedDiscount(0);
     }
@@ -887,11 +887,11 @@ export const CheckoutPage = ({
                         setAppliedDiscount(res.discount);
                         setCouponSuccess(res.message);
                         setCouponError('');
-                      }).catch((error) => {
-                        setCouponError(error.response?.data?.message || 'Mã này chưa được cấu hình hoặc không áp dụng được.');
-                        setCouponSuccess('');
+                      } else {
+                        setCouponError(res.message || "Mã không hợp lệ");
+                        setCouponSuccess("");
                         setAppliedDiscount(0);
-                      });
+                      }
                     }}
                     className={`text-[10px] font-bold px-2 py-0.5 rounded-md border transition cursor-pointer ${
                       formData.couponCode.toUpperCase() === v.code
