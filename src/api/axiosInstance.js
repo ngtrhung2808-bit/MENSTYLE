@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // Tạo một Axios Instance dùng chung
-const baseUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || 'http://localhost:5001/api';
+const baseUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || 'http://localhost:5000/api';
 const axiosInstance = axios.create({
   // Base URL for API calls – works both in Vite dev server and when run via Node.
   baseURL: baseUrl,

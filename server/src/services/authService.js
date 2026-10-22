@@ -41,9 +41,10 @@ export const registerUser = async (data) => {
 
 export const loginUser = async (emailOrUsername, password) => {
   // Support both email login and local admin login (username: 'admin')
-  const query = emailOrUsername.toLowerCase() === 'admin'
-    ? { role: 'admin' }
-    : { email: emailOrUsername.toLowerCase() };
+  const cleanInput = (emailOrUsername || '').trim().toLowerCase();
+  const query = (cleanInput === 'admin' || cleanInput === 'admin@menstyle.vn')
+    ? { role: { $in: ['admin', 'super_admin'] } }
+    : { email: cleanInput };
 
   const user = await User.findOne(query).select('+password');
   if (!user) {
