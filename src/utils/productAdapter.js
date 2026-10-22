@@ -26,7 +26,7 @@ const getImageUrl = (image) => {
 const CATEGORY_MAP = {
   '6ad2fb1e8fcbd7a1d5310c5f': 'Áo Polo',
   '6ad2fb1e8fcbd7a1d5310c60': 'Áo Sơ Mi',
-  '6ad2fb1e8fcbd7a1d5310c61': 'Quần Âu & Khaki',
+  '6ad2fb1e8fcbd7a1d5310c61': 'Quần Âu Công Sở',
   '6ad2fb1e8fcbd7a1d5310c62': 'Áo Khoác & Blazer'
 };
 
@@ -42,15 +42,30 @@ const normalizeCategoryName = (rawCat, productName = '') => {
     return CATEGORY_MAP[strCat];
   }
 
+  // Nếu chuỗi danh mục đã chuẩn thì giữ nguyên
+  const validCats = [
+    'Áo Polo',
+    'Áo Sơ Mi',
+    'Áo Khoác & Blazer',
+    'Quần Âu Công Sở',
+    'Quần Jeans & Khaki',
+    'Quần Short',
+    'Phụ Kiện'
+  ];
+  const exact = validCats.find(c => c.toLowerCase() === strCat.toLowerCase());
+  if (exact) return exact;
+
   const lowerCat = strCat.toLowerCase();
   const lowerName = String(productName || '').toLowerCase();
 
   if (lowerCat.includes('polo') || lowerName.includes('polo')) return 'Áo Polo';
   if (lowerCat.includes('sơ mi') || lowerCat.includes('so mi') || lowerName.includes('sơ mi') || lowerName.includes('so mi')) return 'Áo Sơ Mi';
   if (lowerCat.includes('khoác') || lowerCat.includes('khoac') || lowerCat.includes('blazer') || lowerName.includes('khoác') || lowerName.includes('khoac') || lowerName.includes('blazer') || lowerName.includes('jacket')) return 'Áo Khoác & Blazer';
-  if (lowerCat.includes('quần') || lowerCat.includes('quan') || lowerCat.includes('jogger') || lowerName.includes('quần') || lowerName.includes('quan') || lowerName.includes('jogger')) return 'Quần Âu & Khaki';
+  if (lowerCat.includes('jeans') || lowerCat.includes('khaki') || lowerName.includes('jean') || lowerName.includes('khaki')) return 'Quần Jeans & Khaki';
+  if (lowerCat.includes('âu') || lowerCat.includes('au') || lowerCat.includes('tây') || lowerCat.includes('tay') || lowerName.includes('âu') || lowerName.includes('au') || lowerName.includes('tây')) return 'Quần Âu Công Sở';
   if (lowerCat.includes('short') || lowerName.includes('short')) return 'Quần Short';
-  if (lowerCat.includes('phụ kiện') || lowerCat.includes('phu kien')) return 'Phụ Kiện';
+  if (lowerCat.includes('quần') || lowerCat.includes('quan') || lowerCat.includes('jogger') || lowerName.includes('quần') || lowerName.includes('quan') || lowerName.includes('jogger')) return 'Quần Âu Công Sở';
+  if (lowerCat.includes('phụ kiện') || lowerCat.includes('phu kien') || lowerName.includes('thắt lưng') || lowerName.includes('that lung') || lowerName.includes('ví') || lowerName.includes('cà vạt')) return 'Phụ Kiện';
 
   return strCat || 'Khác';
 };
