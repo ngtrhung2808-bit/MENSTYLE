@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
+import voucherSyncRoutes from './routes/voucherSyncRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -48,6 +49,7 @@ export const createApp = () => {
   app.use('/api/products', productRoutes);
   app.use('/api/orders', orderRoutes);
   app.use('/api/coupons', couponRoutes);
+  app.use('/api/vouchers', voucherSyncRoutes);
   app.use('/api/chat', chatRoutes);
 
   // 404 handler for undefined routes
