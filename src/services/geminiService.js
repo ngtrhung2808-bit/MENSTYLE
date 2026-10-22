@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 
 // Lấy API Key độc quyền từ biến môi trường máy chủ (.env), tuyệt đối không để lộ ra UI hay LocalStorage
 export const getGeminiApiKey = () => {
-  const envKey = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GEMINI_API_KEY) || (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY);
+  const envKey = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || '';
   // Dọn dẹp key cũ trong localStorage nếu có để ngăn đối thủ/khách hàng F12 đánh cắp
   if (typeof localStorage !== 'undefined' && localStorage.getItem('menstyle_gemini_api_key')) {
     localStorage.removeItem('menstyle_gemini_api_key');

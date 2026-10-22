@@ -23,7 +23,7 @@ const CATEGORIES = [
     title: 'Quần Âu Công Sở',
     subTitle: 'Co Giãn • Tôn Phom Chân',
     items: 'Thiết kế lịch lãm',
-    targetCategory: 'Quần Âu Công Sở',
+    targetCategory: 'Quần Âu & Jean',
     image: 'https://cdn.hstatic.net/products/200000690725/hsbk801_cv_87b8a1c7cf094a1fa9ca9c002a7a62c8.webp'
   },
   {
@@ -31,12 +31,12 @@ const CATEGORIES = [
     title: 'Blazer & Áo Khoác',
     subTitle: 'Chuẩn Phong Độ Quý Ông',
     items: '18+ mẫu cao cấp',
-    targetCategory: 'Áo Khoác & Blazer',
+    targetCategory: 'Blazer & Suit',
     image: 'https://cdn.hstatic.net/products/200000690725/hsbk801_to_n_f0a1612b08aa46359ffec2e0d8f83319.webp'
   }
 ];
 
-export const FeaturedCategories = ({ onSelectCategory }) => {
+export const FeaturedCategories = ({ onSelectCategory, products = [], loading = false }) => {
   return (
     <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-10 sm:py-16">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-8 gap-2 sm:gap-4">
@@ -66,6 +66,10 @@ export const FeaturedCategories = ({ onSelectCategory }) => {
             <img
               src={cat.image}
               alt={cat.title}
+              onError={(event) => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = '/images/product-fallback.avif';
+              }}
               className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-108 filter brightness-95 group-hover:brightness-100"
             />
 
@@ -81,7 +85,7 @@ export const FeaturedCategories = ({ onSelectCategory }) => {
                 {cat.title}
               </h3>
               <div className="mt-2 flex items-center justify-between pt-2 border-t border-white/15 text-[11px] text-neutral-300">
-                <span>{cat.items}</span>
+                <span>{loading ? '…' : `${products.filter((product) => product.category === cat.targetCategory).length} sản phẩm`}</span>
                 <span className="text-amber-400 font-bold group-hover:translate-x-1 transition flex items-center gap-0.5">
                   Mua ngay <ArrowRight className="w-3 h-3" />
                 </span>

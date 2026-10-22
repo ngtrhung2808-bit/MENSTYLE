@@ -3,12 +3,10 @@ import { X, ShoppingBag, Check, Sparkles, Tag, CheckCircle2 } from 'lucide-react
 import { Button } from '../common/Button';
 
 export const ComboDetailModal = ({ isOpen, onClose, combo, products = [], onAddMultipleToCart }) => {
-  if (!isOpen || !combo) return null;
-
   const [added, setAdded] = useState(false);
 
   // Lấy các sản phẩm thực tế trong kho theo itemIds của Combo
-  const comboProducts = (combo.itemIds || [])
+  const comboProducts = (combo?.itemIds || [])
     .map(id => products.find(p => p.id === id))
     .filter(Boolean);
 
@@ -28,6 +26,8 @@ export const ComboDetailModal = ({ isOpen, onClose, combo, products = [], onAddM
       setSelectedVariants(initial);
     }
   }, [combo]);
+
+  if (!isOpen || !combo) return null;
 
   const handleSelectSize = (productId, size) => {
     setSelectedVariants(prev => ({

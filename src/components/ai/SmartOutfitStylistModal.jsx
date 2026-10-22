@@ -11,13 +11,13 @@ const OCCASIONS = [
 ];
 
 export const SmartOutfitStylistModal = ({ isOpen, onClose, products = [], onAddMultipleToCart }) => {
-  if (!isOpen) return null;
-
   const [selectedOccasion, setSelectedOccasion] = useState(OCCASIONS[0].label);
   const [userNote, setUserNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [outfit, setOutfit] = useState(null);
   const [addedSuccess, setAddedSuccess] = useState(false);
+
+  if (!isOpen) return null;
 
   const handleGenerate = async () => {
     setLoading(true);

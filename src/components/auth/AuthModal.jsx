@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowRight, CheckCircle2, ShieldCheck, X } from 'lucide-react';
 import { Button } from '../common/Button';
+import axiosInstance from '../../api/axiosInstance';
 
 export const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
-  if (!isOpen) return null;
-
   const [mode, setMode] = useState('login'); // 'login' | 'register'
   const [formData, setFormData] = useState({
     name: '',
@@ -14,12 +13,11 @@ export const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
   });
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    const savedAccountsStr = localStorage.getItem('menstyle_registered_users');
-    const registeredUsers = savedAccountsStr ? JSON.parse(savedAccountsStr) : [];
 
     if (mode === 'register') {
       if (!formData.name.trim()) {
@@ -35,32 +33,17 @@ export const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
         return;
       }
 
-      // Kiểm tra trùng email
-      const existing = registeredUsers.find(u => u.email.toLowerCase() === formData.email.trim().toLowerCase());
-      if (existing) {
-        setError('Email này đã được đăng ký tài khoản. Vui lòng chuyển sang Đăng nhập!');
-        return;
+      try {
+        const { data } = await axiosInstance.post('/auth/register', {
+          name: formData.name.trim(), email: formData.email.trim(), password: formData.password,
+        });
+        const result = data.data;
+        localStorage.setItem('menstyle_token', result.token);
+        onLoginSuccess(result.user);
+        onClose();
+      } catch (error) {
+        setError(error.response?.data?.message || 'Không thể tạo tài khoản. Vui lòng thử lại.');
       }
-
-      // Tạo tài khoản mới và lưu vào danh sách
-      const newUser = {
-        id: 'USER-' + Date.now(),
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        password: formData.password,
-        phone: '',
-        address: '',
-        memberLevel: 'Thành Viên Bạc',
-        points: 100,
-        createdAt: new Date().toLocaleDateString('vi-VN')
-      };
-
-      registeredUsers.push(newUser);
-      localStorage.setItem('menstyle_registered_users', JSON.stringify(registeredUsers));
-
-      // Đăng nhập ngay sau khi đăng ký
-      onLoginSuccess(newUser);
-      onClose();
       return;
     }
 
@@ -70,29 +53,17 @@ export const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
       return;
     }
 
-    const foundUser = registeredUsers.find(
-      u => u.email.toLowerCase() === formData.email.trim().toLowerCase()
-    );
-
-    if (foundUser) {
-      if (foundUser.password !== formData.password) {
-        setError('Mật khẩu không chính xác. Vui lòng thử lại!');
-        return;
-      }
-      onLoginSuccess(foundUser);
-    } else {
-      // Cho phép đăng nhập linh hoạt hoặc đăng nhập thành công ngay với email mới
-      const defaultUser = {
-        id: 'USER-' + Date.now(),
-        name: formData.email.split('@')[0].toUpperCase(),
-        email: formData.email.trim(),
-        memberLevel: 'Thành Viên Bạc',
-        points: 100
-      };
-      onLoginSuccess(defaultUser);
+    try {
+      const { data } = await axiosInstance.post('/auth/login', {
+        email: formData.email.trim(), password: formData.password,
+      });
+      const result = data.data;
+      localStorage.setItem('menstyle_token', result.token);
+      onLoginSuccess(result.user);
+      onClose();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Không thể đăng nhập. Vui lòng thử lại.');
     }
-
-    onClose();
   };
 
   return (

@@ -2,8 +2,10 @@
 import axios from 'axios';
 
 // Tạo một Axios Instance dùng chung
+const baseUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || 'http://localhost:5001/api';
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  // Base URL for API calls – works both in Vite dev server and when run via Node.
+  baseURL: baseUrl,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -13,12 +15,14 @@ const axiosInstance = axios.create({
 // Tự động đính kèm token khi gọi API
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('menstyle_token');
+    // Guard against environments where localStorage is not available (e.g., Node scripts).
+    const token = typeof window !== 'undefined' && window.localStorage
+      ? window.localStorage.getItem('menstyle_token')
+      : undefined;
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
   (error) => Promise.reject(error)

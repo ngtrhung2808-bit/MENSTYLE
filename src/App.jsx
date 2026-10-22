@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import axiosInstance from './api/axiosInstance';
 import { useLocation, useNavigate, Routes, Route } from 'react-router-dom';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
@@ -13,8 +14,8 @@ import { CheckoutPage } from './components/checkout/CheckoutPage';
 import { UserProfilePage } from './components/profile/UserProfilePage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminLogin } from './components/admin/AdminLogin';
-import { AuthModal } from './components/auth/AuthModal';
 import { ChatbotWidget } from './components/chatbot/ChatbotWidget';
+
 import { SmartOutfitStylistModal } from './components/ai/SmartOutfitStylistModal';
 import { VisualSearchModal } from './components/ai/VisualSearchModal';
 import { BlogPage } from './components/blog/BlogPage';
@@ -25,6 +26,7 @@ import { HomeFabricTechSection } from './components/home/HomeFabricTechSection';
 import { FabricDetailModal } from './components/home/FabricDetailModal';
 import { Toast } from './components/common/Toast';
 import { Button } from './components/common/Button';
+import { AuthModal } from './components/auth/AuthModal';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { MOCK_PRODUCTS } from './data/mockProducts';
 import { markVoucherAsUsed } from './data/voucherConfig';
@@ -34,35 +36,62 @@ export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('menstyle_products') || localStorage.getItem('menstyle_products_v2');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= MOCK_PRODUCTS.length) {
-          return parsed;
-        }
-      } catch (e) {
-        console.error('Lỗi đọc menstyle_products:', e);
-      }
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [productsError, setProductsError] = useState('');
+
+  const requestProducts = useCallback(async () => {
+    const response = await axiosInstance.get('/products');
+    return extractProducts(response.data);
+  }, []);
+
+  const fetchProducts = useCallback(async () => {
+    setLoadingProducts(true);
+    setProductsError('');
+    try {
+      const apiProducts = await requestProducts();
+      setProducts(apiProducts);
+      console.log(`Đã tải ${apiProducts.length} sản phẩm từ MongoDB.`);
+    } catch (error) {
+      console.error('Lỗi lấy sản phẩm:', error);
+      setProductsError(error.response?.data?.message || error.message || 'Không thể tải sản phẩm.');
+    } finally {
+      setLoadingProducts(false);
     }
-    localStorage.setItem('menstyle_products', JSON.stringify(MOCK_PRODUCTS));
-    localStorage.setItem('menstyle_products_v2', JSON.stringify(MOCK_PRODUCTS));
-    return MOCK_PRODUCTS;
-  });
+  }, [requestProducts]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const [currentTab, setCurrentTab] = useState('home'); // Mặc định luôn là Trang Chủ ('home') dành cho Khách hàng
   const [filterCategory, setFilterCategory] = useState('Tất cả');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentUser, setCurrentUser] = useState(() => {
+    if (!localStorage.getItem('menstyle_token')) return null;
     const saved = localStorage.getItem('menstyle_user');
     return saved ? JSON.parse(saved) : null; // Mặc định là null (Khách vãng lai)
   });
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isPendingCheckout, setIsPendingCheckout] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
-    return localStorage.getItem('menstyle_admin_auth') === 'true';
+    try { return JSON.parse(localStorage.getItem('menstyle_user') || 'null')?.role === 'admin'; } catch { return false; }
   });
+
+  useEffect(() => {
+    if (!localStorage.getItem('menstyle_token')) return;
+    axiosInstance.get('/auth/me').then(({ data }) => {
+      const user = data.data;
+      setCurrentUser(user);
+      setIsAdminLoggedIn(user.role === 'admin');
+      localStorage.setItem('menstyle_user', JSON.stringify(user));
+    }).catch(() => {
+      localStorage.removeItem('menstyle_token');
+      localStorage.removeItem('menstyle_user');
+      setCurrentUser(null);
+      setIsAdminLoggedIn(false);
+    });
+  }, []);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -254,9 +283,10 @@ const isTryingAdmin =
     if (!isAdminLoggedIn) {
       return (
         <AdminLogin 
-          onLoginSuccess={() => {
+          onLoginSuccess={(user) => {
+            setCurrentUser(user);
+            localStorage.setItem('menstyle_user', JSON.stringify(user));
             setIsAdminLoggedIn(true);
-            localStorage.setItem('menstyle_admin_auth', 'true');
           }}
           onBackToClient={() => {
             navigate('/');
@@ -280,7 +310,9 @@ const isTryingAdmin =
         }}
         onLogout={() => {
           setIsAdminLoggedIn(false);
-          localStorage.removeItem('menstyle_admin_auth');
+          localStorage.removeItem('menstyle_token');
+          localStorage.removeItem('menstyle_user');
+          setCurrentUser(null);
         }}
       />
     );
@@ -395,9 +427,12 @@ const isTryingAdmin =
           /* TRANG PROFILE & LỊCH SỬ ĐƠN HÀNG (TUẦN 3) */
           <UserProfilePage 
             user={currentUser}
+            onReorder={(items) => { setCartItems(items); localStorage.setItem('menstyle_cart', JSON.stringify(items)); setCurrentTab('checkout'); }}
             onBackToShopping={() => setCurrentTab('home')}
             onLogout={() => {
               setCurrentUser(null);
+              setIsAdminLoggedIn(false);
+              localStorage.removeItem('menstyle_token');
               localStorage.removeItem('menstyle_user');
               setCurrentTab('home');
               addToast('Đã Đăng Xuất', 'Bạn đã quay trở lại giao diện khách vãng lai.', 'info');
@@ -417,6 +452,9 @@ const isTryingAdmin =
           /* TRANG DANH SÁCH SẢN PHẨM & BỘ LỌC (PLP) */
           <ProductListingPage 
             products={products}
+            loading={loadingProducts}
+            error={productsError}
+            onRetry={fetchProducts}
             onQuickView={handleOpenDetail}
             onAddToCart={handleAddToCart}
             initialCategory={filterCategory}
@@ -444,6 +482,8 @@ const isTryingAdmin =
 
             {/* 3. Featured Categories (Bộ Sưu Tập Phái Mạnh) */}
             <FeaturedCategories 
+              products={products}
+              loading={loadingProducts}
               onSelectCategory={(catName) => {
                 setFilterCategory(catName);
                 setCurrentTab('products');
@@ -494,7 +534,7 @@ const isTryingAdmin =
                     Sơ Mi Kháng Khuẩn
                   </Button>
                   <Button 
-                    onClick={() => handleNavigateWithCategory('Quần Âu Công Sở')}
+                    onClick={() => handleNavigateWithCategory('Quần Âu & Jean')}
                     variant="ghost" 
                     size="sm" 
                     className="rounded-full text-neutral-800 hover:text-amber-600 font-bold text-xs shrink-0 cursor-pointer"
@@ -514,7 +554,14 @@ const isTryingAdmin =
 
               {/* Grid 8 sản phẩm MENSTYLE nổi bật */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
-                {products.slice(0, 8).map((product) => (
+                {loadingProducts ? Array.from({ length: 8 }, (_, index) => (
+                  <div key={`product-skeleton-${index}`} className="bg-white rounded-2xl p-3 border border-neutral-100 animate-pulse">
+                    <div className="aspect-[3/4] rounded-xl bg-neutral-200 mb-3" />
+                    <div className="h-3 w-1/3 bg-neutral-200 rounded mb-2" />
+                    <div className="h-4 w-5/6 bg-neutral-200 rounded mb-3" />
+                    <div className="h-4 w-1/2 bg-neutral-200 rounded" />
+                  </div>
+                )) : products.slice(0, 8).map((product) => (
                   <ProductCard 
                     key={product.id} 
                     product={product} 
@@ -561,7 +608,7 @@ const isTryingAdmin =
                   size="lg" 
                   className="rounded-full border-neutral-300 px-6 sm:px-8 hover:border-neutral-950 font-bold text-xs sm:text-base w-full sm:w-auto cursor-pointer"
                 >
-                  Xem toàn bộ 200+ sản phẩm thời trang MENSTYLE <ArrowRight className="w-4 h-4 ml-2" />
+                  Xem toàn bộ {products.length} sản phẩm thời trang MENSTYLE <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </section>
@@ -660,6 +707,7 @@ const isTryingAdmin =
         onSelectProduct={handleOpenDetail}
         currentUser={currentUser}
         onRequireAuth={() => handleOpenAiFeature(() => {}, 'Trợ Lý Chatbot AI Stylist')}
+        onAddMultipleToCart={handleAddMultipleToCart}
       />
 
       {/* 9.1. Modal AI Smart Outfit Stylist (Gợi ý trọn bộ set đồ theo hoàn cảnh) */}
