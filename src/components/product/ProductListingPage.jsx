@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { SidebarFilter } from './SidebarFilter';
 import { ProductCard } from './ProductCard';
-import { ArrowUpDown, SlidersHorizontal, Grid, ListFilter, Sparkles, Loader2, X } from 'lucide-react';
+import { ArrowUpDown, SlidersHorizontal, Grid, ListFilter, Sparkles, Loader2, X, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
 import { parseSemanticSearchWithAI } from '../../services/geminiService';
 import { ProductGridSkeleton } from '../common/FeedbackStates';
 
@@ -359,25 +359,90 @@ export const ProductListingPage = ({
             </div>
           )}
 
-          {/* Phân Trang (Pagination) */}
+          {/* Phân Trang (Pagination) & Nút Xem Thêm Chuẩn Thương Mại */}
           {totalPages > 1 && (
-            <div className="mt-8 flex justify-center items-center gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <div className="mt-10 pt-6 border-t border-neutral-200/80 flex flex-col items-center gap-4">
+              {/* Nút Xem Thêm Trang Kế Tiếp */}
+              {currentPage < totalPages && (
                 <button
-                  key={page}
+                  type="button"
                   onClick={() => {
-                    setCurrentPage(page);
+                    setCurrentPage(prev => Math.min(prev + 1, totalPages));
                     window.scrollTo({ top: 120, behavior: 'smooth' });
                   }}
-                  className={`w-9 h-9 text-xs font-bold rounded-lg border transition ${
-                    currentPage === page
-                      ? 'bg-neutral-950 border-neutral-950 text-white shadow-xs'
-                      : 'bg-white border-neutral-200 text-neutral-700 hover:border-neutral-950'
-                  }`}
+                  className="px-8 py-3 bg-white hover:bg-neutral-950 text-neutral-900 hover:text-white border-2 border-neutral-950 rounded-full text-xs sm:text-sm font-black transition-all shadow-sm hover:shadow-md flex items-center gap-2 cursor-pointer group"
                 >
-                  {page}
+                  <span>Xem Thêm ({filteredProducts.length - currentPage * itemsPerPage} sản phẩm tiếp theo)</span>
+                  <ChevronsRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
-              ))}
+              )}
+
+              {/* Dải Nút Trang 1, 2, 3, 4... */}
+              <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+                {/* Nút Về Trước */}
+                <button
+                  type="button"
+                  disabled={currentPage === 1}
+                  onClick={() => {
+                    setCurrentPage(prev => Math.max(1, prev - 1));
+                    window.scrollTo({ top: 120, behavior: 'smooth' });
+                  }}
+                  className="px-3 py-2 rounded-xl border border-neutral-300 bg-white text-neutral-700 hover:border-neutral-950 disabled:opacity-30 disabled:pointer-events-none text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Trước</span>
+                </button>
+
+                {/* Các nút số trang 1, 2, 3, 4 ... */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  if (totalPages > 7) {
+                    if (page !== 1 && page !== totalPages && Math.abs(page - currentPage) > 2) {
+                      if (page === 2 || page === totalPages - 1) {
+                        return <span key={page} className="px-1 text-xs text-neutral-400 font-bold">...</span>;
+                      }
+                      return null;
+                    }
+                  }
+
+                  const isActive = currentPage === page;
+                  return (
+                    <button
+                      type="button"
+                      key={page}
+                      onClick={() => {
+                        setCurrentPage(page);
+                        window.scrollTo({ top: 120, behavior: 'smooth' });
+                      }}
+                      className={`w-9 h-9 sm:w-10 sm:h-10 text-xs sm:text-sm font-black rounded-xl border transition cursor-pointer flex items-center justify-center ${
+                        isActive
+                          ? 'bg-neutral-950 border-neutral-950 text-amber-400 shadow-md scale-105'
+                          : 'bg-white border-neutral-200 text-neutral-700 hover:border-neutral-950 hover:bg-neutral-50'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+
+                {/* Nút Kế Tiếp */}
+                <button
+                  type="button"
+                  disabled={currentPage === totalPages}
+                  onClick={() => {
+                    setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                    window.scrollTo({ top: 120, behavior: 'smooth' });
+                  }}
+                  className="px-3 py-2 rounded-xl border border-neutral-300 bg-white text-neutral-700 hover:border-neutral-950 disabled:opacity-30 disabled:pointer-events-none text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                >
+                  <span className="hidden sm:inline">Sau</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Thông tin số trang hiện tại */}
+              <p className="text-[11px] text-neutral-500 font-medium">
+                Đang xem trang <strong className="text-neutral-900">{currentPage}</strong> / {totalPages} (Tổng {filteredProducts.length} sản phẩm)
+              </p>
             </div>
           )}
         </div>
