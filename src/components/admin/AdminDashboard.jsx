@@ -1,5 +1,5 @@
 import axiosInstance from '../../api/axiosInstance';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   LayoutDashboard, 
   ShoppingBag, 
