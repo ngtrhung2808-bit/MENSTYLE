@@ -7,14 +7,14 @@ echo ========================================================
 echo       DANG KHOI DONG TRANG QUAN TRI MENSTYLE ADMIN...
 echo ========================================================
 echo.
-echo Tai khoan mac dinh: admin
-echo Mat khau mac dinh : admin123
+echo Tai khoan mac dinh: admin  (hoac admin@menstyle.vn)
+echo Mat khau mac dinh : admin  (hoac admin123 / Admin@123456)
 echo.
-echo Dang tu dong mo trinh duyet vao trang Quan tri...
 
 cd /d "%~dp0"
+start /b cmd /c "cd server && npm start"
 start /b cmd /c "npm run dev"
-timeout /t 1 >nul
+timeout /t 2 >nul
 
 :: Mo trinh duyet mac dinh vao thang trang admin
 start http://localhost:5173/?admin
