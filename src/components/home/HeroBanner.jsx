@@ -61,7 +61,7 @@ export const HeroBanner = ({ onExplore }) => {
     <div className="relative w-full overflow-hidden bg-neutral-950 select-none">
       {/* Khung ảnh Full Width Banner tỉ lệ thời trang chuẩn Torano */}
       <div className="relative w-full h-[360px] sm:h-[480px] md:h-[560px] lg:h-[640px] overflow-hidden">
-        {SLIDES.map((s, idx) => (
+        {slides.map((s, idx) => (
           <div
             key={s.id}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
@@ -123,7 +123,7 @@ export const HeroBanner = ({ onExplore }) => {
 
       {/* Cụm Nút Điều Hướng Trái / Phải dạng mũi tên mờ */}
       <button
-        onClick={() => setCurrentSlide((currentSlide - 1 + SLIDES.length) % SLIDES.length)}
+        onClick={() => setCurrentSlide((currentSlide - 1 + slides.length) % slides.length)}
         className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-neutral-950/40 hover:bg-neutral-950/80 text-white backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg"
         aria-label="Previous slide"
       >
@@ -131,7 +131,7 @@ export const HeroBanner = ({ onExplore }) => {
       </button>
 
       <button
-        onClick={() => setCurrentSlide((currentSlide + 1) % SLIDES.length)}
+        onClick={() => setCurrentSlide((currentSlide + 1) % slides.length)}
         className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-neutral-950/40 hover:bg-neutral-950/80 text-white backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg"
         aria-label="Next slide"
       >
@@ -140,7 +140,7 @@ export const HeroBanner = ({ onExplore }) => {
 
       {/* Dải Indicator Dots dạng gạch thanh lịch ở đáy */}
       <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
-        {SLIDES.map((_, i) => (
+        {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrentSlide(i)}
