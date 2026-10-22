@@ -30,6 +30,7 @@ import { AuthModal } from './components/auth/AuthModal';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { MOCK_PRODUCTS } from './data/mockProducts';
 import { markVoucherAsUsed } from './data/voucherConfig';
+import { extractProducts } from './utils/productAdapter';
 
 
 export default function App() {

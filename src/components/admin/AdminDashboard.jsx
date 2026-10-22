@@ -665,7 +665,7 @@ export const AdminDashboard = ({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-100">
-                      {ordersError && <tr><td colSpan="7" className="p-3 text-rose-600">{ordersError}</td></tr>}
+                      
                       {ordersList.length === 0 ? (
                         <tr>
                           <td colSpan="6" className="p-8 text-center text-neutral-400">
