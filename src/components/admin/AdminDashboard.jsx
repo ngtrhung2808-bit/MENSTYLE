@@ -32,7 +32,8 @@ import {
   Percent,
   CheckCircle,
   XCircle,
-  PackageCheck
+  PackageCheck,
+  ShieldCheck
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { MOCK_PRODUCTS, CATEGORIES } from '../../data/mockProducts';
