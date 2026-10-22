@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Globe, Share2, Shield, RotateCcw, Truck, Store, FileText, CheckCircle2, X } from 'lucide-react';
 import { SmartSizeGuideModal } from '../product/SmartSizeGuideModal';
+import { ReturnPolicyModal } from '../common/ReturnPolicyModal';
 
 export const Footer = ({ onNavigate }) => {
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
@@ -234,8 +235,14 @@ export const Footer = ({ onNavigate }) => {
         productCategory="Áo Polo & Sơ Mi"
       />
 
-      {/* Modal Chính Sách & Thông Tin Hỗ Trợ */}
-      {activeModal && (
+      {/* Modal Chính Sách & Quy Trình Đổi Trả Đầy Đủ 8 Tiêu Chí */}
+      <ReturnPolicyModal 
+        isOpen={activeModal === 'return'}
+        onClose={() => setActiveModal(null)}
+      />
+
+      {/* Modal Chính Sách & Thông Tin Hỗ Trợ Khác */}
+      {activeModal && activeModal !== 'return' && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4">
           <div 
             className="fixed inset-0 bg-neutral-950/75 backdrop-blur-sm"

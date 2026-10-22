@@ -15,6 +15,7 @@ import {
   X
 } from 'lucide-react';
 import { Button } from '../common/Button';
+import { getOrderStatusInfo } from '../../data/orderStatuses';
 
 export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'profile' | 'password'
@@ -197,16 +198,14 @@ export const UserProfilePage = ({ onBackToShopping, user, onLogout }) => {
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      {order.status === 'delivering' && (
-                        <span className="bg-amber-50 text-amber-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-amber-200">
-                          <Truck className="w-3.5 h-3.5" /> {order.statusLabel}
-                        </span>
-                      )}
-                      {order.status === 'completed' && (
-                        <span className="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-emerald-200">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> {order.statusLabel}
-                        </span>
-                      )}
+                      {(() => {
+                        const sInfo = getOrderStatusInfo(order.status);
+                        return (
+                          <span className={`text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border ${sInfo.color}`}>
+                            {sInfo.label}
+                          </span>
+                        );
+                      })()}
                     </div>
                   </div>
 

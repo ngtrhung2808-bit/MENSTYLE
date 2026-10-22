@@ -23,7 +23,7 @@ import {
   Minus
 } from 'lucide-react';
 import { Button } from '../common/Button';
-import { validateVoucher, AVAILABLE_VOUCHERS } from '../../data/voucherConfig';
+import { validateVoucher, getStoredVouchers } from '../../data/voucherConfig';
 import { EWalletGatewayModal } from './EWalletGatewayModal';
 import { VIETNAM_PROVINCES } from '../../data/vietnamLocations';
 
@@ -202,7 +202,8 @@ export const CheckoutPage = ({
       return;
     }
 
-    const result = validateVoucher(formData.couponCode, subTotal);
+    const userIdentifier = currentUser?.email || currentUser?.phone || formData.email || formData.phone;
+    const result = validateVoucher(formData.couponCode, subTotal, userIdentifier);
     if (result.valid) {
       setAppliedDiscount(result.discount);
       setCouponSuccess(result.message);
@@ -877,13 +878,14 @@ export const CheckoutPage = ({
 
               {/* Gợi ý chọn nhanh mã voucher */}
               <div className="flex flex-wrap gap-1.5 mt-2">
-                {AVAILABLE_VOUCHERS.map(v => (
+                {getStoredVouchers().filter(v => v.isActive !== false).map(v => (
                   <button
                     key={v.code}
                     type="button"
                     onClick={() => {
                       setFormData(prev => ({ ...prev, couponCode: v.code }));
-                      const res = validateVoucher(v.code, subTotal);
+                      const userIdentifier = currentUser?.email || currentUser?.phone || formData.email || formData.phone;
+                      const res = validateVoucher(v.code, subTotal, userIdentifier);
                       if (res.valid) {
                         setAppliedDiscount(res.discount);
                         setCouponSuccess(res.message);
@@ -897,10 +899,10 @@ export const CheckoutPage = ({
                     className={`text-[10px] font-bold px-2 py-0.5 rounded-md border transition cursor-pointer ${
                       formData.couponCode.toUpperCase() === v.code
                         ? 'bg-amber-500 text-neutral-950 border-amber-500'
-                        : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border-neutral-200'
+                        : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:border-neutral-900'
                     }`}
                   >
-                    {v.code} ({v.displayDiscount})
+                    {v.code} ({v.percent ? `-${v.percent}%` : `-${Math.round((v.discountAmount || 0) / 1000)}k`})
                   </button>
                 ))}
               </div>

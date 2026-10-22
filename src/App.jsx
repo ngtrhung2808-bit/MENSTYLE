@@ -27,6 +27,7 @@ import { Toast } from './components/common/Toast';
 import { Button } from './components/common/Button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { MOCK_PRODUCTS } from './data/mockProducts';
+import { markVoucherAsUsed } from './data/voucherConfig';
 
 
 export default function App() {
@@ -333,7 +334,12 @@ const isTryingAdmin =
             onOrderSuccess={(orderData) => {
               addToast('Đặt Hàng Thành Công', `Mã đơn hàng: ${orderData.orderCode}. Đơn hàng đã được đồng bộ vào hệ thống quản trị!`);
               
-              // Lưu vào danh sách đơn hàng toàn hệ thống
+              // 1. Phân loại trạng thái thanh toán online hay COD
+              const isOnlinePayment = ['banking', 'momo', 'zalopay', 'vnpay'].includes(orderData.paymentMethod);
+              const initialStatus = isOnlinePayment ? 'paid' : 'pending';
+              const initialStatusText = isOnlinePayment ? 'Đã thanh toán (ONLINE)' : 'Chờ xác nhận';
+
+              // 2. Lưu vào danh sách đơn hàng toàn hệ thống
               const existingOrders = JSON.parse(localStorage.getItem('menstyle_orders') || '[]');
               const newOrder = {
                 id: orderData.orderCode,
@@ -345,14 +351,40 @@ const isTryingAdmin =
                 cartItems: orderData.cartItems,
                 total: orderData.grandTotal,
                 paymentMethod: orderData.paymentMethod,
-                paymentStatus: orderData.paymentMethod === 'cod' ? 'Chưa thanh toán' : 'Đã thanh toán (Chờ khớp)',
-                status: 'pending',
-                statusText: 'Chờ xác nhận',
+                paymentStatus: isOnlinePayment ? 'Đã thanh toán (ONLINE)' : 'Chưa thanh toán (COD)',
+                status: initialStatus,
+                statusText: initialStatusText,
                 date: orderData.createdAt
               };
               
               const updatedOrders = [newOrder, ...existingOrders];
               localStorage.setItem('menstyle_orders', JSON.stringify(updatedOrders));
+
+              // 3. TỰ ĐỘNG CẬP NHẬT & TRỪ SỐ LƯỢNG TỒN KHO SẢN PHẨM
+              setProducts(prevProducts => {
+                const updatedProducts = prevProducts.map(prod => {
+                  const purchasedItems = orderData.cartItems.filter(item => item.id === prod.id);
+                  if (purchasedItems.length > 0) {
+                    const totalPurchasedQty = purchasedItems.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
+                    const currentStock = prod.totalStock !== undefined ? prod.totalStock : (prod.stock !== undefined ? prod.stock : 50);
+                    const newStock = Math.max(0, currentStock - totalPurchasedQty);
+                    return {
+                      ...prod,
+                      stock: newStock,
+                      totalStock: newStock
+                    };
+                  }
+                  return prod;
+                });
+                localStorage.setItem('menstyle_products', JSON.stringify(updatedProducts));
+                return updatedProducts;
+              });
+
+              // 4. Ghi nhận voucher đã dùng (Mỗi khách 1 lần)
+              if (orderData.couponCode) {
+                const userIdentifier = currentUser?.email || currentUser?.phone || orderData.email || orderData.phone;
+                markVoucherAsUsed(orderData.couponCode, userIdentifier);
+              }
 
               setCartItems([]);
               localStorage.removeItem('menstyle_cart');
