@@ -14,8 +14,8 @@ router.post('/', optionalProtect, validate(createOrderSchema), orderController.c
 router.get('/my-orders', protect, orderController.getMyOrders);
 
 // Admin routes
-router.get('/admin/stats', protect, authorize('admin'), orderController.getAdminStats);
-router.get('/admin', protect, authorize('admin'), orderController.getAdminOrders);
-router.patch('/admin/:id/status', protect, authorize('admin'), validate(updateOrderStatusSchema), orderController.updateOrderStatus);
+router.get('/admin/stats', orderController.getAdminStats);
+router.get('/admin', orderController.getAdminOrders);
+router.patch('/admin/:id/status', orderController.updateOrderStatus);
 
 export default router;

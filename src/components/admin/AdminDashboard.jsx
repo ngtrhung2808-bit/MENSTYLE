@@ -1,3 +1,4 @@
+import axiosInstance from '../../api/axiosInstance';
 import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
@@ -110,19 +111,78 @@ export const AdminDashboard = ({
   const [orderSearch, setOrderSearch] = useState('');
   const [orderStatusFilter, setOrderStatusFilter] = useState('ALL');
 
-  // Danh sách đơn hàng đồng bộ thời gian thực từ Khách hàng
+  // Danh sách đơn hàng đồng bộ thời gian thực từ MongoDB Atlas & LocalStorage
   const [ordersList, setOrdersList] = useState(() => {
     const saved = localStorage.getItem('menstyle_orders');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) {
         console.error(e);
       }
     }
     return [];
   });
+
+  // Tự động tải đơn hàng mới nhất từ MongoDB Atlas
+  const fetchBackendOrders = useCallback(async () => {
+    try {
+      const res = await axiosInstance.get('/orders/admin');
+      if (res.data && res.data.success && Array.isArray(res.data.data)) {
+        const mapped = res.data.data.map(o => {
+          const sInfo = getOrderStatusInfo(o.orderStatus || 'pending');
+          const isOnline = ['banking', 'momo', 'zalopay', 'vnpay'].includes(o.paymentMethod);
+          const paymentStatusText = isOnline 
+            ? 'Đã thanh toán (ONLINE)' 
+            : (o.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán (COD)');
+          
+          const fullAddress = o.customerInfo 
+            ? `${o.customerInfo.address || ''}, ${o.customerInfo.district ? o.customerInfo.district + ', ' : ''}${o.customerInfo.province || ''}`
+            : '';
+
+          const itemsText = (o.items || []).map(i => `${i.name} (${i.selectedSize || 'L'}, x${i.quantity})`).join(', ');
+
+          return {
+            id: o.orderCode || o._id,
+            mongoId: o._id,
+            customer: o.customerInfo?.fullName || 'Khách Hàng',
+            email: o.customerInfo?.email || '',
+            phone: o.customerInfo?.phone || '',
+            address: fullAddress,
+            items: itemsText,
+            cartItems: o.items || [],
+            total: o.grandTotal || o.subTotal || 0,
+            paymentMethod: o.paymentMethod || 'cod',
+            paymentStatus: paymentStatusText,
+            status: o.orderStatus || 'pending',
+            statusText: sInfo.label,
+            date: o.createdAt || new Date().toISOString()
+          };
+        });
+
+        // Hợp nhất đơn hàng MongoDB và đơn hàng localStorage tránh trùng lặp
+        setOrdersList(prev => {
+          const combined = [...mapped];
+          for (const p of prev) {
+            if (!combined.some(c => c.id === p.id)) {
+              combined.push(p);
+            }
+          }
+          localStorage.setItem('menstyle_orders', JSON.stringify(combined));
+          return combined;
+        });
+      }
+    } catch (err) {
+      console.warn('Lỗi lấy đơn hàng từ MongoDB API:', err.message);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchBackendOrders();
+    const interval = setInterval(fetchBackendOrders, 5000);
+    return () => clearInterval(interval);
+  }, [fetchBackendOrders]);
 
   // Danh sách khách hàng đã đăng ký từ hệ thống
   const [customersList] = useState(() => {
@@ -365,12 +425,22 @@ export const AdminDashboard = ({
   };
 
   // ================= CÁC TÍNH NĂNG THAO TÁC ĐƠN HÀNG =================
-  const handleUpdateOrderStatus = (orderId, newStatus) => {
+  const handleUpdateOrderStatus = async (orderId, newStatus) => {
     const sInfo = getOrderStatusInfo(newStatus);
+    const targetOrder = ordersList.find(o => o.id === orderId);
     const updated = ordersList.map(o => o.id === orderId ? { ...o, status: newStatus, statusText: sInfo.label } : o);
     setOrdersList(updated);
     localStorage.setItem('menstyle_orders', JSON.stringify(updated));
     logAdminAction('Admin', 'Cập nhật trạng thái đơn', `Đơn #${orderId} -> ${sInfo.label}`, 'info');
+
+    // Đồng bộ trạng thái đơn hàng sang MongoDB Atlas
+    if (targetOrder?.mongoId) {
+      try {
+        await axiosInstance.patch(`/orders/admin/${targetOrder.mongoId}/status`, { status: newStatus });
+      } catch (err) {
+        console.warn('Lỗi cập nhật trạng thái đơn trên MongoDB:', err.message);
+      }
+    }
   };
 
   const handleClearAllOrders = () => {
