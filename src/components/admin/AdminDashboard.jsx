@@ -545,6 +545,85 @@ export const AdminDashboard = ({
     logAdminAction('Super Admin', 'Cập nhật phân quyền nhân viên', `Staff ID: ${staffId}`, 'warning');
   };
 
+  // ================= THAO TÁC BANNER SLIDE =================
+  const handleOpenAddBanner = () => {
+    setEditingBanner(null);
+    setBannerForm({
+      title: '',
+      subtitle: '',
+      desc: '',
+      image: '',
+      category: 'Áo Sơ Mi',
+      ctaText: 'Mua Ngay'
+    });
+    setIsBannerModalOpen(true);
+  };
+
+  const handleOpenEditBanner = (ban) => {
+    setEditingBanner(ban);
+    setBannerForm({
+      title: ban.title || '',
+      subtitle: ban.subtitle || '',
+      desc: ban.desc || '',
+      image: ban.image || '',
+      category: ban.category || 'Áo Sơ Mi',
+      ctaText: ban.ctaText || 'Mua Ngay'
+    });
+    setIsBannerModalOpen(true);
+  };
+
+  const handleSaveBanner = (e) => {
+    e.preventDefault();
+    if (!bannerForm.title.trim() || !bannerForm.image.trim()) {
+      alert('Vui lòng nhập tiêu đề và chọn ảnh cho Banner!');
+      return;
+    }
+
+    let updated;
+    if (editingBanner) {
+      updated = bannersList.map(b => b.id === editingBanner.id ? { ...b, ...bannerForm } : b);
+      logAdminAction('Admin', 'Chỉnh sửa Banner slide', bannerForm.title, 'warning');
+    } else {
+      const newBanner = {
+        id: Date.now(),
+        ...bannerForm,
+        isActive: true,
+        displayOrder: bannersList.length + 1
+      };
+      updated = [...bannersList, newBanner];
+      logAdminAction('Admin', 'Thêm mới Banner slide', bannerForm.title, 'success');
+    }
+
+    setBannersList(updated);
+    saveStoredBanners(updated);
+    setIsBannerModalOpen(false);
+  };
+
+  const handleDeleteBanner = (bannerId) => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa Banner này khỏi trang chủ không?')) {
+      const updated = bannersList.filter(b => b.id !== bannerId);
+      setBannersList(updated);
+      saveStoredBanners(updated);
+      logAdminAction('Admin', 'Xóa Banner slide', `Banner ID: ${bannerId}`, 'danger');
+    }
+  };
+
+  // Upload ảnh trực tiếp từ máy tính (hỗ trợ chuyển file thành DataURL base64)
+  const handleFileUpload = (e, callback) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Dung lượng ảnh tối đa là 5MB!');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        callback(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // ================= 6. GIAO DIỆN CỬA HÀNG (STOREFRONT CMS) =================
   const handleToggleBannerActive = (bannerId) => {
     const updated = bannersList.map(b => b.id === bannerId ? { ...b, isActive: !b.isActive } : b);
@@ -1644,8 +1723,15 @@ export const AdminDashboard = ({
                 <div className="p-5 sm:p-6 border-b border-neutral-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
                     <h3 className="text-base font-bold text-neutral-900">Danh Sách Slide Banner Trang Chủ</h3>
-                    <p className="text-xs text-neutral-400 mt-0.5">Các tấm hình lớn quảng bá bộ sưu tập thời trang ngoài trang chính</p>
+                    <p className="text-xs text-neutral-400 mt-0.5">Thêm ảnh mới từ máy tính, thay ảnh banner và cập nhật chữ hiển thị ngoài trang chủ</p>
                   </div>
+                  <Button 
+                    onClick={handleOpenAddBanner}
+                    size="sm"
+                    className="bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold text-xs rounded-xl px-3.5 flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  >
+                    <Plus className="w-4 h-4" /> Thêm Banner Mới
+                  </Button>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -1686,8 +1772,19 @@ export const AdminDashboard = ({
                               {ban.isActive !== false ? '● Đang chiếu' : '○ Tạm ẩn'}
                             </button>
                           </td>
-                          <td className="p-4 text-right">
-                            <span className="text-xs text-amber-600 font-semibold">Tự động xoay vòng</span>
+                          <td className="p-4 text-right whitespace-nowrap">
+                            <button 
+                              onClick={() => handleOpenEditBanner(ban)}
+                              className="text-xs font-semibold text-amber-600 hover:text-amber-800 mr-2.5 cursor-pointer"
+                            >
+                              Sửa ảnh & chữ
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteBanner(ban.id)}
+                              className="text-xs font-semibold text-rose-600 hover:text-rose-800 cursor-pointer"
+                            >
+                              Xóa
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -1870,6 +1967,144 @@ export const AdminDashboard = ({
             </div>
           )}
 
+
+          {/* ================= MODAL THÊM / SỬA BANNER SLIDE TRANG CHỦ ================= */}
+          {isBannerModalOpen && (
+            <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+              <div className="fixed inset-0 bg-neutral-950/75 backdrop-blur-sm" onClick={() => setIsBannerModalOpen(false)} />
+              <div className="relative bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl z-10 border border-neutral-100 flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between pb-3 border-b border-neutral-200">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="w-5 h-5 text-amber-600" />
+                    <h3 className="text-base font-bold text-neutral-950">
+                      {editingBanner ? 'Chỉnh Sửa Slide Banner Trang Chủ' : 'Thêm Slide Banner Mới Lên Trang Chủ'}
+                    </h3>
+                  </div>
+                  <button onClick={() => setIsBannerModalOpen(false)} className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSaveBanner} className="space-y-4 mt-4">
+                  {/* Tải ảnh từ máy tính hoặc dán Link URL */}
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-700 mb-1">
+                      Hình Ảnh Banner <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <input 
+                          type="text"
+                          required
+                          value={bannerForm.image}
+                          onChange={(e) => setBannerForm({ ...bannerForm, image: e.target.value })}
+                          placeholder="Dán link ảnh (https://...) hoặc tải ảnh từ máy tính..."
+                          className="flex-1 px-3 py-2 border border-neutral-300 rounded-xl text-xs outline-none focus:border-amber-500 font-mono text-[11px]"
+                        />
+                        <label className="px-3 py-2 bg-neutral-950 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold cursor-pointer shrink-0 flex items-center gap-1.5 transition">
+                          <span>Tải Ảnh Lên</span>
+                          <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={(e) => handleFileUpload(e, (dataUrl) => setBannerForm(prev => ({ ...prev, image: dataUrl })))}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+
+                      {bannerForm.image && (
+                        <div className="relative rounded-xl overflow-hidden border border-neutral-200 aspect-[16/7] bg-neutral-900 flex items-center justify-center">
+                          <img 
+                            src={bannerForm.image} 
+                            alt="Banner Preview" 
+                            className="w-full h-full object-cover"
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                          />
+                          <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-xs text-white text-[10px] px-2 py-0.5 rounded font-mono">
+                            Xem trước tỷ lệ Banner
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-700 mb-1">
+                      Tiêu Đề Lớn (Title) <span className="text-rose-500">*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      required
+                      value={bannerForm.title}
+                      onChange={(e) => setBannerForm({ ...bannerForm, title: e.target.value })}
+                      placeholder="VD: BỘ SƯU TẬP THU ĐÔNG 2026..."
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-xs outline-none focus:border-amber-500 font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-700 mb-1">
+                      Phụ Đề (Subtitle)
+                    </label>
+                    <input 
+                      type="text" 
+                      value={bannerForm.subtitle}
+                      onChange={(e) => setBannerForm({ ...bannerForm, subtitle: e.target.value })}
+                      placeholder="VD: URBAN ELEGANCE • ĐẲNG CẤP PHÁI MẠNH..."
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-xs outline-none focus:border-amber-500 uppercase text-[11px]"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-neutral-700 mb-1">Danh Mục Liên Kết</label>
+                      <select 
+                        value={bannerForm.category}
+                        onChange={(e) => setBannerForm({ ...bannerForm, category: e.target.value })}
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-xs outline-none focus:border-amber-500 bg-white"
+                      >
+                        {CATEGORIES.filter(c => c !== 'Tất cả').map((cat) => (
+                          <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-neutral-700 mb-1">Chữ Trên Nút (CTA)</label>
+                      <input 
+                        type="text" 
+                        value={bannerForm.ctaText}
+                        onChange={(e) => setBannerForm({ ...bannerForm, ctaText: e.target.value })}
+                        placeholder="VD: Mua Ngay, Xem BST..."
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-xs outline-none focus:border-amber-500 font-bold"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-700 mb-1">Đoạn Mô Tả Ngắn</label>
+                    <textarea 
+                      rows="2"
+                      value={bannerForm.desc}
+                      onChange={(e) => setBannerForm({ ...bannerForm, desc: e.target.value })}
+                      placeholder="Mô tả chất liệu, thiết kế nổi bật của bộ sưu tập..."
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-xs outline-none focus:border-amber-500 resize-none"
+                    />
+                  </div>
+
+                  <div className="pt-3 border-t border-neutral-200 flex items-center justify-end gap-2.5">
+                    <Button type="button" variant="outline" onClick={() => setIsBannerModalOpen(false)} className="text-xs px-4 rounded-xl cursor-pointer">
+                      Hủy Bỏ
+                    </Button>
+                    <Button type="submit" className="bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold text-xs px-5 rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs">
+                      <Save className="w-4 h-4" /> {editingBanner ? 'Cập Nhật Banner' : 'Lưu & Đăng Banner'}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
           {/* ================= MODAL PHẢN HỒI ĐÁNH GIÁ ================= */}
           {replyModalOpen && selectedReviewForReply && (
             <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4">
@@ -2025,17 +2260,33 @@ export const AdminDashboard = ({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-neutral-700 mb-1">Link Ảnh Sản Phẩm (URL)</label>
-                    <div className="flex gap-2">
-                      <input 
-                        type="url" 
-                        value={productForm.image}
-                        onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
-                        placeholder="https://product.hstatic.net/..."
-                        className="flex-1 px-3 py-2 border border-neutral-300 rounded-xl text-xs outline-none focus:border-amber-500 font-mono text-[11px]"
-                      />
+                    <label className="block text-xs font-bold text-neutral-700 mb-1">Hình Ảnh Sản Phẩm</label>
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          value={productForm.image}
+                          onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
+                          placeholder="Dán link ảnh (https://...) hoặc chọn file từ máy tính..."
+                          className="flex-1 px-3 py-2 border border-neutral-300 rounded-xl text-xs outline-none focus:border-amber-500 font-mono text-[11px]"
+                        />
+                        <label className="px-3 py-2 bg-neutral-950 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold cursor-pointer shrink-0 flex items-center gap-1.5 transition">
+                          <span>Chọn Ảnh Từ Máy</span>
+                          <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={(e) => handleFileUpload(e, (dataUrl) => setProductForm(prev => ({ ...prev, image: dataUrl })))}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
                       {productForm.image && (
-                        <img src={productForm.image} alt="Preview" className="w-9 h-9 object-cover rounded-lg border border-neutral-300 shrink-0" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                        <div className="flex items-center gap-3 p-2 bg-neutral-50 rounded-xl border border-neutral-200">
+                          <img src={productForm.image} alt="Preview" className="w-12 h-14 object-cover rounded-lg border border-neutral-300 shrink-0" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                          <div className="text-[11px] text-neutral-500">
+                            Ảnh đã được nạp thành công. Bạn có thể nhấn <strong className="text-neutral-800">Lưu Sản Phẩm</strong> để áp dụng.
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>

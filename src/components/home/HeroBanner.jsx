@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, ChevronLeft, ChevronRight, Sparkles, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
 import { Button } from '../common/Button';
+import { getStoredBanners } from '../../data/storefrontData';
 
-const SLIDES = [
+const DEFAULT_SLIDES = [
   {
     id: 1,
     title: 'BỘ SƯU TẬP THU ĐÔNG 2026',
@@ -34,16 +35,27 @@ const SLIDES = [
 
 export const HeroBanner = ({ onExplore }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [slides, setSlides] = useState(() => {
+    try {
+      const stored = getStoredBanners();
+      const active = stored.filter(b => b.isActive !== false);
+      if (active.length > 0) return active;
+    } catch (e) {
+      console.error(e);
+    }
+    return DEFAULT_SLIDES;
+  });
 
   // Tự động chuyển slide sau mỗi 6 giây
   useEffect(() => {
+    if (slides.length <= 1) return;
     const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % SLIDES.length);
+      setCurrentSlide(prev => (prev + 1) % slides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides]);
 
-  const slide = SLIDES[currentSlide];
+  const slide = slides[currentSlide] || slides[0] || DEFAULT_SLIDES[0];
 
   return (
     <div className="relative w-full overflow-hidden bg-neutral-950 select-none">

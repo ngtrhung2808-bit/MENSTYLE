@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, ShoppingBag, Heart, User, Menu, X, ChevronDown, Store, Flame, Sparkles, Camera } from 'lucide-react';
+import { getStoredStorefrontConfig } from '../../data/storefrontData';
 
 export const Header = ({ 
   onOpenCart, 
@@ -18,6 +19,7 @@ export const Header = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const storefrontConfig = getStoredStorefrontConfig();
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -29,7 +31,8 @@ export const Header = ({
   return (
     <header className="sticky top-0 z-40 w-full shadow-md">
       {/* 1. TẦNG 1: DẢI CHẠY KHUYẾN MÃI (TOP RUNNING MARQUEE) */}
-      <div className="bg-[#1c1917] text-[#d6d3d1] text-[11px] sm:text-xs py-1.5 overflow-hidden whitespace-nowrap border-b border-neutral-800">
+      {storefrontConfig.isAnnouncementActive !== false && (
+        <div className="bg-[#1c1917] text-[#d6d3d1] text-[11px] sm:text-xs py-1.5 overflow-hidden whitespace-nowrap border-b border-neutral-800">
         <div className="animate-marquee-infinite select-none font-medium flex items-center">
           <div className="shrink-0 flex items-center gap-8 pr-8">
             <span className="flex items-center gap-1.5 text-amber-300">
@@ -79,6 +82,7 @@ export const Header = ({
           </div>
         </div>
       </div>
+      )}
 
       {/* 2. TẦNG 2: THANH CHÍNH MÀU ĐEN (BRAND BAR) */}
       <div className="bg-[#121212] text-white border-b border-neutral-800">
