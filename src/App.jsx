@@ -51,11 +51,42 @@ export default function App() {
     setProductsError('');
     try {
       const apiProducts = await requestProducts();
-      setProducts(apiProducts);
-      console.log(`Đã tải ${apiProducts.length} sản phẩm từ MongoDB.`);
+      if (apiProducts && apiProducts.length > 0) {
+        setProducts(apiProducts);
+        localStorage.setItem('menstyle_products_cache', JSON.stringify(apiProducts));
+        console.log(`Đã tải ${apiProducts.length} sản phẩm từ MongoDB Atlas.`);
+      } else {
+        throw new Error('API trả về rỗng');
+      }
     } catch (error) {
-      console.error('Lỗi lấy sản phẩm:', error);
-      setProductsError(error.response?.data?.message || error.message || 'Không thể tải sản phẩm.');
+      console.warn('Lỗi kết nối Backend, đang nạp dữ liệu Fallback an toàn:', error.message);
+      // Fallback: Lấy từ LocalStorage cache hoặc MOCK_PRODUCTS
+      const cached = localStorage.getItem('menstyle_products_cache') || localStorage.getItem('menstyle_products');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setProducts(parsed);
+            setLoadingProducts(false);
+            return;
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      const fallbackProds = MOCK_PRODUCTS.map(p => ({
+        ...p,
+        id: String(p.id),
+        price: Number(p.price || 0),
+        originalPrice: Number(p.originalPrice || 0),
+        discount: Number(p.discount || 0),
+        stock: Number(p.stock || p.totalStock || 50),
+        totalStock: Number(p.totalStock || p.stock || 50),
+        images: Array.isArray(p.images) && p.images.length > 0 ? p.images : [p.image],
+        category: p.category || 'Áo Sơ Mi'
+      }));
+      setProducts(fallbackProds);
+      localStorage.setItem('menstyle_products_cache', JSON.stringify(fallbackProds));
     } finally {
       setLoadingProducts(false);
     }
