@@ -42,7 +42,7 @@ export default function App() {
   const [productsError, setProductsError] = useState('');
 
   const requestProducts = useCallback(async () => {
-    const response = await axiosInstance.get('/products');
+    const response = await axiosInstance.get('/products?limit=500');
     return extractProducts(response.data);
   }, []);
 
